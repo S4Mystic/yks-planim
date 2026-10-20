@@ -1098,6 +1098,11 @@ tabGit('gorevler');
 /* ===== DODO AI: panel ve sekmeler ===== */
 let dodoSekme = 'analiz';
 
+// Hata Düzeltildi: dodoYenile fonksiyonu eklendi
+function dodoYenile() {
+  dodoIcerikCiz();
+}
+
 function dodoSekmeCiz() {
   document.getElementById('dodoSek').innerHTML = [['analiz', 'Analiz'], ['sohbet', 'Sohbet']].map(t =>
     '<button type="button" class="' + (dodoSekme === t[0] ? 'aktif' : '') + '" onclick="dodoSekmeGit(\'' + t[0] + '\')">' + t[1] + '</button>').join('');
@@ -1274,12 +1279,6 @@ function dodoMesaj(t, ok) {
   const e = document.getElementById('dodoMesaj');
   if (!e) return;
   e.textContent = t; e.style.color = ok ? 'var(--yesil)' : 'var(--kirmizi)';
-}
-function dodoYenile() {
-  if (dodoSekme !== 'analiz') return;
-  const el = document.getElementById('dodoIcerik'), st = el.scrollTop;
-  el.innerHTML = '<div class="anim">' + (dodoAktifRapor ? dodoRaporGorunum() : dodoAnalizForm()) + '</div>';
-  el.scrollTop = st;
 }
 function dodoKonular() {
   const s = new Set(dodoOku('dodo_ayar', {}).konular || []);
