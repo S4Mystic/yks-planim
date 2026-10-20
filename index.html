@@ -143,6 +143,17 @@ body.dodoAcik #dodoPanel{transform:translateY(0);opacity:1;visibility:visible;tr
 .dodoSek button.aktif{background:var(--degrade);border-color:transparent;color:#0b0d14;font-weight:700;box-shadow:0 6px 18px rgba(124,156,255,.35)}
 #dodoIcerik{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:4px 16px calc(24px + env(safe-area-inset-bottom))}
 
+/* ===== DODO AI: form ===== */
+input[type=password]{display:block;width:100%;min-height:48px;margin-top:6px;padding:10px 12px;border:1px solid var(--kenar);border-radius:14px;background:rgba(255,255,255,.07);color:var(--yazi);font-family:inherit;font-size:16px}
+.uclu{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ikiGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.soruSatir{border-top:1px solid rgba(255,255,255,.1);padding:6px 0 12px}
+select:disabled{opacity:.4}
+.fotolar{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.foto{position:relative}
+.foto img{width:84px;height:84px;object-fit:cover;border-radius:12px;display:block}
+.foto button{position:absolute;top:-6px;right:-6px;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:var(--kirmizi);color:#10131a;font-size:14px}
+
 /* Netlify rozetini gizle */
 .netlify-badge, [class*="netlify"] {
   display: none !important;
@@ -1007,7 +1018,7 @@ const EKRAN = {
   hedefler()  { return hedeflerEkrani(); },
   program()   { return programEkrani(); },
   ayarlar() {
-    return kart('Yedekleme',
+    return dodoAyarKarti() + kart('Yedekleme',
       '<p class="soluk">Verilerin sadece bu telefondaki tarayıcıda durur. Düzenli yedek al.</p>' +
       '<button class="btn" onclick="yedekIndir()">Yedekle (JSON indir)</button>' +
       '<button class="btn ikincil" onclick="document.getElementById(\'dosya\').click()">Yedeği yükle</button>' +
@@ -1040,7 +1051,7 @@ function tabGit(id) {
 
 /* ===== YEDEK ===== */
 function yedekIndir() {
-  const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
+  const blob = new Blob([JSON.stringify(Object.assign({}, S, {dodo: dodoYedekAl()}), null, 2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'yks-yedek-' + bugun() + '.json';
@@ -1058,7 +1069,9 @@ function yedekYukle(input) {
       const veri = JSON.parse(r.result);
       if (!veri || veri.surum !== 1) throw new Error('Geçersiz yedek');
       if (!confirm('Şu anki verilerin silinip yedektekiler yüklenecek. Emin misin?')) return;
+      const dodoVeri = veri.dodo; delete veri.dodo;
       S = Object.assign(varsayilan(), veri);
+      dodoYedekYukle(dodoVeri);
       kaydet();
       tabGit(aktifTab);
       alert('Yedek yüklendi.');
@@ -1089,7 +1102,7 @@ function dodoSekmeCiz() {
 function dodoIcerikCiz() {
   const el = document.getElementById('dodoIcerik');
   const govde = dodoSekme === 'analiz'
-    ? kart('Deneme analizi', '<p class="soluk">Analiz formu sonraki adımlarda gelecek.</p>')
+    ? dodoAnalizForm()
     : kart('Sohbet', '<p class="soluk">Sohbet ekranı sonraki adımlarda gelecek.</p>');
   el.innerHTML = '<div class="anim">' + govde + '</div>';
 }
@@ -1117,6 +1130,239 @@ function dodoKapat(geriden) {
 
 window.addEventListener('popstate', () => dodoKapat(true));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') dodoKapat(); });
+
+/* ===== DODO AI: ayar, API, analiz formu (Adım 2-3) ===== */
+const DODO_KEY = 'dodo_api_anahtari';
+const DODO_MODEL = 'gemini-3.8-flash';
+const DODO_YEDEK = ['dodo_analizler','dodo_konu_toplam','dodo_haftalik_ozet','dodo_sohbet','dodo_ayar'];
+const DODO_SIKLAR = ['','A','B','C','D','E'];
+
+function dodoOku(k, v) { try { const x = localStorage.getItem(k); return x ? JSON.parse(x) : v; } catch (e) { return v; } }
+function dodoYaz(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { bildir('Kayıt alanı dolu'); } }
+function dodoAnahtar() { try { return localStorage.getItem(DODO_KEY) || ''; } catch (e) { return ''; } }
+function dodoModel() { return (dodoOku('dodo_ayar', {}).model || '').trim() || DODO_MODEL; }
+
+/* Yedek: API anahtarı BİLEREK dışarıda */
+function dodoYedekAl() {
+  const o = {};
+  DODO_YEDEK.forEach(k => { const v = dodoOku(k, undefined); if (v !== undefined) o[k] = v; });
+  return o;
+}
+function dodoYedekYukle(o) {
+  if (!o || typeof o !== 'object') return;
+  DODO_YEDEK.forEach(k => { if (k in o) dodoYaz(k, o[k]); });
+}
+
+/* --- TEK API FONKSİYONU (Interactions API'ye geçerken sadece burayı değiştir) --- */
+function dodoHataMetni(d, m) {
+  const ek = m ? ' (' + String(m).slice(0, 150) + ')' : '';
+  if (d === 429) return 'Limit doldu (429). Biraz bekleyip tekrar dene.';
+  if (d === 400 || d === 403) return 'Geçersiz API anahtarı ya da izin yok (' + d + '). Ayarlar\'dan anahtarı kontrol et.' + ek;
+  if (d === 404) return 'Model bulunamadı (404). Ayarlar\'da model adını kontrol et, gemini-3.5-flash-lite dene.';
+  if (d >= 500) return 'Google sunucusunda geçici sorun (' + d + '). Biraz sonra tekrar dene.';
+  return 'Beklenmeyen hata (' + d + ').' + ek;
+}
+async function geminiIstek(parcalar, sistem) {
+  const anahtar = dodoAnahtar();
+  if (!anahtar) throw new Error('API anahtarı yok. Ayarlar sekmesinden Gemini API anahtarını ekle.');
+  if (!navigator.onLine) throw new Error('İnternet bağlantısı yok. Bağlanınca tekrar dene.');
+  let r;
+  try {
+    r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(dodoModel()) + ':generateContent', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'x-goog-api-key': anahtar},
+      body: JSON.stringify({
+        systemInstruction: {parts: [{text: sistem}]},
+        contents: [{role: 'user', parts: parcalar}],
+        generationConfig: {temperature: 0.2, responseMimeType: 'application/json'}
+      })
+    });
+  } catch (e) { throw new Error('Google\'a ulaşılamadı. İnternetini kontrol et.'); }
+  if (!r.ok) {
+    let m = '';
+    try { const j = await r.json(); m = (j.error && j.error.message) || ''; } catch (e) {}
+    throw new Error(dodoHataMetni(r.status, m));
+  }
+  const j = await r.json();
+  const p = j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts;
+  const metin = (p || []).map(x => x.text || '').join('');
+  if (!metin) throw new Error('Yapay zeka boş yanıt verdi. Tekrar dene.');
+  return metin;
+}
+
+/* --- Ayarlar kartı --- */
+function dodoAyarKarti() {
+  return kart('🦤 Dodo AI (Gemini)',
+    '<p class="soluk">API anahtarı sadece bu cihazda durur, yedeğe girmez.</p>' +
+    '<label class="alan" for="d_key">Gemini API anahtarı</label>' +
+    '<div class="ekleSatir"><input type="password" id="d_key" autocomplete="off" value="' + esc(dodoAnahtar()) + '">' +
+    '<button class="btn ikincil" type="button" aria-label="Göster/gizle" onclick="dodoGoster()">👁</button></div>' +
+    '<label class="alan">Model adı<input type="text" id="d_model" autocapitalize="off" spellcheck="false" value="' + esc(dodoModel()) + '"></label>' +
+    '<p class="soluk">Hata verirse gemini-3.5-flash-lite dene.</p>' +
+    '<button class="btn" onclick="dodoAyarKaydet()">Kaydet</button>' +
+    '<button class="btn ikincil" onclick="dodoTest()">Bağlantıyı test et</button>' +
+    '<p class="soluk" id="dodoTestSonuc" style="margin-top:10px"></p>');
+}
+function dodoGoster() { const e = document.getElementById('d_key'); e.type = e.type === 'password' ? 'text' : 'password'; }
+function dodoAyarKaydet(sessiz) {
+  const k = document.getElementById('d_key').value.trim();
+  const m = document.getElementById('d_model').value.trim() || DODO_MODEL;
+  if (/[^\x20-\x7e]/.test(k)) { alert('Anahtarda geçersiz karakter var. Tekrar kopyala.'); return false; }
+  try { if (k) localStorage.setItem(DODO_KEY, k); else localStorage.removeItem(DODO_KEY); } catch (e) {}
+  dodoYaz('dodo_ayar', Object.assign(dodoOku('dodo_ayar', {}), {model: m}));
+  if (sessiz !== true) bildir('Kaydedildi ✓');
+  return true;
+}
+async function dodoTest() {
+  if (!dodoAyarKaydet(true)) return;
+  const e = document.getElementById('dodoTestSonuc');
+  e.textContent = 'Test ediliyor...';
+  try {
+    await geminiIstek([{text: 'Sadece {"durum":"ok"} JSON\'unu döndür.'}], 'Sadece geçerli JSON döndür.');
+    e.textContent = '✓ Bağlantı çalışıyor (' + dodoModel() + ').';
+  } catch (x) { e.textContent = '✗ ' + x.message; }
+}
+
+/* --- Analiz formu (veriler dodoF'te durur, hata olunca silinmez) --- */
+let dodoF = {ad:'', tarih:bugun(), tur:'TYT', ders:'Matematik', d:'', y:'', b:'', sorular:[], anahtar:'', fotolar:[]};
+
+function dodoSayi(v) { const n = parseInt(v, 10); return isNaN(n) || n < 0 ? 0 : n; }
+function dodoNet() { return dodoSayi(dodoF.d) - dodoSayi(dodoF.y) / 4; }
+function dodoAlan(k, v) {
+  dodoF[k] = v;
+  if (k === 'd' || k === 'y' || k === 'b') { const e = document.getElementById('dodoNet'); if (e) e.textContent = netYaz(dodoNet()); }
+}
+function dodoMesaj(t, ok) {
+  const e = document.getElementById('dodoMesaj');
+  if (!e) return;
+  e.textContent = t; e.style.color = ok ? 'var(--yesil)' : 'var(--kirmizi)';
+}
+function dodoYenile() {
+  if (dodoSekme !== 'analiz') return;
+  const el = document.getElementById('dodoIcerik'), st = el.scrollTop;
+  el.innerHTML = '<div>' + dodoAnalizForm() + '</div>';
+  el.scrollTop = st;
+}
+function dodoKonular() {
+  const s = new Set(dodoOku('dodo_ayar', {}).konular || []);
+  Object.keys(dodoOku('dodo_konu_toplam', {})).forEach(k => s.add(k));
+  dodoF.sorular.forEach(x => { if (x.konu && x.konu.trim()) s.add(x.konu.trim()); });
+  return [...s].filter(Boolean).sort((a, b) => a.localeCompare(b, 'tr'));
+}
+function dodoSoruEkle() { dodoF.sorular.push({no:'', konu:'', isaret:'', dogru:'', durum:'yanlış'}); dodoYenile(); }
+function dodoSoruSil(i) { dodoF.sorular.splice(i, 1); dodoYenile(); }
+function dodoSoru(i, k, v) {
+  dodoF.sorular[i][k] = v;
+  if (k === 'durum') { if (v === 'boş') dodoF.sorular[i].isaret = ''; dodoYenile(); }
+}
+
+function dodoSoruSatir(x, i) {
+  const sec = (k, v, kapali) => '<select' + (kapali ? ' disabled' : '') + ' onchange="dodoSoru(' + i + ',\'' + k + '\',this.value)">' +
+    DODO_SIKLAR.map(s => '<option value="' + s + '"' + (s === v ? ' selected' : '') + '>' + (s || '-') + '</option>').join('') + '</select>';
+  const dur = '<select onchange="dodoSoru(' + i + ',\'durum\',this.value)"><option value="yanlış"' + (x.durum === 'yanlış' ? ' selected' : '') +
+    '>yanlış</option><option value="boş"' + (x.durum === 'boş' ? ' selected' : '') + '>boş</option></select>';
+  return '<div class="soruSatir"><div class="ikiGrid">' +
+    '<label class="alan">Soru no<input type="number" min="1" inputmode="numeric" value="' + esc(x.no) + '" oninput="dodoSoru(' + i + ',\'no\',this.value)"></label>' +
+    '<label class="alan">Durum' + dur + '</label></div>' +
+    '<label class="alan">Konu<input type="text" list="dodoKonuListe" placeholder="Örn: Türev" value="' + esc(x.konu) + '" oninput="dodoSoru(' + i + ',\'konu\',this.value)"></label>' +
+    '<div class="ikiGrid"><label class="alan">İşaretlediğim şık' + sec('isaret', x.isaret, x.durum === 'boş') + '</label>' +
+    '<label class="alan">Doğru şık' + sec('dogru', x.dogru) + '</label></div>' +
+    '<button class="btn ikincil" onclick="dodoSoruSil(' + i + ')">Satırı sil</button></div>';
+}
+
+/* Fotoğraf: uzun kenar 1600 px, JPEG base64 */
+function dodoFotoBoyut(f) {
+  return new Promise((ok, hata) => {
+    const u = URL.createObjectURL(f), im = new Image();
+    im.onload = () => {
+      const m = Math.max(im.width, im.height), o = m > 1600 ? 1600 / m : 1;
+      const c = document.createElement('canvas');
+      c.width = Math.round(im.width * o); c.height = Math.round(im.height * o);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(u);
+      const url = c.toDataURL('image/jpeg', 0.8);
+      ok({url: url, b64: url.split(',')[1]});
+    };
+    im.onerror = () => { URL.revokeObjectURL(u); hata(new Error('okunamadı')); };
+    im.src = u;
+  });
+}
+async function dodoFotoEkle(inp) {
+  const dosyalar = [...inp.files]; inp.value = '';
+  let fazla = 0, bozuk = 0;
+  for (const f of dosyalar) {
+    if (dodoF.fotolar.length >= 6) { fazla++; continue; }
+    try { dodoF.fotolar.push(await dodoFotoBoyut(f)); } catch (e) { bozuk++; }
+  }
+  dodoYenile();
+  if (fazla || bozuk) dodoMesaj((fazla ? fazla + ' fotoğraf eklenmedi (en fazla 6). ' : '') + (bozuk ? bozuk + ' fotoğraf okunamadı.' : ''), false);
+}
+function dodoFotoSil(i) { dodoF.fotolar.splice(i, 1); dodoYenile(); }
+function dodoFotoMB() { return dodoF.fotolar.reduce((t, x) => t + x.b64.length * 0.75, 0) / 1048576; }
+
+function dodoAnalizForm() {
+  const f = dodoF;
+  const opt = (l, v) => l.map(x => '<option' + (x === v ? ' selected' : '') + '>' + esc(x) + '</option>').join('');
+  const sayi = (ad, k) => '<label class="alan">' + ad + '<input type="number" min="0" inputmode="numeric" value="' + esc(f[k]) + '" oninput="dodoAlan(\'' + k + '\',this.value)"></label>';
+  const temel = kart('Deneme bilgisi',
+    '<label class="alan">Deneme adı<input type="text" placeholder="Örn: TYT Deneme 5" value="' + esc(f.ad) + '" oninput="dodoAlan(\'ad\',this.value)"></label>' +
+    '<label class="alan">Tarih<input type="date" value="' + esc(f.tarih) + '" onchange="dodoAlan(\'tarih\',this.value)"></label>' +
+    '<label class="alan">Sınav<select onchange="dodoAlan(\'tur\',this.value)">' + opt(['TYT', 'AYT'], f.tur) + '</select></label>' +
+    '<label class="alan">Ders<select onchange="dodoAlan(\'ders\',this.value)">' + opt(DERSLER, f.ders) + '</select></label>');
+  const sonuc = kart('Sonuç',
+    '<div class="uclu">' + sayi('Doğru', 'd') + sayi('Yanlış', 'y') + sayi('Boş', 'b') + '</div>' +
+    '<div class="satir" style="margin-top:12px"><div class="sayi" id="dodoNet">' + netYaz(dodoNet()) + '</div><div class="soluk">net (doğru - yanlış/4)</div></div>');
+  const sor = kart('Yanlış ve boş sorular',
+    '<datalist id="dodoKonuListe">' + dodoKonular().map(k => '<option value="' + esc(k) + '">').join('') + '</datalist>' +
+    (f.sorular.length ? f.sorular.map(dodoSoruSatir).join('') : '<p class="soluk">Yanlış veya boş yaptığın soruları ekle. Konuyu elle yaz, önceki konular öneri olarak çıkar.</p>') +
+    '<button class="btn ikincil" onclick="dodoSoruEkle()">+ Soru ekle</button>');
+  const anahtar = kart('Cevap anahtarı (isteğe bağlı)',
+    '<textarea placeholder="Örn: 1-A 2-C 3-B ..." oninput="dodoAlan(\'anahtar\',this.value)">' + esc(f.anahtar) + '</textarea>');
+  const foto = kart('Fotoğraflar (' + f.fotolar.length + '/6)',
+    '<button class="btn ikincil" onclick="document.getElementById(\'dodoDosya\').click()">📷 Fotoğraf ekle</button>' +
+    '<input type="file" id="dodoDosya" accept="image/*" multiple hidden onchange="dodoFotoEkle(this)">' +
+    (f.fotolar.length ? '<div class="fotolar">' + f.fotolar.map((x, i) =>
+      '<div class="foto"><img alt="" src="' + x.url + '"><button aria-label="Sil" onclick="dodoFotoSil(' + i + ')">✕</button></div>').join('') +
+      '</div><p class="soluk">Toplam: ' + dodoFotoMB().toFixed(2).replace('.', ',') + ' MB</p>' : ''));
+  const git = '<button class="btn" onclick="dodoAnalizEt()">🦤 Analiz Et</button><p id="dodoMesaj" style="margin:10px 0 0;font-size:14px"></p>';
+  return temel + sonuc + sor + anahtar + foto + git;
+}
+
+/* Doğrulama; geçerliyse sonraki turda API'ye gidecek veriyi döndürür */
+function dodoDogrula() {
+  const f = dodoF, d = dodoSayi(f.d), y = dodoSayi(f.y), b = dodoSayi(f.b);
+  if (!f.ad.trim()) return {hata: 'Deneme adını yaz.'};
+  if (!f.tarih) return {hata: 'Tarihi seç.'};
+  if (d + y + b < 1) return {hata: 'Doğru, yanlış ve boş sayılarını gir.'};
+  if (d + y + b > 120) return {hata: 'Toplam soru sayısı 120\'yi geçemez.'};
+  const nolar = new Set();
+  for (let i = 0; i < f.sorular.length; i++) {
+    const s = f.sorular[i], n = dodoSayi(s.no), t = 'Satır ' + (i + 1) + ': ';
+    if (n < 1) return {hata: t + 'soru numarasını gir.'};
+    if (nolar.has(n)) return {hata: t + n + '. soru iki kez girilmiş.'};
+    nolar.add(n);
+    if (!s.konu.trim()) return {hata: t + 'konuyu yaz.'};
+    if (s.durum === 'yanlış' && s.isaret && s.isaret === s.dogru) return {hata: t + 'işaretlediğin şık doğru şıkla aynı, yanlış olamaz.'};
+  }
+  const sy = f.sorular.filter(s => s.durum === 'yanlış').length, sb = f.sorular.length - sy;
+  if (sy > y) return {hata: 'Listede ' + sy + ' yanlış soru var ama yanlış sayın ' + y + '.'};
+  if (sb > b) return {hata: 'Listede ' + sb + ' boş soru var ama boş sayın ' + b + '.'};
+  return {
+    uyari: (sy < y || sb < b) ? 'Not: ' + (y - sy) + ' yanlış ve ' + (b - sb) + ' boş sorunun konusu girilmedi, analiz sadece girilenlere dayanır.' : '',
+    veri: {ad: f.ad.trim(), tarih: f.tarih, tur: f.tur, ders: f.ders, dogru: d, yanlis: y, bos: b, net: dodoNet(),
+      sorular: f.sorular.map(s => ({no: dodoSayi(s.no), konu: s.konu.trim(), isaret: s.isaret, dogru: s.dogru, durum: s.durum})),
+      anahtar: f.anahtar.trim(), fotolar: f.fotolar.map(x => x.b64)}
+  };
+}
+function dodoAnalizEt() {
+  const r = dodoDogrula();
+  if (r.hata) return dodoMesaj(r.hata, false);
+  const a = dodoOku('dodo_ayar', {}), set = new Set(a.konular || []);
+  r.veri.sorular.forEach(s => set.add(s.konu));
+  a.konular = [...set].slice(-300);
+  dodoYaz('dodo_ayar', a);
+  dodoMesaj('✓ Form doğru. Analiz çağrısı bir sonraki adımda eklenecek. ' + r.uyari, true);
+}
 
 /* ===== ADIM 7: PWA ===== */
 if ('serviceWorker' in navigator) {
