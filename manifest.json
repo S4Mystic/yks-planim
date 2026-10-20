@@ -1,6 +1,6 @@
 {
-  "name": "YKS Planlayıcı",
-  "short_name": "YKS",
+  "name": "Lyrica",
+  "short_name": "Lyrica",
   "description": "YKS çalışma planı, süre tutucu ve haftalık analiz",
   "start_url": "./index.html",
   "scope": "./",
