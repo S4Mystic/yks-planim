@@ -73,7 +73,7 @@ body::before{content:"";position:fixed;inset:-20%;z-index:0;pointer-events:none;
 header{padding:calc(18px + env(safe-area-inset-top)) 20px 6px}
 header h1{font-size:28px;font-weight:700;letter-spacing:-.6px;background:linear-gradient(120deg,#fff 30%,#a5b4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
 header p{text-transform:capitalize}
-main{padding:10px 16px 130px}
+main{padding:10px 16px 170px}
 a{color:#9db6ff}
 .kart{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.04));border:1px solid var(--kenar);border-radius:24px;padding:18px;margin-bottom:14px;-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);box-shadow:0 10px 32px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.04)}
 .kart::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.12),transparent 38%)}
@@ -119,6 +119,30 @@ nav button.aktif svg{animation:zipla .5s cubic-bezier(.3,1.6,.5,1)}
 @keyframes toastGir{from{opacity:0;transform:translate(-50%,12px)}}
 @media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
 
+/* ===== PROGRAM: gün kopyala/yapıştır simgeleri ===== */
+.kart>.gunAraclar{position:absolute;top:10px;right:12px;display:flex;gap:6px;z-index:2}
+.gunAraclar button{width:36px;height:36px;padding:0;display:grid;place-items:center;border-radius:12px;border:1px solid var(--kenar);background:rgba(255,255,255,.08);color:var(--yazi);transition:transform .15s,opacity .2s}
+.gunAraclar button svg{width:18px;height:18px}
+.gunAraclar button:active{transform:scale(.9)}
+.gunAraclar button.pasif{opacity:.35}
+.gunAraclar button.dolu{border-color:rgba(143,176,255,.7);background:rgba(143,176,255,.22)}
+
+/* ===== DODO AI: buton ve panel ===== */
+#dodoBtn{position:fixed;right:16px;bottom:calc(98px + env(safe-area-inset-bottom));z-index:8;width:56px;height:56px;border-radius:50%;border:1px solid rgba(190,205,255,.5);background:linear-gradient(145deg,rgba(143,176,255,.55),rgba(167,139,250,.4));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 8px 22px rgba(0,0,0,.45),0 0 18px rgba(143,176,255,.35),inset 0 1px 0 rgba(255,255,255,.45);font-size:28px;line-height:1;padding:0;display:grid;place-items:center;transition:transform .2s,opacity .2s}
+#dodoBtn:active{transform:scale(.92)}
+body.dodoAcik #dodoBtn{opacity:0;pointer-events:none;transform:scale(.7)}
+#dodoPerde{position:fixed;inset:0;z-index:20;background:rgba(3,4,10,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .25s}
+#dodoPanel{position:fixed;left:0;right:0;bottom:0;z-index:21;height:75vh;height:75dvh;display:flex;flex-direction:column;border-radius:28px 28px 0 0;border:1px solid var(--kenar);border-bottom:0;background:linear-gradient(160deg,rgba(40,44,70,.96),rgba(14,16,28,.98));box-shadow:0 -12px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.2);transform:translateY(100%);opacity:0;visibility:hidden;transition:transform .25s cubic-bezier(.2,.8,.2,1),opacity .25s,visibility 0s .25s}
+body.dodoAcik #dodoPerde{opacity:1;pointer-events:auto}
+body.dodoAcik #dodoPanel{transform:translateY(0);opacity:1;visibility:visible;transition:transform .25s cubic-bezier(.2,.8,.2,1),opacity .25s,visibility 0s}
+.dodoUst{display:flex;align-items:center;gap:10px;padding:14px 16px 6px}
+.dodoUst b{flex:1;font-size:18px;letter-spacing:-.3px}
+.dodoUst button{width:44px;height:44px;border-radius:14px;border:1px solid var(--kenar);background:rgba(255,255,255,.08);color:var(--yazi);font-size:20px;padding:0}
+.dodoSek{display:flex;gap:8px;padding:6px 16px 10px}
+.dodoSek button{flex:1;min-height:46px;border-radius:14px;border:1px solid var(--kenar);background:rgba(255,255,255,.06);color:var(--soluk);font-family:inherit;font-size:16px;transition:all .2s}
+.dodoSek button.aktif{background:var(--degrade);border-color:transparent;color:#0b0d14;font-weight:700;box-shadow:0 6px 18px rgba(124,156,255,.35)}
+#dodoIcerik{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:4px 16px calc(24px + env(safe-area-inset-bottom))}
+
 /* Netlify rozetini gizle */
 .netlify-badge, [class*="netlify"] {
   display: none !important;
@@ -136,6 +160,15 @@ nav button.aktif svg{animation:zipla .5s cubic-bezier(.3,1.6,.5,1)}
   <main id="icerik"></main>
   <nav id="menu"></nav>
 </div>
+
+<!-- DODO AI: sağ alt buton ve panel -->
+<button id="dodoBtn" type="button" aria-label="Dodo AI'yı aç" onclick="dodoAc()">🦤</button>
+<div id="dodoPerde" onclick="dodoKapat()"></div>
+<section id="dodoPanel" role="dialog" aria-modal="true" aria-label="Dodo AI">
+  <div class="dodoUst"><b>🦤 Dodo AI</b><button type="button" aria-label="Kapat" onclick="dodoKapat()">✕</button></div>
+  <div class="dodoSek" id="dodoSek"></div>
+  <div id="dodoIcerik"></div>
+</section>
 
 <script>
 /* ===== VERİ MODELİ (tüm veri tek bir S nesnesinde, localStorage'da) =====
@@ -497,7 +530,7 @@ function sureEkrani() {
   const son = S.sureler.slice(-8).reverse().map(x =>
     '<div class="kayit"><div>' + esc(x.ders) + ': ' + sureYaz(x.sn) + '<br><span class="soluk">' + gunAdi(x.gun) + '</span></div>' +
     '<button class="sil" onclick="sureSil(\'' + x.id + '\')">✕</button></div>').join('');
-  return kart('Süre tutucu', ust) + toplamKart +
+  return kart('Kronometre', ust) + toplamKart +
     (son ? kart('Son kayıtlar', son) : '');
 }
 
@@ -898,6 +931,35 @@ function programKopyala() {
   bildir('Kopyalandı ✓');
 }
 
+/* Gün kopyala / yapıştır (pano uygulama açıkken bellekte durur) */
+let programPano = null;
+
+function gunKopyala(i) {
+  const l = (S.program[programHafta] || [])[i] || [];
+  if (!l.length) return alert('Bu günde kopyalanacak madde yok.');
+  programPano = {ad:GUN_ADLARI[i], metinler:l.map(x => x.metin)};
+  ekranCiz();
+  bildir(GUN_ADLARI[i] + ' kopyalandı ✓');
+}
+
+function gunYapistir(i) {
+  if (!programPano) return alert('Önce bir günün sağ üstündeki kopyala simgesine bas.');
+  const hedef = programAl(programHafta)[i];
+  programPano.metinler.forEach(m => hedef.push({id:yeniId(), metin:m}));
+  programUygula();
+  ekranCiz();
+  bildir(programPano.ad + ' → ' + GUN_ADLARI[i] + ' yapıştırıldı ✓');
+}
+
+function gunKart(i, baslik, govde) {
+  return '<div class="kart"><div class="gunAraclar">' +
+    '<button aria-label="Günü kopyala" title="Günü kopyala" onclick="gunKopyala(' + i + ')">' +
+      IK('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>') + '</button>' +
+    '<button class="' + (programPano ? 'dolu' : 'pasif') + '" aria-label="Yapıştır" title="Yapıştır" onclick="gunYapistir(' + i + ')">' +
+      IK('<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9z"/><path d="M9 12h6M9 16h4"/>') + '</button></div>' +
+    '<h2 style="padding-right:92px">' + baslik + '</h2>' + govde + '</div>';
+}
+
 function programEkrani() {
   const m = programHafta, bg = bugun(), bu = haftaBasi();
   const etiket = m === bu ? ' (bu hafta)' : (m === gunTarihi(bu, 7) ? ' (gelecek hafta)' : '');
@@ -911,7 +973,7 @@ function programEkrani() {
   const gunler = GUN_ADLARI.map((ad, i) => {
     const ds = gunTarihi(m, i), liste = (S.program[m] || [])[i] || [];
     const tarih = tarihDon(ds).toLocaleDateString('tr-TR', {day:'numeric', month:'long'});
-    return kart(ad + (ds === bg ? ' (bugün)' : '') + ' <span class="soluk">' + tarih + '</span>',
+    return gunKart(i, ad + (ds === bg ? ' (bugün)' : '') + ' <span class="soluk">' + tarih + '</span>',
       liste.map(it => '<div class="kayit"><div>' + esc(it.metin) + '</div>' +
         '<button class="sil" onclick="programSil(' + i + ',\'' + it.id + '\')">✕</button></div>').join('') +
       '<div class="ekleSatir"><input type="text" id="pg_' + i + '" placeholder="Örn: TYT Matematik 40 soru" ' +
@@ -927,7 +989,7 @@ let animasyon = false;
 const TABLAR = [
   {id:'gorevler', ad:'Görevler', ikon:IK('<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>')},
   {id:'kaynaklar', ad:'Kaynaklar', ikon:IK('<path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h10"/>')},
-  {id:'sure', ad:'Süre', ikon:IK('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/>')},
+  {id:'sure', ad:'Kronometre', ikon:IK('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/>')},
   {id:'haftalik', ad:'Haftalık', ikon:IK('<path d="M3 20h18M6 20v-7M12 20V5M18 20v-10"/>')},
   {id:'hedefler', ad:'Hedefler', ikon:IK('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>')},
   {id:'ayarlar', ad:'Ayarlar', ikon:IK('<path d="M4 7h10m4 0h2M4 17h2m4 0h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>')}
@@ -1015,6 +1077,46 @@ planYenile();
 programUygula();
 baslikGuncelle();
 tabGit('gorevler');
+
+/* ===== DODO AI: panel (Adım 1) ===== */
+let dodoSekme = 'analiz';
+
+function dodoSekmeCiz() {
+  document.getElementById('dodoSek').innerHTML = [['analiz', 'Analiz'], ['sohbet', 'Sohbet']].map(t =>
+    '<button type="button" class="' + (dodoSekme === t[0] ? 'aktif' : '') + '" onclick="dodoSekmeGit(\'' + t[0] + '\')">' + t[1] + '</button>').join('');
+}
+
+function dodoIcerikCiz() {
+  const el = document.getElementById('dodoIcerik');
+  const govde = dodoSekme === 'analiz'
+    ? kart('Deneme analizi', '<p class="soluk">Analiz formu sonraki adımlarda gelecek.</p>')
+    : kart('Sohbet', '<p class="soluk">Sohbet ekranı sonraki adımlarda gelecek.</p>');
+  el.innerHTML = '<div class="anim">' + govde + '</div>';
+}
+
+function dodoSekmeGit(t) {
+  dodoSekme = t;
+  dodoSekmeCiz();
+  dodoIcerikCiz();
+  document.getElementById('dodoIcerik').scrollTop = 0;
+}
+
+function dodoAc() {
+  if (document.body.classList.contains('dodoAcik')) return;
+  dodoSekmeCiz();
+  dodoIcerikCiz();
+  document.body.classList.add('dodoAcik');
+  try { history.pushState({dodo: 1}, ''); } catch (e) {}
+}
+
+function dodoKapat(geriden) {
+  if (!document.body.classList.contains('dodoAcik')) return;
+  document.body.classList.remove('dodoAcik');
+  if (geriden !== true) { try { if (history.state && history.state.dodo) history.back(); } catch (e) {} }
+}
+
+window.addEventListener('popstate', () => dodoKapat(true));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') dodoKapat(); });
 
 /* ===== ADIM 7: PWA ===== */
 if ('serviceWorker' in navigator) {
