@@ -1051,7 +1051,7 @@ function tabGit(id) {
 
 /* ===== YEDEK ===== */
 function yedekIndir() {
-  const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
+  const blob = new Blob([JSON.stringify(Object.assign({}, S, {dodo: dodoYedekAl()}), null, 2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'yks-yedek-' + bugun() + '.json';
@@ -1100,7 +1100,7 @@ function dodoSekmeCiz() {
 function dodoIcerikCiz() {
   const el = document.getElementById('dodoIcerik');
   const govde = dodoSekme === 'analiz'
-    ? kart('Deneme analizi', '<p class="soluk">Analiz formu sonraki adımlarda gelecek.</p>')
+    ? dodoAnalizForm()
     : kart('Sohbet', '<p class="soluk">Sohbet ekranı sonraki adımlarda gelecek.</p>');
   el.innerHTML = '<div class="anim">' + govde + '</div>';
 }
