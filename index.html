@@ -173,10 +173,10 @@ select:disabled{opacity:.4}
 </div>
 
 <!-- DODO AI: sağ alt buton ve panel -->
-<button id="dodoBtn" type="button" aria-label="Dodo AI'yı aç" onclick="dodoAc()">🦤</button>
+<button id="dodoBtn" type="button" aria-label="Ecoli AI'yı aç" onclick="dodoAc()">🦤</button>
 <div id="dodoPerde" onclick="dodoKapat()"></div>
-<section id="dodoPanel" role="dialog" aria-modal="true" aria-label="Dodo AI">
-  <div class="dodoUst"><b>🦤 Dodo AI</b><button type="button" aria-label="Kapat" onclick="dodoKapat()">✕</button></div>
+<section id="dodoPanel" role="dialog" aria-modal="true" aria-label="Ecoli AI">
+  <div class="dodoUst"><b>🦤 Ecoli AI</b><button type="button" aria-label="Kapat" onclick="dodoKapat()">✕</button></div>
   <div class="dodoSek" id="dodoSek"></div>
   <div id="dodoIcerik"></div>
 </section>
@@ -1192,7 +1192,7 @@ async function geminiIstek(parcalar, sistem) {
 
 /* --- Ayarlar kartı --- */
 function dodoAyarKarti() {
-  return kart('🦤 Dodo AI (Gemini)',
+  return kart('🦤 Ecoli AI (Gemini)',
     '<p class="soluk">API anahtarı sadece bu cihazda durur, yedeğe girmez.</p>' +
     '<label class="alan" for="d_key">Gemini API anahtarı</label>' +
     '<div class="ekleSatir"><input type="password" id="d_key" autocomplete="off" value="' + esc(dodoAnahtar()) + '">' +
