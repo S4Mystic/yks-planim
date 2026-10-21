@@ -143,6 +143,17 @@ body.dodoAcik #dodoPanel{transform:translateY(0);opacity:1;visibility:visible;tr
 .dodoSek button.aktif{background:var(--degrade);border-color:transparent;color:#0b0d14;font-weight:700;box-shadow:0 6px 18px rgba(124,156,255,.35)}
 #dodoIcerik{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:4px 16px calc(24px + env(safe-area-inset-bottom))}
 
+/* ===== DODO AI: form ===== */
+input[type=password]{display:block;width:100%;min-height:48px;margin-top:6px;padding:10px 12px;border:1px solid var(--kenar);border-radius:14px;background:rgba(255,255,255,.07);color:var(--yazi);font-family:inherit;font-size:16px}
+.uclu{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ikiGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.soruSatir{border-top:1px solid rgba(255,255,255,.1);padding:6px 0 12px}
+select:disabled{opacity:.4}
+.fotolar{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.foto{position:relative}
+.foto img{width:84px;height:84px;object-fit:cover;border-radius:12px;display:block}
+.foto button{position:absolute;top:-6px;right:-6px;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:var(--kirmizi);color:#10131a;font-size:14px}
+  
 /* Netlify rozetini gizle */
 .netlify-badge, [class*="netlify"] {
   display: none !important;
@@ -1007,7 +1018,7 @@ const EKRAN = {
   hedefler()  { return hedeflerEkrani(); },
   program()   { return programEkrani(); },
   ayarlar() {
-    return kart('Yedekleme',
+    return dodoAyarKarti() + kart('Yedekleme',
       '<p class="soluk">Verilerin sadece bu telefondaki tarayıcıda durur. Düzenli yedek al.</p>' +
       '<button class="btn" onclick="yedekIndir()">Yedekle (JSON indir)</button>' +
       '<button class="btn ikincil" onclick="document.getElementById(\'dosya\').click()">Yedeği yükle</button>' +
