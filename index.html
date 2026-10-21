@@ -1069,7 +1069,9 @@ function yedekYukle(input) {
       const veri = JSON.parse(r.result);
       if (!veri || veri.surum !== 1) throw new Error('Geçersiz yedek');
       if (!confirm('Şu anki verilerin silinip yedektekiler yüklenecek. Emin misin?')) return;
+            const dodoVeri = veri.dodo; delete veri.dodo;
       S = Object.assign(varsayilan(), veri);
+      dodoYedekYukle(dodoVeri);
       kaydet();
       tabGit(aktifTab);
       alert('Yedek yüklendi.');
