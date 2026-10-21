@@ -1354,16 +1354,203 @@ function dodoDogrula() {
       anahtar: f.anahtar.trim(), fotolar: f.fotolar.map(x => x.b64)}
   };
 }
-function dodoAnalizEt() {
-  const r = dodoDogrula();
-  if (r.hata) return dodoMesaj(r.hata, false);
-  const a = dodoOku('dodo_ayar', {}), set = new Set(a.konular || []);
-  r.veri.sorular.forEach(s => set.add(s.konu));
-  a.konular = [...set].slice(-300);
-  dodoYaz('dodo_ayar', a);
-  dodoMesaj('✓ Form doğru. Analiz çağrısı bir sonraki adımda eklenecek. ' + r.uyari, true);
+/* ===== DODO AI: analiz çağrısı ve hafıza (Adım 4-5) ===== */
+const DODO_SISTEM = "Sen Dodo'sun, bir YKS deneme analiz asistanısın. SADECE kullanıcının sana verdiği deneme verilerini, fotoğrafları ve kayıtlı geçmişi kullan. Veride olmayan hiçbir bilgiyi uydurma. Bir konuda 5'ten az soru varsa o konu için 'veri yetersiz' yaz, yüzde yorumu yapma. Genel, boş tavsiye verme: her önerin verideki somut bir konuya veya soruya dayanmalı. Fotoğraftaki bir şeyi okuyamazsan 'okunamadı' de, tahmin etme. Yanıtı SADECE geçerli JSON olarak ver, başka metin ekleme.";
+let dodoSonucHtml = '', dodoMesgul = false, dodoSon = null;
+
+/* --- Hafıza: dodo_analizler asıl kaynak, dodo_konu_toplam ondan yeniden kurulur --- */
+function dodoAnahtarId(a) { return a.ad + '|' + a.tarih + '|' + a.tur; }
+function dodoKonuKur(liste) {
+  const m = {};
+  liste.forEach(a => (a.konular || []).forEach(k => {
+    const o = m[k.konu] || (m[k.konu] = {dogru: 0, toplam: 0, deneme: 0});
+    o.toplam += k.toplam; o.deneme++;
+  }));
+  return m;
+}
+function dodoGecmisMap(haric) { return dodoKonuKur(dodoOku('dodo_analizler', []).filter(a => dodoAnahtarId(a) !== haric)); }
+function dodoZayifListe(map, n) {
+  return Object.entries(map).sort((a, b) => b[1].toplam - a[1].toplam || b[1].deneme - a[1].deneme).slice(0, n);
+}
+function dodoKaydet(k) {
+  const id = dodoAnahtarId(k);
+  const l = dodoOku('dodo_analizler', []).filter(a => dodoAnahtarId(a) !== id);
+  l.push(k);
+  const son = l.slice(-60);
+  dodoYaz('dodo_analizler', son);
+  dodoYaz('dodo_konu_toplam', dodoKonuKur(son));
 }
 
+/* --- Hesap (JavaScript) --- */
+function dodoKonuHesapla(v, gm) {
+  const m = {}, n = v.sorular.length;
+  v.sorular.forEach(s => {
+    const o = m[s.konu] || (m[s.konu] = {ders: v.ders, konu: s.konu, yanlis: 0, bos: 0, toplam: 0});
+    if (s.durum === 'boş') o.bos++; else o.yanlis++;
+    o.toplam++;
+  });
+  return Object.values(m).map(o => {
+    o.yuzde = Math.round(o.toplam / n * 100);
+    o.veriYeterli = (o.toplam + ((gm[o.konu] || {}).toplam || 0)) >= 5;
+    return o;
+  }).sort((a, b) => b.toplam - a.toplam);
+}
+
+/* --- Prompt (API ve kopyala modu aynı metni kullanır) --- */
+function dodoPromptMetni(v, konular, zayif) {
+  const s = [];
+  s.push('DENEME: ' + v.ad + ' (' + v.tarih + '), ' + v.tur + ' ' + v.ders);
+  s.push('Doğru ' + v.dogru + ', yanlış ' + v.yanlis + ', boş ' + v.bos + ', net ' + netYaz(v.net));
+  s.push('');
+  s.push('YANLIŞ/BOŞ SORULAR (soru no | konu | durum | işaretlediği şık | doğru şık):');
+  v.sorular.forEach(x => s.push(x.no + ' | ' + x.konu + ' | ' + x.durum + ' | ' + (x.isaret || '-') + ' | ' + (x.dogru || '-')));
+  if (v.anahtar) { s.push(''); s.push('CEVAP ANAHTARI: ' + v.anahtar); }
+  s.push('');
+  s.push('KONU SAYIMI (JavaScript hesapladı, yüzdeleri ve toplamları yeniden hesaplama):');
+  konular.forEach(k => s.push('- ' + k.konu + ': ' + k.toplam + ' hatalı soru (yanlış ' + k.yanlis + ', boş ' + k.bos + '), bu denemedeki hataların %' + k.yuzde + '\'i, geçmişle birlikte veri ' + (k.veriYeterli ? 'yeterli' : 'yetersiz')));
+  s.push('');
+  s.push('GEÇMİŞ (en zayıf 10 konu):');
+  if (zayif.length) zayif.forEach(z => s.push('- ' + z[0] + ': ' + z[1].toplam + ' hatalı soru, ' + z[1].deneme + ' denemede'));
+  else s.push('Geçmiş kayıt yok.');
+  if (v.fotolar.length) { s.push(''); s.push('Ekte ' + v.fotolar.length + ' fotoğraf var.'); }
+  s.push('');
+  s.push('İSTENEN JSON (konular alanını EKLEME, onu ben hesapladım; hataTurleri değerleri soru sayısıdır ve toplamı ' + (v.sorular.length) + '\'i geçmesin):');
+  s.push('{"denemeOzeti":"","eksikKavramlar":[{"konu":"","aciklama":"","hangiSorudan":""}],"hataTurleri":{"bilgiEksigi":0,"dikkatHatasi":0,"sureSorunu":0},"calismaOnerileri":["5 madde, her biri somut konu ve süre içersin"],"guvenilirlikNotu":""}');
+  return s.join('\n');
+}
+
+/* --- Yanıtı güvenle çöz --- */
+function dodoJsonCoz(t) {
+  t = String(t).trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+  let o;
+  try { o = JSON.parse(t); } catch (e) {
+    const a = t.indexOf('{'), b = t.lastIndexOf('}');
+    if (a < 0 || b <= a) return null;
+    try { o = JSON.parse(t.slice(a, b + 1)); } catch (e2) { return null; }
+  }
+  if (!o || typeof o !== 'object' || Array.isArray(o)) return null;
+  const ht = o.hataTurleri || {}, say = x => Math.max(0, Math.round(+x || 0));
+  const r = {
+    denemeOzeti: String(o.denemeOzeti || ''),
+    eksikKavramlar: (Array.isArray(o.eksikKavramlar) ? o.eksikKavramlar : []).map(k => { k = k || {};
+      return {konu: String(k.konu || ''), aciklama: String(k.aciklama || ''), hangiSorudan: String(k.hangiSorudan || '')}; }),
+    hataTurleri: {bilgiEksigi: say(ht.bilgiEksigi), dikkatHatasi: say(ht.dikkatHatasi), sureSorunu: say(ht.sureSorunu)},
+    calismaOnerileri: (Array.isArray(o.calismaOnerileri) ? o.calismaOnerileri : []).map(String).slice(0, 5),
+    guvenilirlikNotu: String(o.guvenilirlikNotu || '')
+  };
+  return (r.denemeOzeti || r.calismaOnerileri.length) ? r : null;
+}
+
+/* --- Sonuç kartları --- */
+function dodoSonucKartlari(a) {
+  const r = a.sonuc, ks = a.konular || [], ht = r.hataTurleri;
+  const hm = ht.bilgiEksigi + ht.dikkatHatasi + ht.sureSorunu;
+  const ozet = kart('🦤 ' + esc(a.ad),
+    '<div class="satir"><div class="sayi">' + netYaz(a.net) + '</div><div class="soluk">net · D ' + a.dogru + ' Y ' + a.yanlis + ' B ' + a.bos + '</div></div>' +
+    '<p>' + esc(r.denemeOzeti) + '</p>');
+  const konu = kart('Konu bazında hatalar', ks.length ? ks.map(k =>
+    '<div class="toplam"><span>' + esc(k.konu) + '</span><b>' + k.toplam + ' soru (%' + k.yuzde + ')</b></div>' +
+    '<div class="cubuk"><div style="width:' + k.yuzde + '%"></div></div>' +
+    (k.veriYeterli ? '' : '<p class="soluk">veri yetersiz (5\'ten az soru)</p>')).join('') +
+    '<p class="soluk">Yüzde: bu denemedeki hatalı soruların içindeki konu payı.</p>' : '<p class="soluk">Konu yok.</p>');
+  const kav = r.eksikKavramlar.length ? kart('Eksik kavramlar', r.eksikKavramlar.map(k =>
+    '<div class="plan"><b>' + esc(k.konu) + '</b><br>' + esc(k.aciklama) +
+    (k.hangiSorudan ? '<br><span class="soluk">Soru: ' + esc(k.hangiSorudan) + '</span>' : '') + '</div>').join('')) : '';
+  const tur = hm ? kart('Hata türleri', [['Bilgi eksiği', ht.bilgiEksigi], ['Dikkat hatası', ht.dikkatHatasi], ['Süre sorunu', ht.sureSorunu]].map(x =>
+    '<div class="toplam"><span>' + x[0] + '</span><b>' + x[1] + ' soru</b></div><div class="cubuk"><div style="width:' + Math.round(x[1] / hm * 100) + '%"></div></div>').join('')) : '';
+  const oner = r.calismaOnerileri.length ? kart('Çalışma önerileri', r.calismaOnerileri.map((t, i) =>
+    '<div class="plan">' + (i + 1) + '. ' + esc(t) + '</div>').join('')) : '';
+  const guv = r.guvenilirlikNotu ? kart('Güvenilirlik notu', '<p class="soluk">' + esc(r.guvenilirlikNotu) + '</p>') : '';
+  return ozet + konu + kav + tur + oner + guv;
+}
+
+function dodoHataKart(m) {
+  return kart('Analiz yapılamadı', '<p>' + esc(m) + '</p>' +
+    '<p class="soluk">Limit doluysa promptu kopyalayıp Gemini ya da başka bir yapay zeka sohbetine yapıştır. Fotoğrafları orada kendin ekle.</p>' +
+    '<button class="btn" onclick="dodoKopyala()">📋 Kopyala modu</button>');
+}
+function dodoKopyala() {
+  if (!dodoSon) return bildir('Önce formu doldurup Analiz Et\'e bas');
+  panoyaKopyala(dodoSon.metin);
+}
+
+/* --- Ana fonksiyon --- */
+async function dodoAnalizEt() {
+  if (dodoMesgul) return;
+  const r = dodoDogrula();
+  if (r.hata) return dodoMesaj(r.hata, false);
+  const v = r.veri;
+  if (!v.sorular.length) return dodoMesaj('En az bir yanlış veya boş soru ekle.', false);
+  const a = dodoOku('dodo_ayar', {}), set = new Set(a.konular || []);
+  v.sorular.forEach(s => set.add(s.konu));
+  a.konular = [...set].slice(-300);
+  dodoYaz('dodo_ayar', a);
+
+  const id = dodoAnahtarId(v), gm = dodoGecmisMap(id);
+  const konular = dodoKonuHesapla(v, gm);
+  const metin = dodoPromptMetni(v, konular, dodoZayifListe(gm, 10));
+  dodoSon = {metin: DODO_SISTEM + '\n\n' + metin + '\n\n(Fotoğrafları bu sohbete kendin ekle.)'};
+
+  dodoMesgul = true;
+  dodoMesaj('Analiz ediliyor, 10-30 sn sürebilir...', true);
+  try {
+    const parcalar = [{text: metin}].concat(v.fotolar.map(b => ({inlineData: {mimeType: 'image/jpeg', data: b}})));
+    const sonuc = dodoJsonCoz(await geminiIstek(parcalar, DODO_SISTEM));
+    if (!sonuc) throw new Error('Yapay zeka yanıtı bozuk geldi. Tekrar dene.');
+    const kayit = {id: yeniId(), tarih: v.tarih, ad: v.ad, tur: v.tur, ders: v.ders, dogru: v.dogru, yanlis: v.yanlis,
+      bos: v.bos, net: v.net, konular: konular, sonuc: sonuc, zaman: Date.now()};
+    dodoKaydet(kayit);
+    dodoSonucHtml = dodoSonucKartlari(kayit);
+    dodoYenile();
+    dodoMesaj('✓ Analiz kaydedildi. ' + r.uyari, true);
+    const e = document.getElementById('dodoSonuc'); if (e) e.scrollIntoView({behavior: 'smooth', block: 'start'});
+  } catch (e) {
+    dodoSonucHtml = dodoHataKart(e.message);
+    dodoYenile();
+    dodoMesaj('✗ ' + e.message, false);
+  } finally { dodoMesgul = false; }
+}
+
+/* --- Hafıza ve geçmiş ekranı --- */
+function dodoHafizaHtml() {
+  const an = dodoOku('dodo_analizler', []);
+  const zayif = dodoZayifListe(dodoOku('dodo_konu_toplam', {}), 10);
+  let h = '';
+  if (zayif.length) {
+    const mx = zayif[0][1].toplam || 1;
+    h += kart('🧠 Hafıza: en çok hata yapılan konular', zayif.map(z =>
+      '<div class="toplam"><span>' + esc(z[0]) + '</span><b>' + z[1].toplam + ' soru / ' + z[1].deneme + ' deneme</b></div>' +
+      '<div class="cubuk"><div style="width:' + Math.round(z[1].toplam / mx * 100) + '%"></div></div>').join('') +
+      '<button class="btn ikincil" onclick="dodoHafizaSil()">Hafızayı temizle</button>');
+  }
+  h += kart('Geçmiş analizler', an.length ? an.slice().reverse().map(x =>
+    '<div class="kayit"><div>' + esc(x.ad) + '<br><span class="soluk">' + esc(x.tarih) + ' · ' + esc(x.tur) + ' ' + esc(x.ders) + ' · ' + netYaz(x.net) + ' net</span></div>' +
+    '<button class="sil" aria-label="Aç" onclick="dodoGecmisAc(\'' + esc(x.id) + '\')">👁</button>' +
+    '<button class="sil" aria-label="Sil" onclick="dodoGecmisSil(\'' + esc(x.id) + '\')">✕</button></div>').join('')
+    : '<p class="soluk">Henüz kayıtlı analiz yok.</p>');
+  return h;
+}
+function dodoGecmisAc(id) {
+  const a = dodoOku('dodo_analizler', []).find(x => x.id === id);
+  if (!a) return;
+  dodoSonucHtml = dodoSonucKartlari(a);
+  dodoYenile();
+  const e = document.getElementById('dodoSonuc'); if (e) e.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+function dodoGecmisSil(id) {
+  if (!confirm('Bu analiz silinsin mi?')) return;
+  const l = dodoOku('dodo_analizler', []).filter(x => x.id !== id);
+  dodoYaz('dodo_analizler', l);
+  dodoYaz('dodo_konu_toplam', dodoKonuKur(l));
+  dodoYenile();
+}
+function dodoHafizaSil() {
+  if (!confirm('Tüm analiz geçmişi ve konu hafızası silinsin mi?')) return;
+  dodoYaz('dodo_analizler', []);
+  dodoYaz('dodo_konu_toplam', {});
+  dodoSonucHtml = '';
+  dodoYenile();
+}
 /* ===== ADIM 7: PWA ===== */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
