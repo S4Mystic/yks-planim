@@ -1324,7 +1324,7 @@ function dodoAnalizForm() {
     (f.fotolar.length ? '<div class="fotolar">' + f.fotolar.map((x, i) =>
       '<div class="foto"><img alt="" src="' + x.url + '"><button aria-label="Sil" onclick="dodoFotoSil(' + i + ')">✕</button></div>').join('') +
       '</div><p class="soluk">Toplam: ' + dodoFotoMB().toFixed(2).replace('.', ',') + ' MB</p>' : ''));
-  const git = '<button class="btn" onclick="dodoAnalizEt()">🦤 Analiz Et</button><p id="dodoMesaj" style="margin:10px 0 0;font-size:14px"></p>';
+  const git = '<button class="btn" onclick="dodoAnalizEt()">🦤 Analiz Et</button><p id="dodoMesaj" style="margin:10px 0 0;font-size:14px"></p><div id="dodoSonuc">' + dodoSonucHtml + '</div>';
   return temel + sonuc + sor + anahtar + foto + git;
 }
 
