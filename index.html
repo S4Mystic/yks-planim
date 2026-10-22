@@ -66,7 +66,7 @@ textarea{min-height:110px}
 .alt button{flex:1;min-height:48px;border:0;border-radius:10px;background:var(--yuzey);color:var(--soluk);font-size:16px;font-family:inherit}
 .alt button.aktif{background:var(--vurgu);color:#10131a;font-weight:600}
 /* ===== YENİ TASARIM: cam efekti ve animasyonlar ===== */
-:root{--bg:#090b12;--yazi:#f1f3fa;--soluk:#9aa3ba;--yesil:#5be3b0;--kenar:rgba(255,255,255,.14);--degrade:linear-gradient(135deg,#86a8ff,#a78bfa)}
+:root{--bg:#090b12;--yazi:#f1f3fa;--soluk:#9aa3ba;--yesil:#5be3b0;--kenar:rgba(255,255,255,.14);--degrade:linear-gradient(135deg,#86a8ff,#a78bfa);--sari:#ffd166}
 body{background:var(--bg)}
 body::before{content:"";position:fixed;inset:-20%;z-index:0;pointer-events:none;background:radial-gradient(40% 35% at 20% 15%,rgba(99,102,241,.55),transparent 70%),radial-gradient(35% 30% at 85% 30%,rgba(45,212,191,.32),transparent 70%),radial-gradient(45% 35% at 60% 90%,rgba(192,132,252,.38),transparent 70%);animation:akis 26s ease-in-out infinite alternate;will-change:transform}
 #app{position:relative;z-index:1}
@@ -95,14 +95,13 @@ select option{background:#1a1d2b;color:#f1f3fa}
 .tikalan input{-webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:10px;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06);display:grid;place-content:center;transition:background .2s,border-color .2s}
 .tikalan input:checked{background:var(--yesil);border-color:var(--yesil)}
 .tikalan input:checked::after{content:"";width:6px;height:12px;border:solid #0b0d14;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
-.gorev.pop .tikalan input{animation:pop .35s}
 .alt button{border-radius:16px;background:rgba(255,255,255,.07);border:1px solid var(--kenar);transition:all .2s}
 .alt button.aktif{background:var(--degrade);border-color:transparent;box-shadow:0 6px 18px rgba(124,156,255,.35)}
 .halka{width:230px;height:230px;margin:10px auto 16px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--kenar);background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.14),rgba(255,255,255,.03) 60%);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 10px rgba(255,255,255,.03)}
 .halka.calisiyor{animation:nabiz 2.6s ease-in-out infinite}
 .halka .saat{font-size:38px;margin:0;background:linear-gradient(120deg,#fff,#a5b4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
-nav{position:fixed;left:0;right:0;bottom:0;z-index:5;gap:6px;padding:12px 10px calc(10px + env(safe-area-inset-bottom));border:0;background:linear-gradient(to top,rgba(9,11,18,.9),transparent)}
-nav button{min-width:0;min-height:62px;font-size:9.5px;border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.04));border:1px solid var(--kenar);box-shadow:0 8px 20px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.22);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);transition:transform .2s,color .2s,background .2s,box-shadow .2s}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:5;gap:4px;padding:12px 6px calc(10px + env(safe-area-inset-bottom));border:0;background:linear-gradient(to top,rgba(9,11,18,.9),transparent)}
+nav button{min-width:0;min-height:62px;font-size:8.5px;border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.04));border:1px solid var(--kenar);box-shadow:0 8px 20px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.22);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);transition:transform .2s,color .2s,background .2s,box-shadow .2s}
 nav button svg{width:24px;height:24px}
 nav button.aktif{color:#fff;background:linear-gradient(145deg,rgba(143,176,255,.5),rgba(167,139,250,.3));border-color:rgba(190,205,255,.55);box-shadow:0 8px 24px rgba(124,156,255,.4),inset 0 1px 0 rgba(255,255,255,.4);transform:translateY(-4px)}
 nav button.aktif svg{animation:zipla .5s cubic-bezier(.3,1.6,.5,1)}
@@ -139,29 +138,13 @@ body.dodoAcik #dodoPanel{transform:translateY(0);opacity:1;visibility:visible;tr
 .dodoUst b{flex:1;font-size:18px;letter-spacing:-.3px}
 .dodoUst button{width:44px;height:44px;border-radius:14px;border:1px solid var(--kenar);background:rgba(255,255,255,.08);color:var(--yazi);font-size:20px;padding:0}
 .dodoSek{display:flex;gap:8px;padding:6px 16px 10px}
-.dodoSek button{flex:1;min-height:46px;border-radius:14px;border:1px solid var(--kenar);background:rgba(255,255,255,.06);color:var(--soluk);font-family:inherit;font-size:16px;transition:all .2s}
+.dodoSek button{flex:1;min-height:46px;border-radius:14px;border:1px solid var(--kenar);background:rgba(255,255,255,.06);color:var(--soluk);font-family:inherit;font-size:15px;transition:all .2s}
 .dodoSek button.aktif{background:var(--degrade);border-color:transparent;color:#0b0d14;font-weight:700;box-shadow:0 6px 18px rgba(124,156,255,.35)}
-#dodoIcerik{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:4px 16px calc(24px + env(safe-area-inset-bottom))}
-
-/* ===== DODO AI: form ===== */
-input[type=password]{display:block;width:100%;min-height:48px;margin-top:6px;padding:10px 12px;border:1px solid var(--kenar);border-radius:14px;background:rgba(255,255,255,.07);color:var(--yazi);font-family:inherit;font-size:16px}
-.uclu{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.ikiGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.soruSatir{border-top:1px solid rgba(255,255,255,.1);padding:6px 0 12px}
-select:disabled{opacity:.4}
-.fotolar{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
-.foto{position:relative}
-.foto img{width:84px;height:84px;object-fit:cover;border-radius:12px;display:block}
-.foto button{position:absolute;top:-6px;right:-6px;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:var(--kirmizi);color:#10131a;font-size:14px}
-
-/* ===== YENİ: renk, nav sıkıştırma (7 sekme) ===== */
-:root{--sari:#ffd166}
-nav{gap:4px;padding-left:6px;padding-right:6px}
-nav button{font-size:8.5px}
+#dodoIcerik{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:4px 16px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
 
 /* ===== ECOLI AI: SOHBET ===== */
 #dodoIcerik{display:flex;flex-direction:column;overflow:hidden;padding:0}
-.sohbetAlan{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:6px 16px 10px;display:flex;flex-direction:column;gap:10px}
+.sohbetAlan{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:10px 16px;display:flex;flex-direction:column;gap:10px}
 .bal{max-width:86%;padding:10px 14px;border-radius:18px;font-size:15px;line-height:1.45;overflow-wrap:anywhere}
 .bal.ben{align-self:flex-end;background:var(--degrade);color:#0b0d14;border-bottom-right-radius:6px;box-shadow:0 6px 16px rgba(124,156,255,.3)}
 .bal.ai{align-self:flex-start;background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.05));border:1px solid var(--kenar);border-bottom-left-radius:6px}
@@ -213,24 +196,14 @@ nav button{font-size:8.5px}
 </section>
 
 <script>
-/* ===== VERİ MODELİ (tüm veri tek bir S nesnesinde, localStorage'da) =====
- profil:    {ad, alan, universite, bolum, hedefSiralama, tytHedef, aytHedef, sinavTarihi}
- kaynaklar: [{id, ders, ad, link, toplamVideo, gunlukVideo, baslangic, gunler:[1,3,5], videolar:[{baslik,link}]}]
- gorevler:  [{id, tarih, metin, link, kaynakId, videoNo, tur:'kaynak'|'elle', bitti:false}]
- sureler:   [{id, ders, baslangic, bitis, sn, gun}]
- aktifSayac:{ders, baslangic, biriken, devam, hedefSn} | null   (devam: çalışıyorsa son başlama zamanı, duraklıysa null)
- haftalar:  [{hafta (pazartesi tarihi), alan, tyt:{ders:net}, ayt:{ders:net}, siralama, zorKonular, not}]
- kacan:     {tarih: kaçırılan kaynak görevi sayısı}
- program:   {pazartesiTarihi: [7 gün (Pzt..Paz), her gün [{id, metin}]]}   (görev tur:'program', progId = madde id)
-*/
 const KEY = 'yks_v1';
 const varsayilan = () => ({
   surum: 1,
   profil: {ad:'', alan:'SAY', universite:'', bolum:'', hedefSiralama:'', tytHedef:'', aytHedef:'', sinavTarihi:''},
   kaynaklar: [], gorevler: [], sureler: [], aktifSayac: null, haftalar: [], kacan: {}, program: {},
-  yanlislar: [],   // [{id, tarih, ders, konu, soruNotu, fotoUrl, cozuldu, cozulduTarih?}]
-  konuTakip: {},   // {'TYT|Matematik|Türev': 1 (sarı) | 2 (yeşil)}; kayıt yoksa 0 (çalışılmadı)
-  rutinler: []     // ileride kullanılacak
+  yanlislar: [],   
+  konuTakip: {},   
+  rutinler: []     
 });
 
 let S = varsayilan();
@@ -241,7 +214,6 @@ try {
 
 function kaydet() { localStorage.setItem(KEY, JSON.stringify(S)); }
 
-/* Yardımcılar */
 function bugun() {
   const d = new Date();
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
@@ -249,7 +221,6 @@ function bugun() {
 function yeniId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function kart(baslik, govde) { return '<div class="kart"><h2>' + baslik + '</h2>' + govde + '</div>'; }
 
-/* ===== ADIM 2: KAYNAKLAR VE PLAN ===== */
 const DERSLER = ['Matematik','Geometri','Fizik','Kimya','Biyoloji','Türkçe','Edebiyat','Tarih','Coğrafya','Felsefe','Din Kültürü','Diğer'];
 const GUNLER = [[1,'Pzt'],[2,'Sal'],[3,'Çar'],[4,'Per'],[5,'Cum'],[6,'Cmt'],[0,'Paz']];
 
@@ -389,7 +360,7 @@ function kaynakFormu() {
     '<button class="btn" onclick="kaynakEkle()">Kaynağı ekle ve planla</button>');
 }
 
-/* ===== ADIM 3: GÖREVLER ===== */
+/* ===== GÖREVLER VE RUTİNLER ===== */
 let sonTik = null;
 function bugunGorevleri() {
   const bg = bugun();
@@ -416,20 +387,40 @@ function gorevTikle(id) {
   sonTik = null;
 }
 
+const RUTIN_LISTESI = ['Paragraf', 'Problem', 'Geometri'];
+function rutinTikle(rutinAdi) {
+  const bg = bugun();
+  if (!S.rutinler) S.rutinler = [];
+  const i = S.rutinler.findIndex(r => r.tarih === bg && r.rutin === rutinAdi);
+  if (i >= 0) S.rutinler.splice(i, 1);
+  else S.rutinler.push({tarih: bg, rutin: rutinAdi});
+  kaydet(); ekranCiz();
+}
+
+function rutinlerKart() {
+  const bg = bugun();
+  const tamamlananlar = new Set((S.rutinler || []).filter(r => r.tarih === bg).map(r => r.rutin));
+  const html = RUTIN_LISTESI.map(rutin => {
+    const bitti = tamamlananlar.has(rutin);
+    return '<div class="gorev' + (bitti ? ' bitti' : '') + '">' +
+      '<label class="tikalan"><input type="checkbox"' + (bitti ? ' checked' : '') + ' onchange="rutinTikle(\'' + rutin + '\')"></label>' +
+      '<div class="gmetin"><b>' + rutin + '</b> (Günlük Rutin)</div></div>';
+  }).join('');
+  return kart('Günlük Rutinler', html);
+}
+
 function elleEkle() {
   const tur = document.getElementById('e_tur').value;
   const m = document.getElementById('e_metin').value.trim();
-  if (!m) return alert('Ne yapacağını yaz. Örn: 40 paragraf sorusu');
+  if (!m) return alert('Ne yapacağını yaz.');
   S.gorevler.push({id:yeniId(), tarih:bugun(), metin:(tur === 'Diğer' ? m : tur + ': ' + m),
                    kaynakId:null, videoNos:[], linkler:[], tur:'elle', bitti:false});
-  kaydet();
-  ekranCiz();
+  kaydet(); ekranCiz();
 }
 
 function elleSil(id) {
   S.gorevler = S.gorevler.filter(g => g.id !== id);
-  kaydet();
-  ekranCiz();
+  kaydet(); ekranCiz();
 }
 
 function gorevSatir(g) {
@@ -443,40 +434,29 @@ function gorevlerEkrani() {
   const liste = bugunGorevleri().sort((a, b) => (a.bitti ? 1 : 0) - (b.bitti ? 1 : 0));
   const biten = liste.filter(g => g.bitti);
   const yuzde = liste.length ? Math.round(biten.length / liste.length * 100) : 0;
-  const video = biten.filter(g => g.tur === 'kaynak').reduce((t, g) => t + g.videoNos.length, 0);
-  const elle = biten.filter(g => g.tur === 'elle').length;
-  const parca = [];
-  if (video) parca.push(video + ' video izledin');
-  if (elle) parca.push(elle + ' elle görev bitirdin');
-  const prog = biten.filter(g => g.tur === 'program').length;
-  if (prog) parca.push(prog + ' program görevi bitirdin');
-  const ozet = parca.length ? 'Bugün ' + parca.join(', ') + '.' : 'Henüz bir şey bitirmedin. Tek bir küçük görev seç ve başla.';
   const seri = seriHesapla();
   const st = toplamlar().bugun;
 
   const ust = kart('Bugün ne yaptım',
     '<div class="satir"><div class="sayi">%' + yuzde + '</div><div class="soluk">' + biten.length + ' / ' + liste.length + ' görev tamam</div></div>' +
     '<div class="cubuk"><div style="width:' + yuzde + '%"></div></div>' +
-    '<p>' + ozet + '</p>' +
     '<p>🔥 ' + (seri ? seri + ' gün seri' : 'Seri yok. Bugün bir görev bitirip seriyi başlat.') + '</p>' +
-    (st ? '<p>⏱️ Bugün ' + sureYaz(st) + ' çalıştın.</p>' : ''));
+    (st ? '<p>⏱️ Bugün ' + sureYaz(st) + ' çalıştın.</p>': ''));
 
   const gorevler = kart('Bugünün görevleri', liste.length ? liste.map(gorevSatir).join('')
-    : '<p class="soluk">Bugün için görev yok. Haftalık programını doldur, kaynak ekle ya da aşağıdan kendi görevini yaz.</p>');
+    : '<p class="soluk">Bugün için görev yok. Aşağıdan kendi görevini yazabilirsin.</p>');
 
   const form = kart('Görev ekle',
     '<label class="alan">Türü<select id="e_tur"><option>Soru çözümü</option><option>Deneme</option><option>Konu tekrarı</option><option>Diğer</option></select></label>' +
     '<label class="alan">Ne yapacaksın?<input type="text" id="e_metin" placeholder="Örn: Matematik 40 soru"></label>' +
     '<button class="btn" onclick="elleEkle()">Ekle</button>');
 
-  return '<button class="btn ikincil" style="margin:0 0 12px" onclick="tabGit(\'program\')">📅 Haftalık program</button>' + ust + gorevler + form;
+  return '<button class="btn ikincil" style="margin:0 0 12px" onclick="tabGit(\'program\')">📅 Haftalık program</button>' + rutinlerKart() + ust + gorevler + form;
 }
 
-/* ===== ADIM 4: SÜRE TUTUCU ===== */
+/* ===== SÜRE TUTUCU ===== */
 let secilenDers = 'Matematik';
-
 function gecen(a) { return a.biriken + (a.devam ? Date.now() - a.devam : 0); }
-
 function saatYaz(sn) {
   const h = Math.floor(sn / 3600), m = Math.floor(sn % 3600 / 60), s = sn % 60;
   return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
@@ -499,17 +479,10 @@ function toplamlar() {
   if (a) { const e = Math.floor(gecen(a) / 1000); t += e; b += e; h += e; }
   return {bugun:b, hafta:h, toplam:t};
 }
-function hedefMetni(a) {
-  if (!a || !a.hedefSn) return '';
-  const g = Math.floor(gecen(a) / 1000);
-  return g < a.hedefSn ? 'Hedefe kalan: ' + saatYaz(a.hedefSn - g).slice(3)
-                       : '🎉 10 dakikayı geçtin! İstersen devam et, istersen bitir.';
-}
-
-function sayacBaslat(hedefSn) {
+function sayacBaslat() {
   if (S.aktifSayac) return;
   const now = Date.now();
-  S.aktifSayac = {ders:secilenDers, baslangic:now, biriken:0, devam:now, hedefSn:hedefSn || 0};
+  S.aktifSayac = {ders:secilenDers, baslangic:now, biriken:0, devam:now};
   kaydet(); ekranCiz();
 }
 function sayacDuraklat() {
@@ -542,8 +515,6 @@ function guncelleCanli() {
   const a = S.aktifSayac;
   const s = document.getElementById('saat');
   if (s && a) s.textContent = saatYaz(Math.floor(gecen(a) / 1000));
-  const h = document.getElementById('hedef');
-  if (h) h.textContent = hedefMetni(a);
   const t = toplamlar();
   [['t_bugun', t.bugun], ['t_hafta', t.hafta], ['t_toplam', t.toplam]].forEach(x => {
     const e = document.getElementById(x[0]);
@@ -551,7 +522,6 @@ function guncelleCanli() {
   });
 }
 setInterval(guncelleCanli, 1000);
-document.addEventListener('visibilitychange', guncelleCanli);
 
 function sureEkrani() {
   const a = S.aktifSayac, t = toplamlar();
@@ -575,60 +545,36 @@ function sureEkrani() {
   const son = S.sureler.slice(-8).reverse().map(x =>
     '<div class="kayit"><div>' + esc(x.ders) + ': ' + sureYaz(x.sn) + '<br><span class="soluk">' + gunAdi(x.gun) + '</span></div>' +
     '<button class="sil" onclick="sureSil(\'' + x.id + '\')">✕</button></div>').join('');
-  return kart('Kronometre', ust) + toplamKart +
-    (son ? kart('Son kayıtlar', son) : '');
+  return kart('Kronometre', ust) + toplamKart + (son ? kart('Son kayıtlar', son) : '');
 }
 
-/* ===== ADIM 5: PROFİL VE HEDEFLER ===== */
+/* ===== PROFİL VE HEDEFLER ===== */
 function bildir(m) {
   const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = m;
+  t.className = 'toast'; t.textContent = m;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 2000);
 }
-
 function baslikGuncelle() {
   document.getElementById('baslik').textContent = S.profil.ad ? 'Merhaba, ' + S.profil.ad : 'Lyrica';
 }
-
 function kalanGun() {
   const s = S.profil.sinavTarihi;
   if (!s) return null;
   return Math.round((tarihDon(s) - tarihDon(bugun())) / 86400000);
 }
-
 function profilKaydet() {
   const al = id => document.getElementById(id).value.trim();
   const tyt = al('p_tyt'), ayt = al('p_ayt');
-  if (tyt !== '' && (+tyt < 0 || +tyt > 120)) return alert('TYT neti 0 ile 120 arasında olmalı.');
-  if (ayt !== '' && (+ayt < 0 || +ayt > 80)) return alert('AYT neti 0 ile 80 arasında olmalı.');
   const alan = document.querySelector('input[name="p_alan"]:checked');
   S.profil = {ad:al('p_ad'), alan:(alan ? alan.value : 'SAY'), universite:al('p_uni'), bolum:al('p_bolum'),
               hedefSiralama:al('p_sira'), tytHedef:tyt, aytHedef:ayt, sinavTarihi:al('p_tarih')};
-  kaydet();
-  baslikGuncelle();
-  ekranCiz();
+  kaydet(); baslikGuncelle(); ekranCiz();
   bildir('Kaydedildi ✓');
 }
-
 function hedeflerEkrani() {
   const p = S.profil, g = kalanGun();
-  let sayac;
-  if (g === null) sayac = '<p class="soluk">Sınav tarihini aşağıdan gir. Tarihi ÖSYM sınav takviminden kontrol et.</p>';
-  else if (g < 0) sayac = '<p class="soluk">Girdiğin sınav tarihi geçmiş. Tarihi güncelle.</p>';
-  else if (g === 0) sayac = '<div class="sayi">Bugün!</div><p class="soluk">Sınav günü, başarılar.</p>';
-  else sayac = '<div class="sayi">' + g + ' gün</div><p class="soluk">' + Math.floor(g / 7) + ' hafta ' + (g % 7) + ' gün kaldı</p>';
-
-  const netler = [];
-  if (p.tytHedef !== '') netler.push('TYT: ' + esc(p.tytHedef) + ' net');
-  if (p.aytHedef !== '') netler.push('AYT: ' + esc(p.aytHedef) + ' net');
-  const hedefVar = p.universite || p.bolum || p.hedefSiralama || netler.length;
-  const hedef = hedefVar ? kart('Hedefim',
-    ((p.universite || p.bolum) ? '<p>' + esc(p.universite) + (p.universite && p.bolum ? ' - ' : '') + esc(p.bolum) + '</p>' : '') +
-    (p.hedefSiralama ? '<p class="soluk">Hedef sıralama: ' + esc(p.hedefSiralama) + '</p>' : '') +
-    (netler.length ? '<p class="soluk">' + netler.join(', ') + '</p>' : '')) : '';
-
+  let sayac = g === null ? '<p class="soluk">Sınav tarihini aşağıdan gir.</p>' : (g < 0 ? '<p class="soluk">Tarih geçmiş.</p>' : '<div class="sayi">' + g + ' gün</div>');
   const alanlar = ['SAY', 'EA', 'SÖZ', 'DİL'].map(a =>
     '<label class="cip"><input type="radio" name="p_alan" value="' + a + '"' + (p.alan === a ? ' checked' : '') + '><span>' + a + '</span></label>').join('');
 
@@ -637,606 +583,113 @@ function hedeflerEkrani() {
     '<label class="alan">Alanın</label><div class="cipler">' + alanlar + '</div>' +
     '<label class="alan">Hedef üniversite<input type="text" id="p_uni" value="' + esc(p.universite) + '"></label>' +
     '<label class="alan">Hedef bölüm<input type="text" id="p_bolum" value="' + esc(p.bolum) + '"></label>' +
-    '<label class="alan">Hedef sıralama<input type="number" id="p_sira" min="1" inputmode="numeric" value="' + esc(p.hedefSiralama) + '"></label>' +
-    '<label class="alan">TYT hedef net (en çok 120)<input type="number" id="p_tyt" min="0" max="120" step="0.25" inputmode="decimal" value="' + esc(p.tytHedef) + '"></label>' +
-    '<label class="alan">AYT hedef net (en çok 80)<input type="number" id="p_ayt" min="0" max="80" step="0.25" inputmode="decimal" value="' + esc(p.aytHedef) + '"></label>' +
+    '<label class="alan">Hedef sıralama<input type="number" id="p_sira" value="' + esc(p.hedefSiralama) + '"></label>' +
+    '<label class="alan">TYT hedef net<input type="number" id="p_tyt" value="' + esc(p.tytHedef) + '"></label>' +
+    '<label class="alan">AYT hedef net<input type="number" id="p_ayt" value="' + esc(p.aytHedef) + '"></label>' +
     '<label class="alan">Sınav tarihi<input type="date" id="p_tarih" value="' + esc(p.sinavTarihi) + '"></label>' +
     '<button class="btn" onclick="profilKaydet()">Kaydet</button>');
 
-    return '<button class="btn ikincil" style="margin:0 0 12px" onclick="tabGit(\'konular\')">📚 Konu takip matrisi</button>' +
-    kart('Sınava kalan süre', sayac) + hedef + form;
-
-/* ===== ADIM 6A: HAFTALIK GÜNCELLEME ===== */
-const TYT_DERS = [['turkce','Türkçe',40],['sosyal','Sosyal Bilimler',20],['mat','Temel Matematik',40],['fen','Fen Bilimleri',20]];
-const AYT_DERS = {
-  'SAY':[['mat','Matematik',40],['fizik','Fizik',14],['kimya','Kimya',13],['biyo','Biyoloji',13]],
-  'EA':[['mat','Matematik',40],['edeb','Edebiyat',24],['tar1','Tarih-1',10],['cog1','Coğrafya-1',6]],
-  'SÖZ':[['edeb','Edebiyat',24],['tar1','Tarih-1',10],['cog1','Coğrafya-1',6],['tar2','Tarih-2',11],['cog2','Coğrafya-2',11],['felsefe','Felsefe Grubu',12],['din','Din Kültürü',6]],
-  'DİL':[['dil','Yabancı Dil',80]]
-};
-let haftaSecili = haftaBasi();
-let haftaAlt = 'form';
-
-function haftaPazartesi(s) { const d = tarihDon(s); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return tarihStr(d); }
-function haftaEtiket(m) {
-  const a = tarihDon(m), b = tarihDon(m); b.setDate(b.getDate() + 6);
-  const f = d => d.toLocaleDateString('tr-TR', {day:'numeric', month:'long'});
-  return f(a) + ' - ' + f(b);
-}
-function haftaBul(m) { return S.haftalar.find(h => h.hafta === m); }
-function netToplam(o) {
-  let t = 0, var_ = false;
-  Object.values(o || {}).forEach(x => { if (typeof x === 'number') { t += x; var_ = true; } });
-  return var_ ? t : null;
-}
-function netYaz(n) { return n === null ? '-' : String(Math.round(n * 100) / 100).replace('.', ','); }
-
-function altGit(x) { haftaAlt = x; ekranCiz(); }
-function haftaDegistir(v) { if (!v) return; haftaSecili = haftaPazartesi(v); ekranCiz(); }
-function haftaDuzenle(m) { haftaSecili = m; haftaAlt = 'form'; ekranCiz(); document.getElementById('icerik').scrollTop = 0; }
-function haftaSil(m) {
-  if (!confirm('Bu haftanın kaydı silinsin mi?')) return;
-  S.haftalar = S.haftalar.filter(h => h.hafta !== m);
-  kaydet(); ekranCiz();
-}
-
-function haftaKaydet() {
-  const mevcut = haftaBul(haftaSecili);
-  const alan = (mevcut && mevcut.alan) || S.profil.alan || 'SAY';
-  const al = id => document.getElementById(id).value.trim();
-  const oku = (on, liste) => {
-    const o = {};
-    for (const d of liste) {
-      const v = al(on + d[0]);
-      if (v === '') continue;
-      const n = parseFloat(v);
-      if (isNaN(n) || n > d[2] || n < -d[2] / 4) { alert(d[1] + ' neti ' + (-d[2] / 4) + ' ile ' + d[2] + ' arasında olmalı.'); return null; }
-      o[d[0]] = n;
-    }
-    return o;
-  };
-  const tyt = oku('n_tyt_', TYT_DERS); if (!tyt) return;
-  const ayt = oku('n_ayt_', AYT_DERS[alan] || []); if (!ayt) return;
-  const kayit = {hafta:haftaSecili, alan:alan, tyt:tyt, ayt:ayt, siralama:al('h_sira'), zorKonular:al('h_zor'), not:al('h_not')};
-  const i = S.haftalar.findIndex(h => h.hafta === haftaSecili);
-  if (i >= 0) S.haftalar[i] = kayit; else S.haftalar.push(kayit);
-  S.haftalar.sort((a, b) => a.hafta < b.hafta ? -1 : 1);
-  kaydet(); ekranCiz(); bildir('Hafta kaydedildi ✓');
-}
-
-function haftaFormu() {
-  const m = haftaBul(haftaSecili);
-  const alan = (m && m.alan) || S.profil.alan || 'SAY';
-  const girdiler = (on, liste, veri) => liste.map(d =>
-    '<label class="alan">' + d[1] + ' (en çok ' + d[2] + ')<input type="number" id="' + on + d[0] + '" step="0.25" min="' + (-d[2] / 4) +
-    '" max="' + d[2] + '" inputmode="decimal" value="' + (veri && typeof veri[d[0]] === 'number' ? veri[d[0]] : '') + '"></label>').join('');
-
-  return kart('Hafta',
-      '<label class="alan">Hangi hafta?<input type="date" id="h_tarih" value="' + haftaSecili + '" onchange="haftaDegistir(this.value)"></label>' +
-      '<p class="soluk">' + haftaEtiket(haftaSecili) + (m ? ' (kayıtlı, güncelleniyor)' : '') + '</p>') +
-    kart('TYT netleri', girdiler('n_tyt_', TYT_DERS, m && m.tyt)) +
-    kart('AYT netleri (' + alan + ')', girdiler('n_ayt_', AYT_DERS[alan] || [], m && m.ayt) +
-      '<p class="soluk">Alanını Hedefler sekmesinden değiştirebilirsin.</p>') +
-    kart('Sıralama ve notlar',
-      '<label class="alan">Deneme sıralaması<input type="number" id="h_sira" min="1" inputmode="numeric" value="' + esc(m ? m.siralama : '') + '"></label>' +
-      '<label class="alan">Zorlandığım konular<textarea id="h_zor">' + esc(m ? m.zorKonular : '') + '</textarea></label>' +
-      '<label class="alan">Hafta notu<textarea id="h_not">' + esc(m ? m.not : '') + '</textarea></label>' +
-      '<button class="btn" onclick="haftaKaydet()">' + (m ? 'Güncelle' : 'Kaydet') + '</button>');
-}
-
-function haftaListesi() {
-  if (!S.haftalar.length) return kart('Kayıtlı haftalar', '<p class="soluk">Henüz kayıt yok. Yukarıdaki formu doldurup kaydet.</p>');
-  return kart('Kayıtlı haftalar', S.haftalar.slice().reverse().map(h =>
-    '<div class="kayit"><div>' + haftaEtiket(h.hafta) + '<br><span class="soluk">TYT ' + netYaz(netToplam(h.tyt)) +
-    ' net, AYT ' + netYaz(netToplam(h.ayt)) + ' net' + (h.siralama ? ', sıralama ' + esc(h.siralama) : '') + '</span></div>' +
-    '<button class="sil" onclick="haftaDuzenle(\'' + h.hafta + '\')">✎</button>' +
-    '<button class="sil" onclick="haftaSil(\'' + h.hafta + '\')">✕</button></div>').join(''));
-}
-
-/* ===== ADIM 6B: HAFTALIK ANALİZ ===== */
-function haftaSonu(m) { const d = tarihDon(m); d.setDate(d.getDate() + 6); return tarihStr(d); }
-
-function haftaKay(n) {
-  const d = tarihDon(haftaSecili);
-  d.setDate(d.getDate() + n);
-  haftaSecili = tarihStr(d);
-  ekranCiz();
-}
-
-function haftaVerisi(m) {
-  const son = haftaSonu(m);
-  const g = S.gorevler.filter(x => x.tarih >= m && x.tarih <= son);
-  const kacan = Object.keys(S.kacan).filter(d => d >= m && d <= son).reduce((t, d) => t + S.kacan[d], 0);
-  const planlanan = g.length + kacan;
-  const tamam = g.filter(x => x.bitti).length;
-  const dersSn = {}; let toplamSn = 0;
-  S.sureler.filter(x => x.gun >= m && x.gun <= son).forEach(x => {
-    dersSn[x.ders] = (dersSn[x.ders] || 0) + x.sn;
-    toplamSn += x.sn;
-  });
-  return {planlanan:planlanan, tamam:tamam, yuzde:(planlanan ? Math.round(tamam / planlanan * 100) : 0),
-          toplamSn:toplamSn, dersListe:Object.entries(dersSn).sort((a, b) => b[1] - a[1]), kayit:haftaBul(m)};
-}
-
-function netDetay(o, liste) {
-  return liste.filter(d => o && typeof o[d[0]] === 'number').map(d => d[1] + ' ' + netYaz(o[d[0]])).join(', ');
-}
-
-function kopyaMetni(m) {
-  const v = haftaVerisi(m), p = S.profil, k = v.kayit;
-  const alan = (k && k.alan) || p.alan || 'SAY';
-  const s = [];
-  s.push('YKS HAFTALIK RAPORUM (' + haftaEtiket(m) + ')');
-  s.push('Alan: ' + (p.alan || alan));
-  if (p.universite || p.bolum) s.push('Hedef: ' + [p.universite, p.bolum].filter(Boolean).join(' - '));
-  if (p.hedefSiralama) s.push('Hedef sıralama: ' + p.hedefSiralama);
-  const hn = [];
-  if (p.tytHedef !== '') hn.push('TYT ' + p.tytHedef);
-  if (p.aytHedef !== '') hn.push('AYT ' + p.aytHedef);
-  if (hn.length) s.push('Hedef netler: ' + hn.join(', '));
-  const kg = kalanGun();
-  if (kg !== null && kg >= 0) s.push('Sınava kalan: ' + kg + ' gün');
-  s.push('');
-  s.push('GÖREVLER: planlanan ' + v.planlanan + ', tamamlanan ' + v.tamam + ' (%' + v.yuzde + ')');
-  s.push('ÇALIŞMA SÜRESİ: toplam ' + sureYaz(v.toplamSn));
-  v.dersListe.forEach(d => s.push('- ' + d[0] + ': ' + sureYaz(d[1])));
-  s.push('');
-  if (k) {
-    s.push('BU HAFTAKİ DENEME:');
-    s.push('TYT toplam ' + netYaz(netToplam(k.tyt)) + ' net' + (netDetay(k.tyt, TYT_DERS) ? ' (' + netDetay(k.tyt, TYT_DERS) + ')' : ''));
-    s.push('AYT toplam ' + netYaz(netToplam(k.ayt)) + ' net' + (netDetay(k.ayt, AYT_DERS[alan] || []) ? ' (' + netDetay(k.ayt, AYT_DERS[alan] || []) + ')' : ''));
-    if (k.siralama) s.push('Sıralama: ' + k.siralama);
-    if (k.zorKonular) s.push('Zorlandığım konular: ' + k.zorKonular);
-    if (k.not) s.push('Hafta notu: ' + k.not);
-  } else {
-    s.push('Bu hafta için deneme kaydı girilmemiş.');
-  }
-  const onceki = S.haftalar.filter(h => h.hafta < m).slice(-5);
-  if (onceki.length) {
-    s.push('');
-    s.push('ÖNCEKİ HAFTALARIN DENEME NETLERİ:');
-    onceki.forEach(h => s.push('- ' + haftaEtiket(h.hafta) + ': TYT ' + netYaz(netToplam(h.tyt)) + ', AYT ' + netYaz(netToplam(h.ayt)) + (h.siralama ? ', sıralama ' + h.siralama : '')));
-  }
-  s.push('');
-  s.push('Bu verilere göre güçlü ve zayıf yönlerimi yorumla. Gelecek hafta için kısa ve uygulanabilir bir çalışma önerisi ver.');
-  return s.join('\n');
-}
-
-function eskiKopya(t) {
-  const a = document.createElement('textarea');
-  a.value = t; a.style.position = 'fixed'; a.style.opacity = '0';
-  document.body.appendChild(a); a.select();
-  let ok = false;
-  try { ok = document.execCommand('copy'); } catch (e) {}
-  a.remove();
-  bildir(ok ? 'Kopyalandı ✓' : 'Kopyalanamadı, metni aşağıdan elle seç');
-}
-function panoyaKopyala(t) {
-  if (navigator.clipboard && window.isSecureContext)
-    navigator.clipboard.writeText(t).then(() => bildir('Kopyalandı ✓')).catch(() => eskiKopya(t));
-  else eskiKopya(t);
-}
-function haftaKopyala() { panoyaKopyala(kopyaMetni(haftaSecili)); }
-
-function grafikCiz() {
-  const c = document.getElementById('grafik');
-  if (!c) return;
-  const kayitlar = S.haftalar.slice(-10), n = kayitlar.length;
-  const W = c.clientWidth, H = 220, dpr = window.devicePixelRatio || 1;
-  c.width = W * dpr; c.height = H * dpr;
-  const x = c.getContext('2d');
-  x.scale(dpr, dpr);
-  const tyt = kayitlar.map(h => netToplam(h.tyt));
-  const ayt = kayitlar.map(h => netToplam(h.ayt));
-  const th = S.profil.tytHedef !== '' ? +S.profil.tytHedef : null;
-  const ah = S.profil.aytHedef !== '' ? +S.profil.aytHedef : null;
-  const tum = tyt.concat(ayt, [th, ah]).filter(v => v !== null);
-  const ymax = Math.max(10, Math.ceil(Math.max(...tum) / 10) * 10);
-  const ymin = Math.min(0, Math.floor(Math.min(...tum) / 10) * 10);
-  const pl = 38, pr = 12, pt = 12, pb = 28, w = W - pl - pr, h = H - pt - pb;
-  const X = i => n === 1 ? pl + w / 2 : pl + i * w / (n - 1);
-  const Y = v => pt + h * (1 - (v - ymin) / (ymax - ymin));
-
-  x.font = '12px system-ui, sans-serif';
-  x.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const v = ymin + (ymax - ymin) * i / 4, yy = Y(v);
-    x.strokeStyle = '#2f3441';
-    x.beginPath(); x.moveTo(pl, yy); x.lineTo(W - pr, yy); x.stroke();
-    x.fillStyle = '#9aa0b2'; x.textAlign = 'right'; x.textBaseline = 'middle';
-    x.fillText(String(Math.round(v * 10) / 10), pl - 6, yy);
-  }
-  x.fillStyle = '#9aa0b2'; x.textAlign = 'center'; x.textBaseline = 'top';
-  kayitlar.forEach((hh, i) => {
-    if (n > 6 && i % 2 && i !== n - 1) return;
-    x.fillText(tarihDon(hh.hafta).toLocaleDateString('tr-TR', {day:'numeric', month:'short'}), X(i), H - pb + 8);
-  });
-
-  const hedefCiz = (v, renk) => {
-    if (v === null) return;
-    x.strokeStyle = renk; x.lineWidth = 1.5; x.setLineDash([6, 4]);
-    x.beginPath(); x.moveTo(pl, Y(v)); x.lineTo(W - pr, Y(v)); x.stroke();
-    x.setLineDash([]);
-  };
-  const seri = (d, renk) => {
-    x.strokeStyle = renk; x.fillStyle = renk; x.lineWidth = 2.5; x.setLineDash([]);
-    let acik = false;
-    x.beginPath();
-    d.forEach((v, i) => {
-      if (v === null) { acik = false; return; }
-      if (!acik) { x.moveTo(X(i), Y(v)); acik = true; } else x.lineTo(X(i), Y(v));
-    });
-    x.stroke();
-    d.forEach((v, i) => { if (v !== null) { x.beginPath(); x.arc(X(i), Y(v), 4, 0, 6.2832); x.fill(); } });
-  };
-  hedefCiz(th, '#8fb0ff'); hedefCiz(ah, '#5ecb9a');
-  seri(tyt, '#8fb0ff'); seri(ayt, '#5ecb9a');
-}
-window.addEventListener('resize', () => { if (aktifTab === 'haftalik' && haftaAlt === 'analiz') grafikCiz(); });
-
-function analizEkrani() {
-  const m = haftaSecili, v = haftaVerisi(m);
-  const nav = kart('Hafta',
-    '<div class="ikili"><button class="btn ikincil" onclick="haftaKay(-7)">◀ Önceki</button>' +
-    '<button class="btn ikincil" onclick="haftaKay(7)">Sonraki ▶</button></div>' +
-    '<p style="text-align:center;margin:12px 0 0">' + haftaEtiket(m) + '</p>');
-
-  const gorev = kart('Görevler',
-    '<div class="satir"><div class="sayi">%' + v.yuzde + '</div><div class="soluk">' + v.tamam + ' / ' + v.planlanan + ' görev tamamlandı</div></div>' +
-    '<div class="cubuk"><div style="width:' + v.yuzde + '%"></div></div>' +
-    (v.planlanan ? '' : '<p class="soluk">Bu hafta için planlanmış görev yok.</p>'));
-
-  const sure = kart('Çalışma süresi: ' + sureYaz(v.toplamSn),
-    v.dersListe.length ? v.dersListe.map(d => {
-      const y = Math.round(d[1] / v.toplamSn * 100);
-      return '<div class="toplam"><span>' + esc(d[0]) + '</span><b>' + sureYaz(d[1]) + ' (%' + y + ')</b></div>' +
-             '<div class="cubuk"><div style="width:' + y + '%"></div></div>';
-    }).join('') : '<p class="soluk">Bu hafta süre kaydı yok. Süre sekmesinden süre tut.</p>');
-
-  const grafik = kart('Deneme net grafiği', S.haftalar.length
-    ? '<canvas id="grafik"></canvas><div class="lej"><span style="color:#8fb0ff">● TYT</span><span style="color:#5ecb9a">● AYT</span><span>Kesik çizgi: hedef</span></div>' +
-      (S.haftalar.length < 2 ? '<p class="soluk">Çizgi için en az 2 hafta kaydı gerekir.</p>' : '')
-    : '<p class="soluk">Grafik için Güncelleme sekmesinde en az bir haftanın netlerini kaydet.</p>');
-
-  const kopya = kart('AI analizi için',
-    '<p class="soluk">Bu haftanın verileri metne çevrilir. Kopyalayıp yapay zekaya yapıştır, yorum iste.</p>' +
-    '<button class="btn" onclick="haftaKopyala()">AI analizi için kopyala</button>' +
-    '<textarea readonly style="min-height:200px;margin-top:12px">' + esc(kopyaMetni(m)) + '</textarea>');
-
-  return nav + gorev + sure + grafik + kopya;
-}
-
-function haftalikEkrani() {
-  const alt = '<div class="alt"><button class="' + (haftaAlt === 'form' ? 'aktif' : '') + '" onclick="altGit(\'form\')">Güncelleme</button>' +
-    '<button class="' + (haftaAlt === 'analiz' ? 'aktif' : '') + '" onclick="altGit(\'analiz\')">Analiz</button></div>';
-  return alt + (haftaAlt === 'form' ? haftaFormu() + haftaListesi() : analizEkrani());
-}
-
-/* ===== HAFTALIK PROGRAM ===== */
-const GUN_ADLARI = ['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'];
-
-let programHafta = (function () {
-  const m = haftaBasi();
-  if (new Date().getDay() !== 0) return m;
-  const d = tarihDon(m); d.setDate(d.getDate() + 7);
-  return tarihStr(d);
-})();
-
-function gunTarihi(m, i) { const d = tarihDon(m); d.setDate(d.getDate() + i); return tarihStr(d); }
-function programAl(m) {
-  if (!S.program[m]) S.program[m] = [[], [], [], [], [], [], []];
-  return S.program[m];
-}
-
-function programUygula() {
-  const idler = new Set();
-  Object.keys(S.program).forEach(m => {
-    S.program[m].forEach((liste, i) => {
-      const ds = gunTarihi(m, i);
-      liste.forEach(it => {
-        idler.add(it.id);
-        const g = S.gorevler.find(x => x.progId === it.id);
-        if (!g) S.gorevler.push({id:yeniId(), tarih:ds, metin:it.metin, kaynakId:null, videoNos:[], linkler:[], tur:'program', progId:it.id, bitti:false});
-        else if (!g.bitti) { g.tarih = ds; g.metin = it.metin; }
-      });
-    });
-  });
-  S.gorevler = S.gorevler.filter(g => g.tur !== 'program' || g.bitti || idler.has(g.progId));
-  kaydet();
-}
-
-function programKay(n) { programHafta = gunTarihi(programHafta, n); ekranCiz(); }
-
-function programEkle(i) {
-  const m = document.getElementById('pg_' + i).value.trim();
-  if (!m) return;
-  programAl(programHafta)[i].push({id:yeniId(), metin:m});
-  programUygula();
-  ekranCiz();
-  const k = document.getElementById('pg_' + i);
-  if (k) k.focus();
-}
-
-function programSil(i, id) {
-  const l = programAl(programHafta)[i];
-  const k = l.findIndex(x => x.id === id);
-  if (k >= 0) l.splice(k, 1);
-  programUygula();
-  ekranCiz();
-}
-
-function programKopyala() {
-  const eski = S.program[gunTarihi(programHafta, -7)];
-  if (!eski || !eski.some(l => l.length)) return alert('Önceki haftanın programı boş.');
-  if (S.program[programHafta] && S.program[programHafta].some(l => l.length) &&
-      !confirm('Bu haftanın programının üzerine yazılsın mı?')) return;
-  S.program[programHafta] = eski.map(l => l.map(it => ({id:yeniId(), metin:it.metin})));
-  programUygula();
-  ekranCiz();
-  bildir('Kopyalandı ✓');
-}
-
-/* Gün kopyala / yapıştır (pano uygulama açıkken bellekte durur) */
-let programPano = null;
-
-function gunKopyala(i) {
-  const l = (S.program[programHafta] || [])[i] || [];
-  if (!l.length) return alert('Bu günde kopyalanacak madde yok.');
-  programPano = {ad:GUN_ADLARI[i], metinler:l.map(x => x.metin)};
-  ekranCiz();
-  bildir(GUN_ADLARI[i] + ' kopyalandı ✓');
-}
-
-function gunYapistir(i) {
-  if (!programPano) return alert('Önce bir günün sağ üstündeki kopyala simgesine bas.');
-  const hedef = programAl(programHafta)[i];
-  programPano.metinler.forEach(m => hedef.push({id:yeniId(), metin:m}));
-  programUygula();
-  ekranCiz();
-  bildir(programPano.ad + ' → ' + GUN_ADLARI[i] + ' yapıştırıldı ✓');
-}
-
-function gunKart(i, baslik, govde) {
-  return '<div class="kart"><div class="gunAraclar">' +
-    '<button aria-label="Günü kopyala" title="Günü kopyala" onclick="gunKopyala(' + i + ')">' +
-      IK('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>') + '</button>' +
-    '<button class="' + (programPano ? 'dolu' : 'pasif') + '" aria-label="Yapıştır" title="Yapıştır" onclick="gunYapistir(' + i + ')">' +
-      IK('<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9z"/><path d="M9 12h6M9 16h4"/>') + '</button></div>' +
-    '<h2 style="padding-right:92px">' + baslik + '</h2>' + govde + '</div>';
-}
-
-function programEkrani() {
-  const m = programHafta, bg = bugun(), bu = haftaBasi();
-  const etiket = m === bu ? ' (bu hafta)' : (m === gunTarihi(bu, 7) ? ' (gelecek hafta)' : '');
-  const ust = kart('Haftalık program',
-    '<p class="soluk">Her güne yapacaklarını yaz. O gün gelince Görevler sekmesinde kendiliğinden çıkar.</p>' +
-    '<div class="ikili"><button class="btn ikincil" onclick="programKay(-7)">◀ Önceki</button>' +
-    '<button class="btn ikincil" onclick="programKay(7)">Sonraki ▶</button></div>' +
-    '<p style="text-align:center;margin:12px 0 0"><b>' + haftaEtiket(m) + '</b>' + etiket + '</p>' +
-    '<button class="btn ikincil" onclick="programKopyala()">Önceki haftadan kopyala</button>' +
-    '<button class="btn ikincil" onclick="tabGit(\'gorevler\')">← Görevlere dön</button>');
-  const gunler = GUN_ADLARI.map((ad, i) => {
-    const ds = gunTarihi(m, i), liste = (S.program[m] || [])[i] || [];
-    const tarih = tarihDon(ds).toLocaleDateString('tr-TR', {day:'numeric', month:'long'});
-    return gunKart(i, ad + (ds === bg ? ' (bugün)' : '') + ' <span class="soluk">' + tarih + '</span>',
-      liste.map(it => '<div class="kayit"><div>' + esc(it.metin) + '</div>' +
-        '<button class="sil" onclick="programSil(' + i + ',\'' + it.id + '\')">✕</button></div>').join('') +
-      '<div class="ekleSatir"><input type="text" id="pg_' + i + '" placeholder="Örn: TYT Matematik 40 soru" ' +
-      'onkeydown="if(event.key===\'Enter\')programEkle(' + i + ')">' +
-      '<button class="btn" onclick="programEkle(' + i + ')">Ekle</button></div>');
-  }).join('');
-  return ust + gunler;
+  return '<button class="btn ikincil" style="margin:0 0 12px" onclick="tabGit(\'konular\')">📚 Konu takip matrisi</button>' +
+    kart('Sınava kalan süre', sayac) + form;
 }
 
 /* ===== YANLIŞLAR (HATA HAVUZU) ===== */
-let yanlisFiltre = {ders:'', konu:'', arsiv:false};
-let yanlisTaslak = {ders:'Matematik', konu:'', not:'', url:'', foto:''};  // form taslağı (yeniden çizimde kaybolmaz)
+let yanlisTaslak = {ders:'Matematik', konu:'', not:'', foto:''};
 let yanlisFormAcik = false;
-let yanlisPop = null;   // pop-quiz: {id, notAcik}
+let yanlisPop = null;
 
-/* Fotoğrafı küçült: uzun kenar 800 px, JPEG %55 (localStorage kotası için) */
-function yanlisFotoBoyut(f) {
-  return new Promise((ok, hata) => {
-    const u = URL.createObjectURL(f), im = new Image();
-    im.onload = () => {
-      const m = Math.max(im.width, im.height), o = m > 800 ? 800 / m : 1;
-      const c = document.createElement('canvas');
-      c.width = Math.round(im.width * o); c.height = Math.round(im.height * o);
-      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
-      URL.revokeObjectURL(u);
-      ok(c.toDataURL('image/jpeg', 0.55));
-    };
-    im.onerror = () => { URL.revokeObjectURL(u); hata(new Error('okunamadı')); };
-    im.src = u;
-  });
-}
-
-/* --- Form --- */
-function yanlisAlan(k, v) { yanlisTaslak[k] = v; }
-function yanlisDersDegis(v) { yanlisTaslak.ders = v; ekranCiz(); }
-function yanlisFormToggle() { yanlisFormAcik = !yanlisFormAcik; ekranCiz(); }
 async function yanlisFotoSec(inp) {
   const f = inp.files[0]; inp.value = '';
   if (!f) return;
-  try { yanlisTaslak.foto = await yanlisFotoBoyut(f); } catch (e) { alert('Fotoğraf okunamadı.'); }
-  ekranCiz();
+  const u = URL.createObjectURL(f), im = new Image();
+  im.onload = () => {
+    const m = Math.max(im.width, im.height), o = m > 800 ? 800 / m : 1;
+    const c = document.createElement('canvas');
+    c.width = Math.round(im.width * o); c.height = Math.round(im.height * o);
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(u);
+    yanlisTaslak.foto = c.toDataURL('image/jpeg', 0.55);
+    ekranCiz();
+  };
+  im.src = u;
 }
 function yanlisFotoKaldir() { yanlisTaslak.foto = ''; ekranCiz(); }
-
-/* --- CRUD --- */
 function yanlisKaydet() {
-  const t = yanlisTaslak, konu = t.konu.trim(), url = t.url.trim();
-  if (!konu) return alert('Konuyu yaz. Örn: Türev');
-  if (url && !/^(https?:\/\/|data:image\/)/i.test(url)) return alert('Görsel linki http(s):// ile başlamalı.');
-  if (!t.not.trim() && !t.foto && !url) return alert('En az bir not ya da görsel ekle.');
-  S.yanlislar.push({id:yeniId(), tarih:bugun(), ders:t.ders, konu:konu, soruNotu:t.not.trim(), fotoUrl:t.foto || url, cozuldu:false});
-  try { kaydet(); } catch (e) {   // localStorage dolduysa geri al
-    S.yanlislar.pop();
-    return alert('Kayıt alanı doldu. Daha küçük fotoğraf kullan ya da çözülen soruları sil.');
-  }
-  yanlisTaslak = {ders:t.ders, konu:'', not:'', url:'', foto:''};
+  const t = yanlisTaslak, konu = t.konu.trim();
+  if (!konu) return alert('Konuyu yaz.');
+  S.yanlislar.push({id:yeniId(), tarih:bugun(), ders:t.ders, konu:konu, soruNotu:t.not.trim(), fotoUrl:t.foto, cozuldu:false});
+  kaydet();
+  yanlisTaslak = {ders:t.ders, konu:'', not:'', foto:''};
   yanlisFormAcik = false;
-  ekranCiz(); bildir('Kaydedildi ✓');
+  ekranCiz(); bildir('Depoya eklendi ✓');
 }
-
 function yanlisSil(id) {
-  if (!confirm('Bu soru silinsin mi?')) return;
+  if (!confirm('Silinsin mi?')) return;
   S.yanlislar = S.yanlislar.filter(x => x.id !== id);
-  if (yanlisPop && yanlisPop.id === id) yanlisPop = null;
   kaydet(); ekranCiz();
 }
-
-/* Çözüldü işareti: çözülenler Arşiv'e düşer, tekrar tikleyince geri gelir */
 function yanlisDurumTogle(id) {
   const x = S.yanlislar.find(q => q.id === id);
   if (!x) return;
   x.cozuldu = !x.cozuldu;
-  if (x.cozuldu) { x.cozulduTarih = bugun(); if (yanlisPop && yanlisPop.id === id) yanlisPop = null; }
-  else delete x.cozulduTarih;
   kaydet(); ekranCiz();
 }
+function yanlislarEkrani() {
+  const cozulmeyenler = S.yanlislar.filter(x => !x.cozuldu);
+  const cozulenler = S.yanlislar.filter(x => x.cozuldu);
 
-/* --- Filtre --- */
-function yanlisFiltreDegistir(k, v) {
-  yanlisFiltre[k] = v;
-  if (k === 'ders') yanlisFiltre.konu = '';
-  ekranCiz();
-}
-function yanlisSekme(arsiv) { yanlisFiltre.arsiv = arsiv; ekranCiz(); }
-function yanlisListe() {
-  const f = yanlisFiltre;
-  return S.yanlislar
-    .filter(x => !!x.cozuldu === f.arsiv && (!f.ders || x.ders === f.ders) && (!f.konu || x.konu === f.konu))
-    .sort((a, b) => a.tarih < b.tarih ? 1 : a.tarih > b.tarih ? -1 : 0);
-}
+  const listeHtml = (liste, baslik) => {
+    if (!liste.length) return '';
+    return '<h3 class="gun">' + baslik + '</h3>' + liste.map(y =>
+      '<div class="gorev' + (y.cozuldu ? ' bitti' : '') + '">' +
+      '<label class="tikalan"><input type="checkbox"' + (y.cozuldu ? ' checked' : '') + ' onchange="yanlisDurumTogle(\'' + y.id + '\')"></label>' +
+      '<div class="gmetin"><b>' + esc(y.ders) + ' - ' + esc(y.konu) + '</b><br><span class="soluk">' + esc(y.soruNotu || 'Not yok') + '</span>' +
+      (y.fotoUrl ? '<img class="yFoto" alt="" src="' + y.fotoUrl + '">' : '') + '</div>' +
+      '<button class="sil" onclick="yanlisSil(\'' + y.id + '\')">✕</button></div>'
+    ).join('');
+  };
 
-/* --- Pop-quiz: çözülmemişlerden rastgele (aktif ders/konu filtresine uyar) --- */
-function rastgeleSoruGetir() {
-  const f = yanlisFiltre;
-  let havuz = S.yanlislar.filter(x => !x.cozuldu && (!f.ders || x.ders === f.ders) && (!f.konu || x.konu === f.konu));
-  if (!havuz.length) return alert('Çözülmemiş yanlış soru yok (filtreyi de kontrol et).');
-  if (havuz.length > 1 && yanlisPop) havuz = havuz.filter(x => x.id !== yanlisPop.id);
-  yanlisPop = {id: havuz[Math.floor(Math.random() * havuz.length)].id, notAcik: false};
-  ekranCiz();
-  document.getElementById('icerik').scrollTop = 0;
-}
-function yanlisPopNot() { if (yanlisPop) { yanlisPop.notAcik = true; ekranCiz(); } }
-function yanlisPopKapat() { yanlisPop = null; ekranCiz(); }
+  const form = yanlisFormAcik ? kart('Yeni Yanlış Soru',
+    '<label class="alan">Ders<select onchange="yanlisTaslak.ders=this.value">' + DERSLER.map(d => '<option' + (d === yanlisTaslak.ders ? ' selected' : '') + '>' + d + '</option>').join('') + '</select></label>' +
+    '<label class="alan">Konu<input type="text" placeholder="Örn: Türev" value="' + esc(yanlisTaslak.konu) + '" oninput="yanlisTaslak.konu=this.value"></label>' +
+    '<label class="alan">Not<textarea placeholder="Neden yanlış yaptın?" oninput="yanlisTaslak.not=this.value">' + esc(yanlisTaslak.not) + '</textarea></label>' +
+    '<button class="btn ikincil" onclick="document.getElementById(\'fSec\').click()">📷 Fotoğraf Ekle</button>' +
+    '<input type="file" id="fSec" accept="image/*" hidden onchange="yanlisFotoSec(this)">' +
+    (yanlisTaslak.foto ? '<img class="yFoto" src="' + yanlisTaslak.foto + '"><button class="btn ikincil" onclick="yanlisFotoKaldir()">Fotoğrafı Kaldır</button>' : '') +
+    '<button class="btn" onclick="yanlisKaydet()">Depoya Kaydet</button>' +
+    '<button class="btn ikincil" onclick="yanlisFormAcik=false;ekranCiz()">Vazgeç</button>'
+  ) : '<button class="btn" onclick="yanlisFormAcik=true;ekranCiz()">＋ Yanlış Soru Ekle</button>';
 
-/* Ecoli AI için özet metin (çözülmemişler, konuya göre gruplu) */
+  const icerik = S.yanlislar.length ? listeHtml(cozulmeyenler, 'Çözülmeyi Bekleyenler') + listeHtml(cozulenler, 'Çözülenler (Arşiv)')
+    : '<p class="soluk">Henüz depoda yanlış soru yok.</p>';
+
+  return kart('Yanlış Soru Deposu', icerik) + form;
+}
 function yanlisOzetMetni() {
   const l = S.yanlislar.filter(x => !x.cozuldu);
   if (!l.length) return '';
-  const g = {};
-  l.forEach(x => { const a = x.ders + ' - ' + x.konu; (g[a] = g[a] || []).push(x.soruNotu || '(not yok)'); });
-  const s = ['YANLIŞ SORU DEPOM (çözülmemiş ' + l.length + ' soru):'];
-  Object.entries(g).sort((a, b) => b[1].length - a[1].length)
-    .forEach(e => s.push('- ' + e[0] + ': ' + e[1].length + ' soru. Notlarım: ' + e[1].slice(0, 3).join(' / ')));
-  s.push('', 'Bu yanlışlardan zayıf konularımı ve hata kalıplarımı çıkar, öncelik sırasıyla ne çalışmam gerektiğini söyle.');
-  return s.join('\n');
+  return 'Çözülmemiş yanlışlarım:\n' + l.map(x => '- ' + x.ders + ' / ' + x.konu + ': ' + (x.soruNotu || 'not yok')).join('\n');
 }
 
-/* --- Ekran parçaları --- */
-function yanlisKonuOner(ders) {
-  const s = new Set();
-  MUF.filter(m => m.ders === ders).forEach(m => m.konular.forEach(k => s.add(k)));
-  S.yanlislar.filter(x => x.ders === ders).forEach(x => s.add(x.konu));
-  return [...s].sort((a, b) => a.localeCompare(b, 'tr'));
-}
-
-function yanlisKart(x) {
-  return '<div class="gorev' + (x.cozuldu ? ' bitti' : '') + '">' +
-    '<label class="tikalan"><input type="checkbox" title="Çözüldü"' + (x.cozuldu ? ' checked' : '') + ' onchange="yanlisDurumTogle(\'' + x.id + '\')"></label>' +
-    '<div class="gmetin"><b>' + esc(x.ders) + ' · ' + esc(x.konu) + '</b><br><span class="soluk">' + gunAdi(x.tarih) + '</span>' +
-    (x.soruNotu ? '<br>' + esc(x.soruNotu) : '') +
-    (x.fotoUrl ? '<img class="yFoto" alt="" src="' + esc(x.fotoUrl) + '">' : '') + '</div>' +
-    '<button class="sil" aria-label="Sil" onclick="yanlisSil(\'' + x.id + '\')">✕</button></div>';
-}
-
-function yanlisPopKart() {
-  if (!yanlisPop) return '';
-  const x = S.yanlislar.find(q => q.id === yanlisPop.id);
-  if (!x) { yanlisPop = null; return ''; }
-  return kart('🎲 Pop-quiz: ' + esc(x.ders) + ' · ' + esc(x.konu),
-    (x.fotoUrl ? '<img class="yFoto" alt="" src="' + esc(x.fotoUrl) + '">' : '<p class="soluk">Bu sorunun görseli yok.</p>') +
-    '<p class="soluk">Önce soruyu kendin çöz, sonra notuna bak.</p>' +
-    (yanlisPop.notAcik ? '<p>' + (x.soruNotu ? esc(x.soruNotu) : 'Not yazmamışsın.') + '</p>'
-      : '<button class="btn ikincil" onclick="yanlisPopNot()">Notumu göster</button>') +
-    '<div class="ikili"><button class="btn" onclick="yanlisDurumTogle(\'' + x.id + '\')">✓ Çözdüm</button>' +
-    '<button class="btn ikincil" onclick="rastgeleSoruGetir()">Sonraki 🎲</button></div>' +
-    '<button class="btn ikincil" onclick="yanlisPopKapat()">Kapat</button>');
-}
-
-function yanlisFormKart() {
-  if (!yanlisFormAcik) return '<button class="btn" onclick="yanlisFormToggle()">＋ Yanlış soru ekle</button>';
-  const t = yanlisTaslak;
-  const dersler = DERSLER.map(d => '<option' + (d === t.ders ? ' selected' : '') + '>' + d + '</option>').join('');
-  return kart('Yanlış soru ekle',
-    '<label class="alan">Ders<select onchange="yanlisDersDegis(this.value)">' + dersler + '</select></label>' +
-    '<datalist id="yKonuListe">' + yanlisKonuOner(t.ders).map(k => '<option value="' + esc(k) + '">').join('') + '</datalist>' +
-    '<label class="alan">Konu<input type="text" list="yKonuListe" placeholder="Örn: Türev" value="' + esc(t.konu) + '" oninput="yanlisAlan(\'konu\',this.value)"></label>' +
-    '<label class="alan">Neden yanlış yaptım? (not)<textarea oninput="yanlisAlan(\'not\',this.value)" placeholder="Örn: Limit tanımını karıştırdım">' + esc(t.not) + '</textarea></label>' +
-    '<button class="btn ikincil" onclick="document.getElementById(\'yDosya\').click()">📷 Fotoğraf ekle</button>' +
-    '<input type="file" id="yDosya" accept="image/*" hidden onchange="yanlisFotoSec(this)">' +
-    (t.foto ? '<img class="yFoto" alt="" src="' + t.foto + '"><button class="btn ikincil" onclick="yanlisFotoKaldir()">Fotoğrafı kaldır</button>'
-      : '<label class="alan">veya görsel linki<input type="url" placeholder="https://..." value="' + esc(t.url) + '" oninput="yanlisAlan(\'url\',this.value)"></label>') +
-    '<button class="btn" onclick="yanlisKaydet()">Kaydet</button>' +
-    '<button class="btn ikincil" onclick="yanlisFormToggle()">Vazgeç</button>');
-}
-
-function yanlislarEkrani() {
-  const f = yanlisFiltre;
-  const aktifSay = S.yanlislar.filter(x => !x.cozuldu).length, arsivSay = S.yanlislar.length - aktifSay;
-  const konular = [...new Set(S.yanlislar.filter(x => !f.ders || x.ders === f.ders).map(x => x.konu))].sort((a, b) => a.localeCompare(b, 'tr'));
-  const sec = (liste, v, bos) => '<option value="">' + bos + '</option>' +
-    liste.map(x => '<option' + (x === v ? ' selected' : '') + '>' + esc(x) + '</option>').join('');
-
-  const ust = '<button class="btn" style="margin:0 0 12px" onclick="rastgeleSoruGetir()">🎲 Rastgele soru getir (' + aktifSay + ')</button>';
-  const alt = '<div class="alt"><button class="' + (f.arsiv ? '' : 'aktif') + '" onclick="yanlisSekme(false)">Çözülmemiş (' + aktifSay + ')</button>' +
-    '<button class="' + (f.arsiv ? 'aktif' : '') + '" onclick="yanlisSekme(true)">Arşiv (' + arsivSay + ')</button></div>';
-  const filtre = kart('Filtre',
-    '<label class="alan">Ders<select onchange="yanlisFiltreDegistir(\'ders\',this.value)">' + sec(DERSLER, f.ders, 'Tüm dersler') + '</select></label>' +
-    '<label class="alan">Konu<select onchange="yanlisFiltreDegistir(\'konu\',this.value)">' + sec(konular, f.konu, 'Tüm konular') + '</select></label>');
-  const liste = yanlisListe();
-  const kartlar = kart((f.arsiv ? 'Arşiv' : 'Çözülmemiş sorular') + ' (' + liste.length + ')',
-    liste.length ? liste.map(yanlisKart).join('') + (f.arsiv ? '' : '<p class="soluk">Çözdüğünde kutuyu işaretle, soru arşive düşer.</p>')
-      : '<p class="soluk">' + (f.arsiv ? 'Arşivde soru yok.' : 'Burada soru yok. Aşağıdan yanlış yaptığın bir soruyu ekle.') + '</p>');
-
-  return ust + yanlisPopKart() + alt + filtre + kartlar + yanlisFormKart();
-}
-
-/* ===== TYT / AYT KONU TAKİP MATRİSİ ===== */
-// [sınav, ders, 'konu1|konu2|...']
+/* ===== KONU TAKİP MATRİSİ ===== */
 const MUF = [
-  ['TYT','Türkçe','Sözcükte Anlam|Cümlede Anlam|Paragraf|Ses Bilgisi|Yazım Kuralları|Noktalama İşaretleri|Sözcük Türleri|Fiiller ve Fiilimsiler|Cümlenin Ögeleri|Cümle Türleri|Anlatım Bozukluğu|Sözcükte Yapı'],
-  ['TYT','Matematik','Temel Kavramlar|Sayı Basamakları|Bölme ve Bölünebilme|EBOB-EKOK|Rasyonel Sayılar|Basit Eşitsizlikler|Mutlak Değer|Üslü Sayılar|Köklü Sayılar|Çarpanlara Ayırma|Oran-Orantı|Denklem Çözme|Problemler|Kümeler|Fonksiyonlar|Permütasyon-Kombinasyon-Olasılık|Veri ve İstatistik'],
-  ['TYT','Geometri','Temel Kavramlar ve Doğruda Açılar|Üçgende Açılar|Dik ve Özel Üçgenler|Açıortay-Kenarortay|Üçgende Alan ve Benzerlik|Çokgenler|Dörtgenler|Çember ve Daire|Analitik Geometri|Katı Cisimler'],
-  ['TYT','Fizik','Fizik Bilimine Giriş|Madde ve Özellikleri|Hareket ve Kuvvet|İş-Güç-Enerji|Isı-Sıcaklık-Genleşme|Basınç|Kaldırma Kuvveti|Elektrostatik|Elektrik Akımı ve Devreler|Manyetizma|Dalgalar|Optik'],
-  ['TYT','Kimya','Kimya Bilimi|Atom ve Periyodik Sistem|Kimyasal Türler Arası Etkileşimler|Maddenin Halleri|Kimyanın Temel Kanunları|Mol Kavramı|Kimyasal Hesaplamalar|Karışımlar|Asitler-Bazlar-Tuzlar|Kimya Her Yerde'],
-  ['TYT','Biyoloji','Canlıların Ortak Özellikleri|Canlıların Temel Bileşenleri|Hücre ve Organeller|Madde Geçişleri|Canlıların Sınıflandırılması|Hücre Bölünmeleri|Kalıtım|Ekosistem Ekolojisi'],
-  ['TYT','Tarih','Tarih ve Zaman|İlk ve Orta Çağlarda Türk Dünyası|İslam Medeniyetinin Doğuşu|İlk Türk-İslam Devletleri|Osmanlı Kuruluş ve Yükselme|Osmanlı Dünya Gücü|Değişim Çağı|Osmanlı Dağılma ve Yenileşme|Milli Mücadele|Atatürk İlke ve İnkılapları'],
-  ['TYT','Coğrafya','Doğa ve İnsan|Dünya\'nın Şekli ve Hareketleri|Harita Bilgisi|İklim Bilgisi|Yerin Şekillenmesi|Su-Toprak-Bitki|Nüfus ve Yerleşme|Ekonomik Faaliyetler|Bölgeler ve Ülkeler|Doğal Afetler'],
-  ['TYT','Felsefe','Felsefenin Konusu|Bilgi Felsefesi|Varlık Felsefesi|Ahlak Felsefesi|Siyaset Felsefesi|Sanat Felsefesi|Din Felsefesi|Bilim Felsefesi'],
-  ['TYT','Din Kültürü','İnanç|İbadet|Ahlak ve Değerler|Hz. Muhammed\'in Hayatı|Vahiy ve Akıl|Yaşayan Dinler|Din ve Hayat'],
-  ['AYT','Matematik','Polinomlar|İkinci Dereceden Denklemler|Karmaşık Sayılar|Parabol|Eşitsizlikler ve Mutlak Değer|Logaritma|Diziler|Trigonometri|Limit|Türev|İntegral|Binom ve Olasılık'],
-  ['AYT','Geometri','Üçgenler|Çokgenler ve Dörtgenler|Çember ve Daire|Analitik Geometri|Çemberin Analitik İncelenmesi|Katı Cisimler'],
-  ['AYT','Fizik','Vektörler|Bağıl Hareket|Newton\'un Hareket Yasaları|İki Boyutta Hareket|Enerji ve Hareket|İtme ve Momentum|Tork ve Denge|Elektriksel Kuvvet ve Alan|Elektriksel Potansiyel ve Sığa|Manyetizma ve İndüksiyon|Alternatif Akım ve Transformatör|Çembersel Hareket|Kütle Çekim ve Kepler|Basit Harmonik Hareket|Dalga Mekaniği|Modern Fizik'],
-  ['AYT','Kimya','Modern Atom Teorisi|Gazlar|Sıvı Çözeltiler|Kimyasal Tepkimelerde Enerji|Kimyasal Tepkimelerde Hız|Kimyasal Denge|Asit-Baz Dengesi|Çözünürlük Dengesi|Kimya ve Elektrik|Karbon Kimyasına Giriş|Organik Bileşikler'],
-  ['AYT','Biyoloji','Sinir Sistemi|Endokrin Sistem|Duyu Organları|Destek ve Hareket Sistemi|Sindirim Sistemi|Dolaşım Sistemi|Solunum Sistemi|Boşaltım Sistemi|Üreme ve Embriyonik Gelişim|Komünite ve Popülasyon Ekolojisi|Genden Proteine|Biyoteknoloji|Fotosentez-Kemosentez|Hücresel Solunum|Bitki Biyolojisi'],
-  ['AYT','Edebiyat','Güzel Sanatlar ve Edebiyat|Şiir Bilgisi|Edebi Sanatlar|İslamiyet Öncesi ve Geçiş Dönemi|Halk Edebiyatı|Divan Edebiyatı|Tanzimat Edebiyatı|Servet-i Fünun ve Fecr-i Ati|Milli Edebiyat|Cumhuriyet Dönemi Şiir|Cumhuriyet Dönemi Roman ve Hikâye|Edebi Akımlar|Dünya Edebiyatı'],
-  ['AYT','Tarih','Osmanlı Kuruluş ve Yükselme|Osmanlı Kültür ve Medeniyeti|XVII. Yüzyıl|XVIII. Yüzyıl|XIX. Yüzyıl|XX. Yüzyıl Başı|I. Dünya Savaşı|Milli Mücadele|Atatürkçülük ve İnkılaplar|İki Savaş Arası Dönem|II. Dünya Savaşı|Soğuk Savaş ve Sonrası'],
-  ['AYT','Coğrafya','Ekosistem ve Biyoçeşitlilik|Nüfus Politikaları|Türkiye\'de Nüfus|Şehirlerin Fonksiyonları|Tarım ve Hayvancılık|Madenler ve Enerji|Ulaşım ve Ticaret|Turizm|Bölgesel Kalkınma|Çevre ve Doğal Kaynaklar|Jeopolitik'],
-  ['AYT','Felsefe','Felsefenin Alanı|MÖ 6. yy - MS 2. yy Felsefesi|MS 2 - 15. yy Felsefesi|15 - 17. yy Felsefesi|18 - 19. yy Felsefesi|20. yy Felsefesi|Mantık|Psikoloji|Sosyoloji'],
-  ['AYT','Din Kültürü','Dünya ve Ahiret|Kur\'an\'a Göre Hz. Muhammed|Kur\'an\'da Bazı Kavramlar|İnançla İlgili Meseleler|Yahudilik ve Hristiyanlık|İslam ve Bilim|Anadolu\'da İslam|Çağdaş Sorunlar']
+  ['TYT','Türkçe','Sözcükte Anlam|Cümlede Anlam|Paragraf|Ses Bilgisi|Yazım Kuralları|Noktalama İşaretleri|Sözcük Türleri|Fiiller|Cümlenin Ögeleri'],
+  ['TYT','Matematik','Temel Kavramlar|Sayı Basamakları|EBOB-EKOK|Rasyonel Sayılar|Basit Eşitsizlikler|Mutlak Değer|Üslü Sayılar|Köklü Sayılar|Çarpanlara Ayırma|Problemler|Kümeler|Fonksiyonlar|Olasılık'],
+  ['TYT','Geometri','Doğruda Açılar|Üçgende Açılar|Özel Üçgenler|Üçgende Alan ve Benzerlik|Dörtgenler|Çember ve Daire|Analitik Geometri|Katı Cisimler'],
+  ['TYT','Fizik','Madde ve Özellikleri|Hareket ve Kuvvet|İş-Güç-Enerji|Isı ve Sıcaklık|Basınç|Kaldırma Kuvveti|Elektrik|Manyetizma|Dalgalar|Optik'],
+  ['TYT','Kimya','Kimya Bilimi|Atom ve Periyodik Sistem|Kimyasal Türler|Maddenin Halleri|Mol Kavramı|Kimyasal Hesaplamalar|Karışımlar|Asitler-Bazlar-Tuzlar'],
+  ['TYT','Biyoloji','Canlıların Ortak Özellikleri|Temel Bileşenler|Hücre|Madde Geçişleri|Sınıflandırma|Bölünmeler|Kalıtım|Ekoloji'],
+  ['AYT','Matematik','Polinomlar|İkinci Dereceden Denklemler|Karmaşık Sayılar|Parabol|Logaritma|Diziler|Trigonometri|Limit|Türev|İntegral'],
+  ['AYT','Fizik','Bağıl Hareket|Newton Yasaları|Momentum|Denge|Elektrik Alan|Manyetizma|Çembersel Hareket|Basit Harmonik|Modern Fizik'],
+  ['AYT','Kimya','Modern Atom Teorisi|Gazlar|Sıvı Çözeltiler|Entalpi|Hız|Denge|Asit-Baz Dengesi|Elektrokimya|Organik Kimya'],
+  ['AYT','Biyoloji','Sinir Sistemi|Endokrin|Duyu Organları|Destek-Hareket|Sindirim|Dolaşım|Solunum|Üreme|Genden Proteine|Fotosentez|Solunum']
 ].map(m => ({tur: m[0], ders: m[1], konular: m[2].split('|')}));
 
-const KONU_DURUM = ['Çalışılmadı', 'Konu Bitti', 'Tekrar/Soru ✓'];   // 0 kırmızı, 1 sarı, 2 yeşil
+const KONU_DURUM = ['Çalışılmadı', 'Konu Bitti', 'Tekrar/Soru ✓'];
 let konuTur = 'TYT';
-let konuAcik = -1;   // açık olan dersin MUF indeksi
+let konuAcik = -1;
 
 function konuAnahtar(m, k) { return m.tur + '|' + m.ders + '|' + k; }
-
-/* Dokununca durum döner: 0 → 1 → 2 → 0 (0 ise kayıt silinir) */
 function konuDurumDegis(i, j) {
   const m = MUF[i], a = konuAnahtar(m, m.konular[j]);
   const n = ((S.konuTakip[a] || 0) + 1) % 3;
@@ -1245,8 +698,6 @@ function konuDurumDegis(i, j) {
 }
 function konuAc(i) { konuAcik = konuAcik === i ? -1 : i; ekranCiz(); }
 function konuTurDegis(t) { konuTur = t; konuAcik = -1; ekranCiz(); }
-
-/* Ders durumu: yeşil = 1 puan, sarı = 0.5 puan; yüzde = puan / konu sayısı */
 function konuSay(m) {
   const s = [0, 0, 0];
   m.konular.forEach(k => s[S.konuTakip[konuAnahtar(m, k)] || 0]++);
@@ -1260,14 +711,12 @@ function konuTakipEkrani() {
   let puan = 0, say = 0;
   liste.forEach(x => { puan += konuPuan(konuSay(x.m)); say += x.m.konular.length; });
   const genel = say ? Math.round(puan / say * 100) : 0;
-
   const alt = '<div class="alt">' + ['TYT', 'AYT'].map(t =>
     '<button class="' + (konuTur === t ? 'aktif' : '') + '" onclick="konuTurDegis(\'' + t + '\')">' + t + '</button>').join('') + '</div>';
 
   const ust = kart('Konu takip · ' + konuTur,
     '<div class="satir"><div class="sayi">%' + genel + '</div><div class="soluk">genel ilerleme</div></div>' +
     '<div class="cubuk"><div style="width:' + genel + '%"></div></div>' +
-    '<p class="soluk">Konuya dokun: <span style="color:var(--kirmizi)">Çalışılmadı</span> → <span style="color:var(--sari)">Konu Bitti</span> → <span style="color:var(--yesil)">Tekrar/Soru ✓</span>. Yeşil tam, sarı yarım puan sayılır.</p>' +
     '<button class="btn ikincil" onclick="tabGit(\'hedefler\')">← Hedeflere dön</button>');
 
   const dersler = liste.map(x => {
@@ -1285,8 +734,229 @@ function konuTakipEkrani() {
   }).join('');
 
   return alt + ust + dersler;
-}    
-  
+}
+
+/* ===== HAFTALIK GÜNCELLEME VE ANALİZ ===== */
+const TYT_DERS = [['turkce','Türkçe',40],['sosyal','Sosyal Bilimler',20],['mat','Temel Matematik',40],['fen','Fen Bilimleri',20]];
+const AYT_DERS = {
+  'SAY':[['mat','Matematik',40],['fizik','Fizik',14],['kimya','Kimya',13],['biyo','Biyoloji',13]],
+  'EA':[['mat','Matematik',40],['edeb','Edebiyat',24],['tar1','Tarih-1',10],['cog1','Coğrafya-1',6]],
+  'SÖZ':[['edeb','Edebiyat',24],['tar1','Tarih-1',10],['cog1','Coğrafya-1',6],['tar2','Tarih-2',11],['cog2','Coğrafya-2',11]],
+  'DİL':[['dil','Yabancı Dil',80]]
+};
+let haftaSecili = haftaBasi();
+let haftaAlt = 'form';
+function haftaBul(m) { return S.haftalar.find(h => h.hafta === m); }
+function netToplam(o) {
+  let t = 0, var_ = false;
+  Object.values(o || {}).forEach(x => { if (typeof x === 'number') { t += x; var_ = true; } });
+  return var_ ? t : null;
+}
+function netYaz(n) { return n === null ? '-' : String(Math.round(n * 100) / 100).replace('.', ','); }
+function haftaFormu() {
+  const m = haftaBul(haftaSecili), alan = (m && m.alan) || S.profil.alan || 'SAY';
+  const girdiler = (on, liste, veri) => liste.map(d =>
+    '<label class="alan">' + d[1] + '<input type="number" id="' + on + d[0] + '" step="0.25" value="' + (veri && typeof veri[d[0]] === 'number' ? veri[d[0]] : '') + '"></label>').join('');
+  return kart('Hafta Deneme Kaydı',
+    '<label class="alan">Hafta başlangıcı (Pazartesi)<input type="date" id="h_tarih" value="' + haftaSecili + '" onchange="haftaSecili=this.value;ekranCiz()"></label>') +
+    kart('TYT Netleri', girdiler('n_tyt_', TYT_DERS, m && m.tyt)) +
+    kart('AYT Netleri (' + alan + ')', girdiler('n_ayt_', AYT_DERS[alan] || [], m && m.ayt) +
+    '<button class="btn" style="margin-top:14px" onclick="haftaKaydet()">Kaydet</button>');
+}
+function haftaKaydet() {
+  const alan = S.profil.alan || 'SAY', al = id => document.getElementById(id).value.trim();
+  const oku = (on, liste) => {
+    const o = {};
+    for (const d of liste) { const n = parseFloat(al(on + d[0])); if (!isNaN(n)) o[d[0]] = n; }
+    return o;
+  };
+  const kayit = {hafta:haftaSecili, alan:alan, tyt:oku('n_tyt_', TYT_DERS), ayt:oku('n_ayt_', AYT_DERS[alan] || []), zorKonular:al('h_zor')};
+  const i = S.haftalar.findIndex(h => h.hafta === haftaSecili);
+  if (i >= 0) S.haftalar[i] = kayit; else S.haftalar.push(kayit);
+  kaydet(); ekranCiz(); bildir('Hafta kaydedildi ✓');
+}
+function haftalikEkrani() {
+  const alt = '<div class="alt"><button class="' + (haftaAlt === 'form' ? 'aktif' : '') + '" onclick="haftaAlt=\'form\';ekranCiz()">Güncelleme</button>' +
+    '<button class="' + (haftaAlt === 'analiz' ? 'aktif' : '') + '" onclick="haftaAlt=\'analiz\';ekranCiz()">Analiz</button></div>';
+  if (haftaAlt === 'form') return alt + haftaFormu();
+  const h = haftaBul(haftaSecili);
+  return alt + kart('Haftalık Özet', h ? '<p>TYT Net: ' + netYaz(netToplam(h.tyt)) + '<br>AYT Net: ' + netYaz(netToplam(h.ayt)) + '</p>' : '<p class="soluk">Bu hafta kayıt yok.</p>');
+}
+
+/* ===== HAFTALIK PROGRAM ===== */
+const GUN_ADLARI = ['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'];
+let programHafta = haftaBasi();
+function gunTarihi(m, i) { const d = tarihDon(m); d.setDate(d.getDate() + i); return tarihStr(d); }
+function programAl(m) { if (!S.program[m]) S.program[m] = [[], [], [], [], [], [], []]; return S.program[m]; }
+function programUygula() {
+  const idler = new Set();
+  Object.keys(S.program).forEach(m => {
+    S.program[m].forEach((liste, i) => {
+      const ds = gunTarihi(m, i);
+      liste.forEach(it => {
+        idler.add(it.id);
+        const g = S.gorevler.find(x => x.progId === it.id);
+        if (!g) S.gorevler.push({id:yeniId(), tarih:ds, metin:it.metin, kaynakId:null, videoNos:[], linkler:[], tur:'program', progId:it.id, bitti:false});
+        else if (!g.bitti) { g.tarih = ds; g.metin = it.metin; }
+      });
+    });
+  });
+  S.gorevler = S.gorevler.filter(g => g.tur !== 'program' || g.bitti || idler.has(g.progId));
+  kaydet();
+}
+function programEkle(i) {
+  const m = document.getElementById('pg_' + i).value.trim();
+  if (!m) return;
+  programAl(programHafta)[i].push({id:yeniId(), metin:m});
+  programUygula(); ekranCiz();
+}
+function programSil(i, id) {
+  const l = programAl(programHafta)[i];
+  const k = l.findIndex(x => x.id === id);
+  if (k >= 0) l.splice(k, 1);
+  programUygula(); ekranCiz();
+}
+function programEkrani() {
+  const m = programHafta, bg = bugun();
+  const ust = kart('Haftalık Program',
+    '<div class="ikili"><button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,-7);ekranCiz()">◀ Önceki</button>' +
+    '<button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,7);ekranCiz()">Sonraki ▶</button></div>' +
+    '<button class="btn ikincil" onclick="tabGit(\'gorevler\')" style="margin-top:10px">← Görevlere Dön</button>');
+  const gunler = GUN_ADLARI.map((ad, i) => {
+    const ds = gunTarihi(m, i), liste = (S.program[m] || [])[i] || [];
+    return kart(ad + (ds === bg ? ' (Bugün)' : ''),
+      liste.map(it => '<div class="kayit"><div>' + esc(it.metin) + '</div><button class="sil" onclick="programSil(' + i + ',\'' + it.id + '\')">✕</button></div>').join('') +
+      '<div class="ekleSatir"><input type="text" id="pg_' + i + '" placeholder="Örn: 40 soru" onkeydown="if(event.key===\'Enter\')programEkle(' + i + ')"><button class="btn" onclick="programEkle(' + i + ')">Ekle</button></div>');
+  }).join('');
+  return ust + gunler;
+}
+
+/* ===== ECOLI AI (SOHBET ASİSTANI) ===== */
+const DODO_SISTEM = "Sen YKS öğrencisi birinin kişisel eğitim koçusun. YKS (TYT/AYT) sistemine son derece hakimsin. Samimi, motivasyonu yüksek, net ve pratik öneriler verirsin. Kullanıcı sana deneme netlerini veya yanlış sorularını attığında nokta atışı zafiyet analizi yaparsın.";
+
+function dodoSistemMetni() {
+  const p = S.profil, b = [];
+  if (p.ad) b.push('Adı: ' + p.ad);
+  if (p.alan) b.push('Alanı: ' + p.alan);
+  if (p.universite || p.bolum) b.push('Hedefi: ' + [p.universite, p.bolum].filter(Boolean).join(' - '));
+  const kg = kalanGun();
+  if (kg !== null && kg >= 0) b.push('Sınava ' + kg + ' gün kaldı');
+  return DODO_SISTEM + (b.length ? '\nÖğrenci bilgisi: ' + b.join(', ') + '.' : '') + '\nYanıtları mobilde okunacak kadar kısa tut.';
+}
+
+function dodoBicim(t) {
+  return esc(t).replace(/^\s*[*-]\s+/gm, '• ').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+}
+
+function dodoSohbetEkrani() {
+  return '<div class="sohbetAlan" id="sohbetAlan"></div>' +
+    '<div class="sohbetCip">' +
+      '<button type="button" onclick="dodoHaftaAnaliz()">📊 Haftamı analiz et</button>' +
+      '<button type="button" onclick="dodoYanlisAnaliz()">❌ Yanlışlarımı yorumla</button>' +
+    '</div>' +
+    '<div class="sohbetGiris">' +
+      '<textarea id="sohbetGiris" placeholder="Netlerini ya da yanlış sorunu yaz..."></textarea>' +
+      '<button class="btn" type="button" onclick="dodoMesajGonder()">↑</button>' +
+    '</div>';
+}
+
+function dodoSohbetCiz(yaziyor, hata) {
+  const el = document.getElementById('sohbetAlan');
+  if (!el) return;
+  const l = dodoOku('dodo_sohbet', []);
+  let h = l.length ? '' : '<div class="bal ai">Selam! 🦤 Ben Ecoli, YKS koçun. Deneme netlerini ya da yanlışlarını yaz, birlikte eksikleri kapatalım.</div>';
+  h += l.map(x => '<div class="bal ' + (x.r === 'user' ? 'ben' : 'ai') + '">' + dodoBicim(x.g || x.t) + '</div>').join('');
+  if (yaziyor) h += '<div class="bal ai yaziyor">Ecoli yazıyor...</div>';
+  if (hata) h += '<div class="bal ai hata">' + esc(hata) + '</div>';
+  el.innerHTML = h;
+  el.scrollTop = el.scrollHeight;
+}
+
+const DODO_KEY = 'dodo_api_anahtari';
+const DODO_MODEL = 'gemini-3.8-flash';
+function dodoOku(k, v) { try { const x = localStorage.getItem(k); return x ? JSON.parse(x) : v; } catch (e) { return v; } }
+function dodoYaz(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function dodoAnahtar() { try { return localStorage.getItem(DODO_KEY) || ''; } catch (e) { return ''; } }
+function dodoModel() { return (dodoOku('dodo_ayar', {}).model || '').trim() || DODO_MODEL; }
+
+async function geminiIstek(icerikler, sistem) {
+  const anahtar = dodoAnahtar();
+  if (!anahtar) throw new Error('API anahtarı yok. Ayarlar sekmesinden Gemini API anahtarını ekle.');
+  const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(dodoModel()) + ':generateContent', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'x-goog-api-key': anahtar},
+    body: JSON.stringify({
+      systemInstruction: {parts: [{text: sistem}]},
+      contents: icerikler,
+      generationConfig: {temperature: 0.7}
+    })
+  });
+  if (!r.ok) throw new Error('API bağlantı hatası (' + r.status + '). Anahtarını kontrol et.');
+  const j = await r.json();
+  const metin = (j.candidates?.[0]?.content?.parts || []).map(x => x.text || '').join('');
+  if (!metin) throw new Error('Yapay zeka boş yanıt verdi.');
+  return metin;
+}
+
+let dodoMesgul = false;
+async function dodoMesajGonder(metin, gorunen) {
+  if (dodoMesgul) return;
+  const giris = document.getElementById('sohbetGiris');
+  const hazir = typeof metin === 'string';
+  const m = String(hazir ? metin : (giris ? giris.value : '')).trim();
+  if (!m) return;
+  const l = dodoOku('dodo_sohbet', []);
+  l.push({r: 'user', t: m, g: gorunen || '', z: Date.now()});
+  dodoYaz('dodo_sohbet', l.slice(-60));
+  if (giris && !hazir) giris.value = '';
+  dodoMesgul = true;
+  dodoSohbetCiz(true);
+  try {
+    const gecmis = l.slice(-20);
+    while (gecmis.length && gecmis[0].r !== 'user') gecmis.shift();
+    const yanit = await geminiIstek(gecmis.map(x => ({role: x.r, parts: [{text: x.t}]})), dodoSistemMetni());
+    const l2 = dodoOku('dodo_sohbet', []);
+    l2.push({r: 'model', t: yanit.trim(), z: Date.now()});
+    dodoYaz('dodo_sohbet', l2.slice(-60));
+    dodoSohbetCiz();
+  } catch (e) {
+    const l2 = dodoOku('dodo_sohbet', []); l2.pop();
+    dodoYaz('dodo_sohbet', l2);
+    if (giris && !hazir) giris.value = m;
+    dodoSohbetCiz(false, e.message);
+  } finally { dodoMesgul = false; }
+}
+
+function dodoHaftaAnaliz() {
+  const h = haftaBul(haftaBasi());
+  if (!h) return dodoSohbetCiz(false, 'Bu haftaya ait deneme kaydı girilmemiş.');
+  dodoMesajGonder('Bu haftaki TYT netim: ' + netYaz(netToplam(h.tyt)) + ', AYT netim: ' + netYaz(netToplam(h.ayt)) + '. Durumumu yorumla ve öneri ver.', '📊 Bu haftayı analiz et');
+}
+function dodoYanlisAnaliz() {
+  const m = yanlisOzetMetni();
+  if (!m) return dodoSohbetCiz(false, 'Yanlışlar sekmesinde çözülmemiş soru yok.');
+  dodoMesajGonder(m, '❌ Yanlışlarımı yorumla');
+}
+function dodoSohbetTemizle() {
+  if (!confirm('Sohbet geçmişi silinsin mi?')) return;
+  dodoYaz('dodo_sohbet', []);
+  dodoSohbetCiz();
+}
+
+function dodoAyarKarti() {
+  return kart('🦤 Ecoli AI (Gemini)',
+    '<label class="alan">Gemini API anahtarı<input type="password" id="d_key" value="' + esc(dodoAnahtar()) + '"></label>' +
+    '<label class="alan">Model adı<input type="text" id="d_model" value="' + esc(dodoModel()) + '"></label>' +
+    '<button class="btn" onclick="dodoAyarKaydet()">Kaydet</button>');
+}
+function dodoAyarKaydet() {
+  const k = document.getElementById('d_key').value.trim();
+  const m = document.getElementById('d_model').value.trim() || DODO_MODEL;
+  if (k) localStorage.setItem(DODO_KEY, k); else localStorage.removeItem(DODO_KEY);
+  dodoYaz('dodo_ayar', {model: m});
+  bildir('Kaydedildi ✓');
+}
+
 /* ===== SEKMELER ===== */
 const IK = p => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>';
 let animasyon = false;
@@ -1303,8 +973,7 @@ const TABLAR = [
 const EKRAN = {
   gorevler()  { return gorevlerEkrani(); },
   kaynaklar() {
-    const liste = S.kaynaklar.length ? S.kaynaklar.map(kaynakKart).join('')
-      : kart('Kaynaklarım', '<p class="soluk">Henüz kaynak yok. Aşağıdan ilk kaynağını ekle.</p>');
+    const liste = S.kaynaklar.length ? S.kaynaklar.map(kaynakKart).join('') : kart('Kaynaklarım', '<p class="soluk">Henüz kaynak yok.</p>');
     return liste + planOnizleme() + kaynakFormu();
   },
   sure()      { return sureEkrani(); },
@@ -1313,502 +982,41 @@ const EKRAN = {
   program()   { return programEkrani(); },
   yanlislar() { return yanlislarEkrani(); },
   konular()   { return konuTakipEkrani(); },
-  ayarlar() {
-    return dodoAyarKarti() + kart('Yedekleme',
-      '<p class="soluk">Verilerin sadece bu telefondaki tarayıcıda durur. Düzenli yedek al.</p>' +
-      '<button class="btn" onclick="yedekIndir()">Yedekle (JSON indir)</button>' +
-      '<button class="btn ikincil" onclick="document.getElementById(\'dosya\').click()">Yedeği yükle</button>' +
-      '<input type="file" id="dosya" accept=".json,application/json" hidden onchange="yedekYukle(this)">');
-  }
+  ayarlar()   { return dodoAyarKarti() + kart('Yedekleme', '<button class="btn" onclick="yedekIndir()">JSON İndir</button>'); }
 };
 
 let aktifTab = 'gorevler';
-
 function tabCiz() {
   document.getElementById('menu').innerHTML = TABLAR.map(t => {
-    const aktif = t.id === aktifTab ||
-      (aktifTab === 'program' && t.id === 'gorevler') ||
-      (aktifTab === 'konular' && t.id === 'hedefler');
-    return '<button class="' + (aktif ? 'aktif' : '') + '" onclick="tabGit(\'' + t.id + '\')">' +
-      '<span>' + t.ikon + '</span>' + t.ad + '</button>';
+    const aktif = t.id === aktifTab || (aktifTab === 'program' && t.id === 'gorevler') || (aktifTab === 'konular' && t.id === 'hedefler');
+    return '<button class="' + (aktif ? 'aktif' : '') + '" onclick="tabGit(\'' + t.id + '\')"><span>' + t.ikon + '</span>' + t.ad + '</button>';
   }).join('');
 }
-
 function ekranCiz() {
-  document.getElementById('icerik').innerHTML =
-    '<section class="sayfa acik' + (animasyon ? ' anim' : '') + '">' + EKRAN[aktifTab]() + '</section>';
-  if (aktifTab === 'haftalik' && haftaAlt === 'analiz') grafikCiz();
+  document.getElementById('icerik').innerHTML = '<section class="sayfa acik' + (animasyon ? ' anim' : '') + '">' + EKRAN[aktifTab]() + '</section>';
 }
-
 function tabGit(id) {
-  aktifTab = id;
-  animasyon = true;
-  tabCiz();
-  ekranCiz();
-  animasyon = false;
+  aktifTab = id; animasyon = true; tabCiz(); ekranCiz(); animasyon = false;
   document.getElementById('icerik').scrollTop = 0;
 }
 
-/* ===== YEDEK ===== */
 function yedekIndir() {
-  const blob = new Blob([JSON.stringify(Object.assign({}, S, {dodo: dodoYedekAl()}), null, 2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'yks-yedek-' + bugun() + '.json';
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'yks-yedek-' + bugun() + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
 }
 
-function yedekYukle(input) {
-  const f = input.files[0];
-  if (!f) return;
-  const r = new FileReader();
-  r.onload = () => {
-    try {
-      const veri = JSON.parse(r.result);
-      if (!veri || veri.surum !== 1) throw new Error('Geçersiz yedek');
-      if (!confirm('Şu anki verilerin silinip yedektekiler yüklenecek. Emin misin?')) return;
-            const dodoVeri = veri.dodo; delete veri.dodo;
-      S = Object.assign(varsayilan(), veri);
-      dodoYedekYukle(dodoVeri);
-      kaydet();
-      tabGit(aktifTab);
-      alert('Yedek yüklendi.');
-    } catch (e) {
-      alert('Bu dosya geçerli bir yedek değil.');
-    }
-  };
-  r.readAsText(f);
-  input.value = '';
-}
-
-/* ===== BAŞLAT ===== */
-document.getElementById('tarih').textContent =
-  new Date().toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long'});
-planYenile();
-programUygula();
-baslikGuncelle();
-tabGit('gorevler');
-
-/* ===== DODO AI: panel (Adım 1) ===== */
-let dodoSekme = 'analiz';
-
-/* Üstteki sekme şeridi artık tek bir "Sohbeti temizle" düğmesi */
-function dodoSekmeCiz() {
-  document.getElementById('dodoSek').innerHTML =
-    '<button type="button" onclick="dodoSohbetTemizle()">🗑 Sohbeti temizle</button>';
-}
-
-function dodoIcerikCiz() {
-  document.getElementById('dodoIcerik').innerHTML = dodoSohbetEkrani();
-  dodoSohbetCiz();
-}
+document.getElementById('tarih').textContent = new Date().toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long'});
+planYenile(); programUygula(); baslikGuncelle(); tabGit('gorevler');
 
 function dodoAc() {
   if (document.body.classList.contains('dodoAcik')) return;
-  dodoSekmeCiz();
-  dodoIcerikCiz();
-  document.body.classList.add('dodoAcik');
-  try { history.pushState({dodo: 1}, ''); } catch (e) {}
-}
-
-function dodoKapat(geriden) {
-  if (!document.body.classList.contains('dodoAcik')) return;
-  document.body.classList.remove('dodoAcik');
-  if (geriden !== true) { try { if (history.state && history.state.dodo) history.back(); } catch (e) {} }
-}
-
-window.addEventListener('popstate', () => dodoKapat(true));
-document.addEventListener('keydown', e => { if (e.key === 'Escape') dodoKapat(); });
-
-/* ===== DODO AI: ayar, API, analiz formu (Adım 2-3) ===== */
-const DODO_KEY = 'dodo_api_anahtari';
-const DODO_MODEL = 'gemini-3.8-flash';
-const DODO_YEDEK = ['dodo_analizler','dodo_konu_toplam','dodo_haftalik_ozet','dodo_sohbet','dodo_ayar'];
-const DODO_SIKLAR = ['','A','B','C','D','E'];
-
-function dodoOku(k, v) { try { const x = localStorage.getItem(k); return x ? JSON.parse(x) : v; } catch (e) { return v; } }
-function dodoYaz(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { bildir('Kayıt alanı dolu'); } }
-function dodoAnahtar() { try { return localStorage.getItem(DODO_KEY) || ''; } catch (e) { return ''; } }
-function dodoModel() { return (dodoOku('dodo_ayar', {}).model || '').trim() || DODO_MODEL; }
-
-/* Yedek: API anahtarı BİLEREK dışarıda */
-function dodoYedekAl() {
-  const o = {};
-  DODO_YEDEK.forEach(k => { const v = dodoOku(k, undefined); if (v !== undefined) o[k] = v; });
-  return o;
-}
-function dodoYedekYukle(o) {
-  if (!o || typeof o !== 'object') return;
-  DODO_YEDEK.forEach(k => { if (k in o) dodoYaz(k, o[k]); });
-}
-
-/* --- TEK API FONKSİYONU (Interactions API'ye geçerken sadece burayı değiştir) --- */
-function dodoHataMetni(d, m) {
-  const ek = m ? ' (' + String(m).slice(0, 150) + ')' : '';
-  if (d === 429) return 'Limit doldu (429). Biraz bekleyip tekrar dene.';
-  if (d === 400 || d === 403) return 'Geçersiz API anahtarı ya da izin yok (' + d + '). Ayarlar\'dan anahtarı kontrol et.' + ek;
-  if (d === 404) return 'Model bulunamadı (404). Ayarlar\'da model adını kontrol et, gemini-3.5-flash-lite dene.';
-  if (d >= 500) return 'Google sunucusunda geçici sorun (' + d + '). Biraz sonra tekrar dene.';
-  return 'Beklenmeyen hata (' + d + ').' + ek;
-}
-async function geminiIstek(icerikler, sistem) {
-  const anahtar = dodoAnahtar();
-  if (!anahtar) throw new Error('API anahtarı yok. Ayarlar sekmesinden Gemini API anahtarını ekle.');
-  if (!navigator.onLine) throw new Error('İnternet bağlantısı yok. Bağlanınca tekrar dene.');
-  let r;
-  try {
-    r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(dodoModel()) + ':generateContent', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json', 'x-goog-api-key': anahtar},
-      body: JSON.stringify({
-        systemInstruction: {parts: [{text: sistem}]},
-        contents: icerikler,   // [{role:'user'|'model', parts:[{text}]}] sohbet geçmişi
-        generationConfig: {temperature: 0.7}
-      })
-    });
-  } catch (e) { throw new Error('Google\'a ulaşılamadı. İnternetini kontrol et.'); }
-  if (!r.ok) {
-    let m = '';
-    try { const j = await r.json(); m = (j.error && j.error.message) || ''; } catch (e) {}
-    throw new Error(dodoHataMetni(r.status, m));
-  }
-  const j = await r.json();
-  const p = j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts;
-  const metin = (p || []).map(x => x.text || '').join('');
-  if (!metin) throw new Error('Yapay zeka boş yanıt verdi. Tekrar dene.');
-  return metin;
-}
-
-/* --- Ayarlar kartı --- */
-function dodoAyarKarti() {
-  return kart('🦤 Ecoli AI (Gemini)',
-    '<p class="soluk">API anahtarı sadece bu cihazda durur, yedeğe girmez.</p>' +
-    '<label class="alan" for="d_key">Gemini API anahtarı</label>' +
-    '<div class="ekleSatir"><input type="password" id="d_key" autocomplete="off" value="' + esc(dodoAnahtar()) + '">' +
-    '<button class="btn ikincil" type="button" aria-label="Göster/gizle" onclick="dodoGoster()">👁</button></div>' +
-    '<label class="alan">Model adı<input type="text" id="d_model" autocapitalize="off" spellcheck="false" value="' + esc(dodoModel()) + '"></label>' +
-    '<p class="soluk">Hata verirse gemini-3.5-flash-lite dene.</p>' +
-    '<button class="btn" onclick="dodoAyarKaydet()">Kaydet</button>' +
-    '<button class="btn ikincil" onclick="dodoTest()">Bağlantıyı test et</button>' +
-    '<p class="soluk" id="dodoTestSonuc" style="margin-top:10px"></p>');
-}
-function dodoGoster() { const e = document.getElementById('d_key'); e.type = e.type === 'password' ? 'text' : 'password'; }
-function dodoAyarKaydet(sessiz) {
-  const k = document.getElementById('d_key').value.trim();
-  const m = document.getElementById('d_model').value.trim() || DODO_MODEL;
-  if (/[^\x20-\x7e]/.test(k)) { alert('Anahtarda geçersiz karakter var. Tekrar kopyala.'); return false; }
-  try { if (k) localStorage.setItem(DODO_KEY, k); else localStorage.removeItem(DODO_KEY); } catch (e) {}
-  dodoYaz('dodo_ayar', Object.assign(dodoOku('dodo_ayar', {}), {model: m}));
-  if (sessiz !== true) bildir('Kaydedildi ✓');
-  return true;
-}
-async function dodoTest() {
-  if (!dodoAyarKaydet(true)) return;
-  const e = document.getElementById('dodoTestSonuc');
-  e.textContent = 'Test ediliyor...';
-  try {
-    await geminiIstek([{role: 'user', parts: [{text: 'Sadece "ok" yaz.'}]}], 'Çok kısa yanıt ver.');
-    e.textContent = '✓ Bağlantı çalışıyor (' + dodoModel() + ').';
-  } catch (x) { e.textContent = '✗ ' + x.message; }
-}
-
-/* --- Analiz formu (veriler dodoF'te durur, hata olunca silinmez) --- */
-let dodoF = {ad:'', tarih:bugun(), tur:'TYT', ders:'Matematik', d:'', y:'', b:'', sorular:[], anahtar:'', fotolar:[]};
-
-function dodoSayi(v) { const n = parseInt(v, 10); return isNaN(n) || n < 0 ? 0 : n; }
-function dodoNet() { return dodoSayi(dodoF.d) - dodoSayi(dodoF.y) / 4; }
-function dodoAlan(k, v) {
-  dodoF[k] = v;
-  if (k === 'd' || k === 'y' || k === 'b') { const e = document.getElementById('dodoNet'); if (e) e.textContent = netYaz(dodoNet()); }
-}
-function dodoMesaj(t, ok) {
-  const e = document.getElementById('dodoMesaj');
-  if (!e) return;
-  e.textContent = t; e.style.color = ok ? 'var(--yesil)' : 'var(--kirmizi)';
-}
-function dodoYenile() {
-  if (dodoSekme !== 'analiz') return;
-  const el = document.getElementById('dodoIcerik'), st = el.scrollTop;
-  el.innerHTML = '<div>' + dodoAnalizForm() + '</div>';
-  el.scrollTop = st;
-}
-function dodoKonular() {
-  const s = new Set(dodoOku('dodo_ayar', {}).konular || []);
-  Object.keys(dodoOku('dodo_konu_toplam', {})).forEach(k => s.add(k));
-  dodoF.sorular.forEach(x => { if (x.konu && x.konu.trim()) s.add(x.konu.trim()); });
-  return [...s].filter(Boolean).sort((a, b) => a.localeCompare(b, 'tr'));
-}
-function dodoSoruEkle() { dodoF.sorular.push({no:'', konu:'', isaret:'', dogru:'', durum:'yanlış'}); dodoYenile(); }
-function dodoSoruSil(i) { dodoF.sorular.splice(i, 1); dodoYenile(); }
-function dodoSoru(i, k, v) {
-  dodoF.sorular[i][k] = v;
-  if (k === 'durum') { if (v === 'boş') dodoF.sorular[i].isaret = ''; dodoYenile(); }
-}
-
-function dodoSoruSatir(x, i) {
-  const sec = (k, v, kapali) => '<select' + (kapali ? ' disabled' : '') + ' onchange="dodoSoru(' + i + ',\'' + k + '\',this.value)">' +
-    DODO_SIKLAR.map(s => '<option value="' + s + '"' + (s === v ? ' selected' : '') + '>' + (s || '-') + '</option>').join('') + '</select>';
-  const dur = '<select onchange="dodoSoru(' + i + ',\'durum\',this.value)"><option value="yanlış"' + (x.durum === 'yanlış' ? ' selected' : '') +
-    '>yanlış</option><option value="boş"' + (x.durum === 'boş' ? ' selected' : '') + '>boş</option></select>';
-  return '<div class="soruSatir"><div class="ikiGrid">' +
-    '<label class="alan">Soru no<input type="number" min="1" inputmode="numeric" value="' + esc(x.no) + '" oninput="dodoSoru(' + i + ',\'no\',this.value)"></label>' +
-    '<label class="alan">Durum' + dur + '</label></div>' +
-    '<label class="alan">Konu<input type="text" list="dodoKonuListe" placeholder="Örn: Türev" value="' + esc(x.konu) + '" oninput="dodoSoru(' + i + ',\'konu\',this.value)"></label>' +
-    '<div class="ikiGrid"><label class="alan">İşaretlediğim şık' + sec('isaret', x.isaret, x.durum === 'boş') + '</label>' +
-    '<label class="alan">Doğru şık' + sec('dogru', x.dogru) + '</label></div>' +
-    '<button class="btn ikincil" onclick="dodoSoruSil(' + i + ')">Satırı sil</button></div>';
-}
-
-/* Fotoğraf: uzun kenar 1600 px, JPEG base64 */
-function dodoFotoBoyut(f) {
-
-/* ===== DODO AI: analiz çağrısı ve hafıza (Adım 4-5) ===== */
-const DODO_SISTEM = "Sen Dodo'sun, bir YKS deneme analiz asistanısın. SADECE kullanıcının sana verdiği deneme verilerini, fotoğrafları ve kayıtlı geçmişi kullan. Veride olmayan hiçbir bilgiyi uydurma. Bir konuda 5'ten az soru varsa o konu için 'veri yetersiz' yaz, yüzde yorumu yapma. Genel, boş tavsiye verme: her önerin verideki somut bir konuya veya soruya dayanmalı. Fotoğraftaki bir şeyi okuyamazsan 'okunamadı' de, tahmin etme. Yanıtı SADECE geçerli JSON olarak ver, başka metin ekleme.";
-let dodoSonucHtml = '', dodoMesgul = false, dodoSon = null;
-
-/* --- Hafıza: dodo_analizler asıl kaynak, dodo_konu_toplam ondan yeniden kurulur --- */
-function dodoAnahtarId(a) { return a.ad + '|' + a.tarih + '|' + a.tur; }
-function dodoKonuKur(liste) {
-  const m = {};
-  liste.forEach(a => (a.konular || []).forEach(k => {
-    const o = m[k.konu] || (m[k.konu] = {dogru: 0, toplam: 0, deneme: 0});
-    o.toplam += k.toplam; o.deneme++;
-  }));
-  return m;
-}
-function dodoGecmisMap(haric) { return dodoKonuKur(dodoOku('dodo_analizler', []).filter(a => dodoAnahtarId(a) !== haric)); }
-function dodoZayifListe(map, n) {
-  return Object.entries(map).sort((a, b) => b[1].toplam - a[1].toplam || b[1].deneme - a[1].deneme).slice(0, n);
-}
-function dodoKaydet(k) {
-  const id = dodoAnahtarId(k);
-  const l = dodoOku('dodo_analizler', []).filter(a => dodoAnahtarId(a) !== id);
-  l.push(k);
-  const son = l.slice(-60);
-  dodoYaz('dodo_analizler', son);
-  dodoYaz('dodo_konu_toplam', dodoKonuKur(son));
-}
-
-/* --- Hesap (JavaScript) --- */
-function dodoKonuHesapla(v, gm) {
-  const m = {}, n = v.sorular.length;
-  v.sorular.forEach(s => {
-    const o = m[s.konu] || (m[s.konu] = {ders: v.ders, konu: s.konu, yanlis: 0, bos: 0, toplam: 0});
-    if (s.durum === 'boş') o.bos++; else o.yanlis++;
-    o.toplam++;
-  });
-  return Object.values(m).map(o => {
-    o.yuzde = Math.round(o.toplam / n * 100);
-    o.veriYeterli = (o.toplam + ((gm[o.konu] || {}).toplam || 0)) >= 5;
-    return o;
-  }).sort((a, b) => b.toplam - a.toplam);
-}
-
-/* --- Prompt (API ve kopyala modu aynı metni kullanır) --- */
-function dodoPromptMetni(v, konular, zayif) {
-  const s = [];
-  s.push('DENEME: ' + v.ad + ' (' + v.tarih + '), ' + v.tur + ' ' + v.ders);
-  s.push('Doğru ' + v.dogru + ', yanlış ' + v.yanlis + ', boş ' + v.bos + ', net ' + netYaz(v.net));
-  s.push('');
-  s.push('YANLIŞ/BOŞ SORULAR (soru no | konu | durum | işaretlediği şık | doğru şık):');
-  v.sorular.forEach(x => s.push(x.no + ' | ' + x.konu + ' | ' + x.durum + ' | ' + (x.isaret || '-') + ' | ' + (x.dogru || '-')));
-  if (v.anahtar) { s.push(''); s.push('CEVAP ANAHTARI: ' + v.anahtar); }
-  s.push('');
-  s.push('KONU SAYIMI (JavaScript hesapladı, yüzdeleri ve toplamları yeniden hesaplama):');
-  konular.forEach(k => s.push('- ' + k.konu + ': ' + k.toplam + ' hatalı soru (yanlış ' + k.yanlis + ', boş ' + k.bos + '), bu denemedeki hataların %' + k.yuzde + '\'i, geçmişle birlikte veri ' + (k.veriYeterli ? 'yeterli' : 'yetersiz')));
-  s.push('');
-  s.push('GEÇMİŞ (en zayıf 10 konu):');
-  if (zayif.length) zayif.forEach(z => s.push('- ' + z[0] + ': ' + z[1].toplam + ' hatalı soru, ' + z[1].deneme + ' denemede'));
-  else s.push('Geçmiş kayıt yok.');
-  if (v.fotolar.length) { s.push(''); s.push('Ekte ' + v.fotolar.length + ' fotoğraf var.'); }
-  s.push('');
-  s.push('İSTENEN JSON (konular alanını EKLEME, onu ben hesapladım; hataTurleri değerleri soru sayısıdır ve toplamı ' + (v.sorular.length) + '\'i geçmesin):');
-  s.push('{"denemeOzeti":"","eksikKavramlar":[{"konu":"","aciklama":"","hangiSorudan":""}],"hataTurleri":{"bilgiEksigi":0,"dikkatHatasi":0,"sureSorunu":0},"calismaOnerileri":["5 madde, her biri somut konu ve süre içersin"],"guvenilirlikNotu":""}');
-  return s.join('\n');
-}
-
-/* --- Yanıtı güvenle çöz --- */
-function dodoJsonCoz(t) {
-  t = String(t).trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
-  let o;
-  try { o = JSON.parse(t); } catch (e) {
-    const a = t.indexOf('{'), b = t.lastIndexOf('}');
-    if (a < 0 || b <= a) return null;
-    try { o = JSON.parse(t.slice(a, b + 1)); } catch (e2) { return null; }
-  }
-  if (!o || typeof o !== 'object' || Array.isArray(o)) return null;
-  const ht = o.hataTurleri || {}, say = x => Math.max(0, Math.round(+x || 0));
-  const r = {
-    denemeOzeti: String(o.denemeOzeti || ''),
-    eksikKavramlar: (Array.isArray(o.eksikKavramlar) ? o.eksikKavramlar : []).map(k => { k = k || {};
-      return {konu: String(k.konu || ''), aciklama: String(k.aciklama || ''), hangiSorudan: String(k.hangiSorudan || '')}; }),
-    hataTurleri: {bilgiEksigi: say(ht.bilgiEksigi), dikkatHatasi: say(ht.dikkatHatasi), sureSorunu: say(ht.sureSorunu)},
-    calismaOnerileri: (Array.isArray(o.calismaOnerileri) ? o.calismaOnerileri : []).map(String).slice(0, 5),
-    guvenilirlikNotu: String(o.guvenilirlikNotu || '')
-  };
-  return (r.denemeOzeti || r.calismaOnerileri.length) ? r : null;
-}
-
-/* --- Sonuç kartları --- */
-function dodoSonucKartlari(a) {
-  const r = a.sonuc, ks = a.konular || [], ht = r.hataTurleri;
-  const hm = ht.bilgiEksigi + ht.dikkatHatasi + ht.sureSorunu;
-  const ozet = kart('🦤 ' + esc(a.ad),
-    '<div class="satir"><div class="sayi">' + netYaz(a.net) + '</div><div class="soluk">net · D ' + a.dogru + ' Y ' + a.yanlis + ' B ' + a.bos + '</div></div>' +
-    '<p>' + esc(r.denemeOzeti) + '</p>');
-  const konu = kart('Konu bazında hatalar', ks.length ? ks.map(k =>
-    '<div class="toplam"><span>' + esc(k.konu) + '</span><b>' + k.toplam + ' soru (%' + k.yuzde + ')</b></div>' +
-    '<div class="cubuk"><div style="width:' + k.yuzde + '%"></div></div>' +
-    (k.veriYeterli ? '' : '<p class="soluk">veri yetersiz (5\'ten az soru)</p>')).join('') +
-    '<p class="soluk">Yüzde: bu denemedeki hatalı soruların içindeki konu payı.</p>' : '<p class="soluk">Konu yok.</p>');
-  const kav = r.eksikKavramlar.length ? kart('Eksik kavramlar', r.eksikKavramlar.map(k =>
-    '<div class="plan"><b>' + esc(k.konu) + '</b><br>' + esc(k.aciklama) +
-    (k.hangiSorudan ? '<br><span class="soluk">Soru: ' + esc(k.hangiSorudan) + '</span>' : '') + '</div>').join('')) : '';
-  const tur = hm ? kart('Hata türleri', [['Bilgi eksiği', ht.bilgiEksigi], ['Dikkat hatası', ht.dikkatHatasi], ['Süre sorunu', ht.sureSorunu]].map(x =>
-    '<div class="toplam"><span>' + x[0] + '</span><b>' + x[1] + ' soru</b></div><div class="cubuk"><div style="width:' + Math.round(x[1] / hm * 100) + '%"></div></div>').join('')) : '';
-  const oner = r.calismaOnerileri.length ? kart('Çalışma önerileri', r.calismaOnerileri.map((t, i) =>
-    '<div class="plan">' + (i + 1) + '. ' + esc(t) + '</div>').join('')) : '';
-  const guv = r.guvenilirlikNotu ? kart('Güvenilirlik notu', '<p class="soluk">' + esc(r.guvenilirlikNotu) + '</p>') : '';
-  return ozet + konu + kav + tur + oner + guv;
-}
-
-function dodoHataKart(m) {
-  return kart('Analiz yapılamadı', '<p>' + esc(m) + '</p>' +
-    '<p class="soluk">Limit doluysa promptu kopyalayıp Gemini ya da başka bir yapay zeka sohbetine yapıştır. Fotoğrafları orada kendin ekle.</p>' +
-    '<button class="btn" onclick="dodoKopyala()">📋 Kopyala modu</button>');
-}
-function dodoKopyala() {
-  if (!dodoSon) return bildir('Önce formu doldurup Analiz Et\'e bas');
-  panoyaKopyala(dodoSon.metin);
-}
-
-/* --- Ana fonksiyon --- */
-async function dodoAnalizEt() {
-  if (dodoMesgul) return;
-  const r = dodoDogrula();
-  if (r.hata) return dodoMesaj(r.hata, false);
-  const v = r.veri;
-  if (!v.sorular.length) return dodoMesaj('En az bir yanlış veya boş soru ekle.', false);
-  const a = dodoOku('dodo_ayar', {}), set = new Set(a.konular || []);
-  v.sorular.forEach(s => set.add(s.konu));
-  a.konular = [...set].slice(-300);
-  dodoYaz('dodo_ayar', a);
-
-  const id = dodoAnahtarId(v), gm = dodoGecmisMap(id);
-  const konular = dodoKonuHesapla(v, gm);
-  const metin = dodoPromptMetni(v, konular, dodoZayifListe(gm, 10));
-  dodoSon = {metin: DODO_SISTEM + '\n\n' + metin + '\n\n(Fotoğrafları bu sohbete kendin ekle.)'};
-
-  dodoMesgul = true;
-  dodoMesaj('Analiz ediliyor, 10-30 sn sürebilir...', true);
-  try {
-    const parcalar = [{text: metin}].concat(v.fotolar.map(b => ({inlineData: {mimeType: 'image/jpeg', data: b}})));
-    const sonuc = dodoJsonCoz(await geminiIstek(parcalar, DODO_SISTEM));
-    if (!sonuc) throw new Error('Yapay zeka yanıtı bozuk geldi. Tekrar dene.');
-    const kayit = {id: yeniId(), tarih: v.tarih, ad: v.ad, tur: v.tur, ders: v.ders, dogru: v.dogru, yanlis: v.yanlis,
-      bos: v.bos, net: v.net, konular: konular, sonuc: sonuc, zaman: Date.now()};
-    dodoKaydet(kayit);
-    dodoSonucHtml = dodoSonucKartlari(kayit);
-    dodoYenile();
-    dodoMesaj('✓ Analiz kaydedildi. ' + r.uyari, true);
-    const e = document.getElementById('dodoSonuc'); if (e) e.scrollIntoView({behavior: 'smooth', block: 'start'});
-  } catch (e) {
-
-/* ===== ECOLI AI: SOHBET ===== */
-// Prompttaki yazım hatalarını düzelttim (koçusun, motivasyonu)
-const DODO_SISTEM = "Sen YKS öğrencisi birinin kişisel eğitim koçusun. YKS (TYT/AYT) sistemine son derece hakimsin. Samimi, motivasyonu yüksek, net ve pratik öneriler verirsin. Kullanıcı sana deneme netlerini veya yanlış sorularını attığında nokta atışı zafiyet analizi yaparsın.";
-let dodoMesgul = false;
-
-/* Sistem promptu + profilden kısa bağlam */
-function dodoSistemMetni() {
-  const p = S.profil, b = [];
-  if (p.ad) b.push('Adı: ' + p.ad);
-  if (p.alan) b.push('Alanı: ' + p.alan);
-  if (p.universite || p.bolum) b.push('Hedefi: ' + [p.universite, p.bolum].filter(Boolean).join(' - '));
-  const kg = kalanGun();
-  if (kg !== null && kg >= 0) b.push('Sınava ' + kg + ' gün kaldı');
-  return DODO_SISTEM + (b.length ? '\nÖğrenci bilgisi: ' + b.join(', ') + '.' : '') +
-    '\nYanıtları mobilde okunacak kadar kısa tut, gerekirse kısa maddeler kullan. Verilmeyen bilgiyi uydurma.';
-}
-
-/* Basit biçimlendirme: güvenli kaçış + madde işareti + **kalın** + satır sonu */
-function dodoBicim(t) {
-  return esc(t).replace(/^\s*[*-]\s+/gm, '• ').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-}
-
-/* Panelin iskeleti (bir kez çizilir) */
-function dodoSohbetEkrani() {
-  return '<div class="sohbetAlan" id="sohbetAlan"></div>' +
-    '<div class="sohbetCip">' +
-      '<button type="button" onclick="dodoHaftaAnaliz()">📊 Haftamı analiz et</button>' +
-      '<button type="button" onclick="dodoYanlisAnaliz()">❌ Yanlışlarımı yorumla</button>' +
-    '</div>' +
-    '<div class="sohbetGiris">' +
-      '<textarea id="sohbetGiris" placeholder="Netlerini ya da yanlış sorunu yaz..."></textarea>' +
-      '<button class="btn" type="button" aria-label="Gönder" onclick="dodoMesajGonder()">↑</button>' +
-    '</div>';
-}
-
-/* Mesaj balonlarını çizer; yaziyor=true ise "yazıyor..." gösterir, hata varsa kırmızı balon ekler */
-function dodoSohbetCiz(yaziyor, hata) {
-  const el = document.getElementById('sohbetAlan');
-  if (!el) return;
-  const l = dodoOku('dodo_sohbet', []);
-  let h = l.length ? '' : '<div class="bal ai">Selam! 🦤 Ben Ecoli, YKS koçun. Deneme netlerini, yanlış yaptığın soruları ya da takıldığın konuyu yaz, birlikte bakalım.</div>';
-  h += l.map(x => '<div class="bal ' + (x.r === 'user' ? 'ben' : 'ai') + '">' + dodoBicim(x.g || x.t) + '</div>').join('');
-  if (yaziyor) h += '<div class="bal ai yaziyor">Ecoli yazıyor...</div>';
-  if (hata) h += '<div class="bal ai hata">' + esc(hata) + '</div>';
-  el.innerHTML = h;
-  el.scrollTop = el.scrollHeight;
-}
-
-/* Mesaj gönder. metin verilirse (hazır buton) kutudan okumaz; gorunen = balonda görünecek kısa etiket */
-async function dodoMesajGonder(metin, gorunen) {
-  if (dodoMesgul) return;
-  const giris = document.getElementById('sohbetGiris');
-  const hazir = typeof metin === 'string';
-  const m = String(hazir ? metin : (giris ? giris.value : '')).trim();
-  if (!m) return;
-  const l = dodoOku('dodo_sohbet', []);
-  l.push({r: 'user', t: m, g: gorunen || '', z: Date.now()});
-  dodoYaz('dodo_sohbet', l.slice(-60));
-  if (giris && !hazir) giris.value = '';
-  dodoMesgul = true;
-  dodoSohbetCiz(true);
-  try {
-    const gecmis = l.slice(-20);                       // API'ye son 20 mesaj
-    while (gecmis.length && gecmis[0].r !== 'user') gecmis.shift();   // ilk mesaj kullanıcıdan olmalı
-    const yanit = await geminiIstek(gecmis.map(x => ({role: x.r, parts: [{text: x.t}]})), dodoSistemMetni());
-    const l2 = dodoOku('dodo_sohbet', []);
-    l2.push({r: 'model', t: yanit.trim(), z: Date.now()});
-    dodoYaz('dodo_sohbet', l2.slice(-60));
-    dodoSohbetCiz();
-  } catch (e) {
-    const l2 = dodoOku('dodo_sohbet', []); l2.pop();   // başarısız kullanıcı mesajını geri al
-    dodoYaz('dodo_sohbet', l2);
-    if (giris && !hazir) giris.value = m;              // yazdığı metin kaybolmasın
-    dodoSohbetCiz(false, e.message);
-  } finally { dodoMesgul = false; }
-}
-
-function dodoHaftaAnaliz() { dodoMesajGonder(kopyaMetni(haftaBasi()), '📊 Bu haftayı analiz et'); }
-function dodoYanlisAnaliz() {
-  const m = yanlisOzetMetni();
-  if (!m) return dodoSohbetCiz(false, 'Yanlışlar sekmesinde çözülmemiş soru yok.');
-  dodoMesajGonder(m, '❌ Yanlışlarımı yorumla');
-}
-function dodoSohbetTemizle() {
-  if (!confirm('Sohbet geçmişi silinsin mi?')) return;
-  dodoYaz('dodo_sohbet', []);
+  document.getElementById('dodoSek').innerHTML = '<button type="type" onclick="dodoSohbetTemizle()">🗑 Sohbeti Temizle</button>';
+  document.getElementById('dodoIcerik').innerHTML = dodoSohbetEkrani();
   dodoSohbetCiz();
+  document.body.classList.add('dodoAcik');
 }
-  
-/* ===== ADIM 7: PWA ===== */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
-}
+function dodoKapat() { document.body.classList.remove('dodoAcik'); }
 </script>
 </body>
 </html>
