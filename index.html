@@ -227,7 +227,10 @@ const KEY = 'yks_v1';
 const varsayilan = () => ({
   surum: 1,
   profil: {ad:'', alan:'SAY', universite:'', bolum:'', hedefSiralama:'', tytHedef:'', aytHedef:'', sinavTarihi:''},
-  kaynaklar: [], gorevler: [], sureler: [], aktifSayac: null, haftalar: [], kacan: {}, program: {}
+  kaynaklar: [], gorevler: [], sureler: [], aktifSayac: null, haftalar: [], kacan: {}, program: {},
+  yanlislar: [],   // [{id, tarih, ders, konu, soruNotu, fotoUrl, cozuldu, cozulduTarih?}]
+  konuTakip: {},   // {'TYT|Matematik|Türev': 1 (sarı) | 2 (yeşil)}; kayıt yoksa 0 (çalışılmadı)
+  rutinler: []     // ileride kullanılacak
 });
 
 let S = varsayilan();
@@ -1031,7 +1034,8 @@ let animasyon = false;
 const TABLAR = [
   {id:'gorevler', ad:'Görevler', ikon:IK('<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>')},
   {id:'kaynaklar', ad:'Kaynaklar', ikon:IK('<path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h10"/>')},
-  {id:'sure', ad:'Kronometre', ikon:IK('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/>')},
+  {id:'sure', ad:'Süre', ikon:IK('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/>')},
+  {id:'yanlislar', ad:'Yanlışlar', ikon:IK('<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>')},
   {id:'haftalik', ad:'Haftalık', ikon:IK('<path d="M3 20h18M6 20v-7M12 20V5M18 20v-10"/>')},
   {id:'hedefler', ad:'Hedefler', ikon:IK('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>')},
   {id:'ayarlar', ad:'Ayarlar', ikon:IK('<path d="M4 7h10m4 0h2M4 17h2m4 0h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>')}
@@ -1060,9 +1064,13 @@ const EKRAN = {
 let aktifTab = 'gorevler';
 
 function tabCiz() {
-  document.getElementById('menu').innerHTML = TABLAR.map(t =>
-    '<button class="' + ((t.id === aktifTab || (aktifTab === 'program' && t.id === 'gorevler')) ? 'aktif' : '') + '" onclick="tabGit(\'' + t.id + '\')">' +
-    '<span>' + t.ikon + '</span>' + t.ad + '</button>').join('');
+  document.getElementById('menu').innerHTML = TABLAR.map(t => {
+    const aktif = t.id === aktifTab ||
+      (aktifTab === 'program' && t.id === 'gorevler') ||
+      (aktifTab === 'konular' && t.id === 'hedefler');
+    return '<button class="' + (aktif ? 'aktif' : '') + '" onclick="tabGit(\'' + t.id + '\')">' +
+      '<span>' + t.ikon + '</span>' + t.ad + '</button>';
+  }).join('');
 }
 
 function ekranCiz() {
