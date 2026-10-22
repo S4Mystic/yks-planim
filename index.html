@@ -194,6 +194,21 @@ tr:first-child td{border-top:none}
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
+
+/* Haftalık program - mobil öncelikli dokunmatik hedefler */
+.kisibtn{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid var(--kenar);background:rgba(255,255,255,.07);color:var(--soluk);transition:all .15s}
+.kisibtn:active{transform:scale(.92);background:rgba(255,255,255,.15)}
+.kisibtn:disabled{opacity:.35;cursor:not-allowed}
+
+/* Masaüstünde de görünür olsun */
+@media (min-width:600px){
+  .kisibtn{opacity:1!important;visibility:visible!important}
+  .gunBaslik{display:flex;align-items:center;justify-content:space-between;gap:8px}
+}
+
+/* Kayıtlı hafta kartı - Düzenle butonu her zaman sağ üstte */
+.kayit{position:relative}
+.kayit .btn.ikincil{position:absolute;top:6px;right:6px;z-index:2}
 }
 </style>
 </head>
@@ -814,24 +829,19 @@ function haftaFormu() {
   const m = haftaBul(haftaSecili), alan = (m && m.alan) || S.profil.alan || 'SAY';
   const girdiler = (on, liste, veri) => liste.map(d =>
     '<label class="alan">' + d[1] + '<input type="number" id="' + on + d[0] + '" step="0.25" min="0" max="' + d[2] + '" value="' + (veri && typeof veri[d[0]] === 'number' ? veri[d[0]] : '') + '"></label>').join('');
-  const saatler = haftaCalismaSaatleri(haftaSecili);
-  const saatlerHtml = Object.entries(saatler.dersler).length ? 
-    '<div class="soluk" style="margin-top:8px"><b>Bu hafta çalışma:</b> ' + 
-    Object.entries(saatler.dersler).map(([d, sn]) => d + ': ' + sureYaz(sn)).join(' · ') + 
-    ' · Toplam: ' + sureYaz(saatler.toplam) + '</div>' : '';
 
   const haftalarSirali = [...S.haftalar].sort((a, b) => b.hafta.localeCompare(a.hafta));
-    const listeHtml = haftalarSirali.length ? haftalarSirali.map(h => {
+  const listeHtml = haftalarSirali.length ? haftalarSirali.map(h => {
     const tytNet = netToplam(h.tyt), aytNet = netToplam(h.ayt);
     const saatlerH = haftaCalismaSaatleri(h.hafta);
-    const dersDagilim = saatlerH.toplam ? '<div class="soluk" style="font-size:12px;margin-top:4px">' + 
+    const dersDagilim = saatlerH.toplam ? '<div class="soluk" style="font-size:11px;margin-top:4px">' + 
         Object.entries(saatlerH.dersler).map(([d, sn]) => d + ': ' + sureYaz(sn)).join(' · ') + '</div>' : '';
-    return '<div class="kayit" style="padding:10px 0;border-top:1px solid rgba(255,255,255,.08);position:relative">' +
-      '<button class="btn ikincil" style="position:absolute;top:10px;right:0;padding:0 12px;min-height:32px;line-height:32px;font-size:12px" onclick="haftaSecili=\'' + h.hafta + '\';haftaAlt=\'form\';ekranCiz()">Düzenle</button>' +
-      '<div style="padding-right:80px">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
+    return '<div class="kayit" style="padding:12px 0 12px 0;border-top:1px solid rgba(255,255,255,.08);position:relative;min-height:44px">' +
+      '<button class="btn ikincil" style="position:absolute;top:6px;right:6px;padding:0 10px;min-height:28px;line-height:28px;font-size:11px;z-index:2" onclick="haftaSecili=\'' + h.hafta + '\';haftaAlt=\'form\';ekranCiz()">Düzenle</button>' +
+      '<div style="padding-right:70px">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">' +
       '<div style="flex:1;min-width:0"><b>' + gunAdi(h.hafta) + '</b> <span class="soluk">(' + h.alan + ')</span></div>' +
-      '<div class="soluk" style="font-size:13px;white-space:nowrap;flex-shrink:0">TYT: ' + netYaz(tytNet) + ' · AYT: ' + netYaz(aytNet) + ' · ⏱ ' + sureYaz(saatlerH.toplam) + '</div>' +
+      '<div class="soluk" style="font-size:12px;white-space:nowrap;flex-shrink:0">TYT: ' + netYaz(tytNet) + ' · AYT: ' + netYaz(aytNet) + '</div>' +
       '</div>' +
       dersDagilim +
       '</div></div>';
@@ -842,7 +852,6 @@ function haftaFormu() {
     kart('TYT Netleri', girdiler('n_tyt_', TYT_DERS, m && m.tyt)) +
     kart('AYT Netleri (' + alan + ')', girdiler('n_ayt_', AYT_DERS[alan] || [], m && m.ayt) +
     '<button class="btn" style="margin-top:14px" onclick="haftaKaydet()">Kaydet</button>') +
-    saatlerHtml +
     kart('Kayıtlı Haftalar (Yeni → Eski)', listeHtml);
 }
 
@@ -1045,11 +1054,6 @@ function programUygula() {
 function programEkle(i) {
   const m = document.getElementById('pg_' + i).value.trim();
   if (!m) return;
-  // Eğer bu gün bugünse, programHafta ne olursa olsun bu haftanın tarihini kullan
-  const ds = gunTarihi(programHafta, i);
-  const bugunStr = bugun();
-  const hedefTarih = (ds === bugunStr) ? bugunStr : ds;
-  
   programAl(programHafta)[i].push({id:yeniId(), metin:m});
   programUygula(); 
   ekranCiz();
@@ -1071,7 +1075,12 @@ function programYapistir(i) {
   if (!programKopilamisGun) return bildir('Önce bir gün kopyalayın');
   const m = programHafta;
   if (!S.program[m]) S.program[m] = [[],[],[],[],[],[],[]];
-  S.program[m][i] = JSON.parse(JSON.stringify(programKopilamisGun.liste));
+  // Yeni ID'ler üret ki programUygula yeni görevler oluşturabilsin
+  const yeniListe = JSON.parse(JSON.stringify(programKopilamisGun.liste)).map(it => ({
+    ...it,
+    id: yeniId()
+  }));
+  S.program[m][i] = yeniListe;
   programUygula();
   ekranCiz();
   bildir('Yapıştırıldı');
@@ -1092,19 +1101,22 @@ function programEkrani() {
   const haftaEtiket = fark === 0 ? 'Bu Hafta' : (fark > 0 ? '+' + fark + ' Hafta Sonra' : fark + ' Hafta Önce');
   const ust = kart('Haftalık Program',
     '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px">' +
-    '<span style="font-size:14px;color:var(--soluk)">Görüntülenen: <b>' + haftaEtiket + '</b> (' + gunAdi(programHafta) + ' - ' + gunAdi(gunTarihi(programHafta, 6)) + ')</span>' +
-    '<div class="ikili" style="gap:4px"><button class="btn ikincil" onclick="programHafta=buHafta;ekranCiz()" style="min-height:36px;padding:0 12px;font-size:13px">📍 Bu Hafta</button>' +
-    '<button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,-7);ekranCiz()">◀</button>' +
-    '<button class="btn" onclick="programKopalaHafta()">📋 Kopyala</button>' +
-    '<button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,7);ekranCiz()">▶</button></div>' +
-    '</div>' +
-    '<button class="btn ikincil" onclick="tabGit(\'gorevler\')" style="margin-top:10px">← Görevlere Dön</button>');
+    '<span style="font-size:12px;color:var(--soluk)">' + haftaEtiket + ' · ' + gunAdi(programHafta) + ' – ' + gunAdi(gunTarihi(programHafta, 6)) + '</span>' +
+    '<div style="display:flex;gap:4px">' +
+    '<button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,-7);ekranCiz()" style="min-height:32px;padding:0 10px;font-size:11px" aria-label="Önceki hafta">◀</button>' +
+    '<button class="btn" onclick="programKopalaHafta()" style="min-height:32px;padding:0 10px;font-size:11px" aria-label="Önceki haftadan kopyala">📋</button>' +
+    '<button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,7);ekranCiz()" style="min-height:32px;padding:0 10px;font-size:11px" aria-label="Sonraki hafta">▶</button>' +
+    '</div></div>' +
+    '<button class="btn ikincil" onclick="tabGit(\'gorevler\')" style="margin-top:8px;padding:0 12px;min-height:36px;font-size:13px">← Görevlere Dön</button>');
   const gunler = GUN_ADLARI.map((ad, i) => {
     const ds = gunTarihi(m, i), liste = (S.program[m] || [])[i] || [];
     return kart('',
-      '<div class="gunBaslik"><span>' + esc(ad) + (ds === bg ? ' (Bugün)' : '') + '</span>' +
-      '<button class="kisibtn" onclick="programKopala(' + i + ')">Kopla</button>' +
-      '<button class="kisibtn" onclick="programYapistir(' + i + ')"' + (!programKopilamisGun ? ' disabled' : '') + '>Yapıştır</button></div>' +
+      '<div class="gunBaslik" style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">' +
+      '<span style="font-weight:600;font-size:15px">' + esc(ad) + (ds === bg ? ' <span style="color:var(--yesil)">●</span>' : '') + '</span>' +
+      '<div style="display:flex;gap:4px">' +
+      '<button class="kisibtn" onclick="programKopala(' + i + ')" aria-label="Günü kopyala" style="min-width:36px;height:36px;padding:0;font-size:16px;display:flex;align-items:center;justify-content:center">📋</button>' +
+      '<button class="kisibtn" onclick="programYapistir(' + i + ')"' + (!programKopilamisGun ? ' disabled' : '') + ' aria-label="Güne yapıştır" style="min-width:36px;height:36px;padding:0;font-size:16px;display:flex;align-items:center;justify-content:center">📥</button>' +
+      '</div></div>' +
       liste.map(it => '<div class="kayit"><div>' + esc(it.metin) + '</div><button class="sil" onclick="programSil(' + i + ',\'' + it.id + '\')">✕</button></div>').join('') +
       '<div class="ekleSatir"><input type="text" id="pg_' + i + '" placeholder="Örn: 40 soru" onkeydown="if(event.key===\'Enter\')programEkle(' + i + ')"><button class="btn" onclick="programEkle(' + i + ')">Ekle</button></div>');
   }).join('');
