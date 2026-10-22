@@ -158,6 +158,7 @@ body.dodoAcik #dodoPanel{transform:translateY(0);opacity:1;visibility:visible;tr
 .sohbetGiris{display:flex;gap:8px;padding:8px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.08)}
 .sohbetGiris textarea{flex:1;min-width:0;min-height:48px;height:48px;max-height:120px;margin:0;resize:none}
 .sohbetGiris .btn{flex:none;width:52px;margin:0;padding:0;min-height:48px;line-height:48px}
+.sohbetGiris{display:flex;flex-direction:column;gap:6px;padding:8px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.08)}.sohbetEkler{display:flex;gap:8px;align-items:center}.ekBtn{flex:none;width:44px;height:44px;border:0;border-radius:14px;background:rgba(255,255,255,.08);color:var(--soluk);font-size:20px;cursor:pointer;display:grid;place-items:center}.dodoFotoOnizleme{position:relative;max-height:180px;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.25)}.dodoFotoOnizleme img{width:100%;height:auto;display:block}.dodoFotoOnizleme button{position:absolute;top:6px;right:6px;width:28px;height:28px;border:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:14px;cursor:pointer}
 .sifreSatir{display:flex;gap:8px;align-items:center;margin-top:0}.sifreSatir input{flex:1;min-width:0;margin-top:0;width:auto}.gozBtn{flex:none;width:44px;height:44px;border:0;border-radius:14px;background:rgba(255,255,255,.08);color:var(--soluk);font-size:18px;cursor:pointer;display:grid;place-items:center}
 .gunBaslik{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}.gunBaslik span{font-weight:600;font-size:15px}.kisibtn{flex:none;width:42px;height:32px;border:0;border-radius:8px;background:rgba(255,255,255,.07);color:var(--soluk);font-size:11px;cursor:pointer;border:1px solid var(--kenar)}.kisibtn:disabled{opacity:.4;cursor:not-allowed}.kisibtn:hover:not(:disabled){background:rgba(255,255,255,.15)}
 
@@ -903,8 +904,13 @@ function dodoSohbetEkrani() {
       '<button type="button" onclick="dodoYanlisAnaliz()">❌ Yanlışlarımı yorumla</button>' +
     '</div>' +
     '<div class="sohbetGiris">' +
+      '<div id="dodoFotoOnizleme" class="dodoFotoOnizleme" style="display:none"></div>' +
       '<textarea id="sohbetGiris" placeholder="Netlerini ya da yanlış sorunu yaz..." onkeydown="return dodoEnterGonder(event)"></textarea>' +
-      '<button class="btn" type="button" onclick="dodoMesajGonder()">↑</button>' +
+      '<div class="sohbetEkler">' +
+        '<button type="button" class="ekBtn" onclick="document.getElementById(\'dodoFotoSec\').click()" aria-label="Fotoğraf ekle">📷</button>' +
+        '<input type="file" id="dodoFotoSec" accept="image/*" hidden onchange="dodoFotoSec(this)">' +
+        '<button class="btn" type="button" onclick="dodoMesajGonder()">↑</button>' +
+      '</div>' +
     '</div>';
 }
 
@@ -913,12 +919,45 @@ function dodoEnterGonder(e) {
   return true;
 }
 
+async function dodoFotoSec(inp) {
+  const f = inp.files[0]; inp.value = '';
+  if (!f) return;
+  if (!f.type.startsWith('image/')) return alert('Sadece resim dosyası seçin.');
+  const u = URL.createObjectURL(f), im = new Image();
+  im.onload = () => {
+    const m = Math.max(im.width, im.height), o = m > 800 ? 800 / m : 1;
+    const c = document.createElement('canvas');
+    c.width = Math.round(im.width * o); c.height = Math.round(im.height * o);
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(u);
+    dodoFotoBase64 = c.toDataURL('image/jpeg', 0.55);
+    dodoFotoOnizlemeGuncelle();
+  };
+  im.src = u;
+}
+function dodoFotoKaldir() { dodoFotoBase64 = null; dodoFotoOnizlemeGuncelle(); }
+function dodoFotoOnizlemeGuncelle() {
+  const el = document.getElementById('dodoFotoOnizleme');
+  if (!el) return;
+  if (dodoFotoBase64) {
+    el.innerHTML = '<img src="' + dodoFotoBase64 + '" alt=""><button type="button" onclick="dodoFotoKaldir()">✕</button>';
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+    el.innerHTML = '';
+  }
+}
+
 function dodoSohbetCiz(yaziyor, hata) {
   const el = document.getElementById('sohbetAlan');
   if (!el) return;
   const l = dodoOku('dodo_sohbet', []);
   let h = l.length ? '' : '<div class="bal ai">Selam! 🦤 Ben Ecoli, YKS koçun. Deneme netlerini ya da yanlışlarını yaz, birlikte eksikleri kapatalım.</div>';
-  h += l.map(x => '<div class="bal ' + (x.r === 'user' ? 'ben' : 'ai') + '">' + dodoBicim(x.g || x.t) + '</div>').join('');
+  h += l.map(x => {
+  const icerik = dodoBicim(x.g || x.t);
+  const fotoHtml = x.hasImage && x.fotoUrl ? '<img class="yFoto" src="' + x.fotoUrl + '">' : '';
+  return '<div class="bal ' + (x.r === 'user' ? 'ben' : 'ai') + '">' + icerik + fotoHtml + '</div>';
+}).join('');
   if (yaziyor) h += '<div class="bal ai yaziyor">Ecoli yazıyor...</div>';
   if (hata) h += '<div class="bal ai hata">' + esc(hata) + '</div>';
   el.innerHTML = h;
@@ -932,15 +971,26 @@ function dodoYaz(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } cat
 function dodoAnahtar() { try { return localStorage.getItem(DODO_KEY) || ''; } catch (e) { return ''; } }
 function dodoModel() { return (dodoOku('dodo_ayar', {}).model || '').trim() || DODO_MODEL; }
 
-async function geminiIstek(icerikler, sistem) {
+async function geminiIstek(icerikler, sistem, gorselBase64) {
   const anahtar = dodoAnahtar();
   if (!anahtar) throw new Error('API anahtarı yok. Ayarlar sekmesinden Gemini API anahtarını ekle.');
+  // Son kullanıcı mesajına görsel varsa ekle
+  const iceriklerKopya = JSON.parse(JSON.stringify(icerikler));
+  if (gorselBase64) {
+    const sonKullanici = iceriklerKopya.length - 1;
+    if (sonKullanici >= 0 && iceriklerKopya[sonKullanici].role === 'user') {
+      const base64Veri = gorselBase64.split(',')[1];
+      iceriklerKopya[sonKullanici].parts.push({
+        inline_data: {mime_type: 'image/jpeg', data: base64Veri}
+      });
+    }
+  }
   const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(dodoModel()) + ':generateContent', {
     method: 'POST',
     headers: {'Content-Type': 'application/json', 'x-goog-api-key': anahtar},
     body: JSON.stringify({
       systemInstruction: {parts: [{text: sistem}]},
-      contents: icerikler,
+      contents: iceriklerKopya,
       generationConfig: {temperature: 0.5, maxOutputTokens: 800, topP: 0.9, topK: 40}
     })
   });
@@ -951,23 +1001,32 @@ async function geminiIstek(icerikler, sistem) {
   return metin;
 }
 
+let dodoFotoBase64 = null;
 let dodoMesgul = false;
 async function dodoMesajGonder(metin, gorunen) {
   if (dodoMesgul) return;
   const giris = document.getElementById('sohbetGiris');
   const hazir = typeof metin === 'string';
   const m = String(hazir ? metin : (giris ? giris.value : '')).trim();
-  if (!m) return;
+  if (!m && !dodoFotoBase64) return; // Metin veya foto olmalı
   const l = dodoOku('dodo_sohbet', []);
-  l.push({r: 'user', t: m, g: gorunen || '', z: Date.now()});
+  const kullaniciMesaji = {r: 'user', t: m, g: gorunen || '', z: Date.now(), hasImage: !!dodoFotoBase64};
+  l.push(kullaniciMesaji);
   dodoYaz('dodo_sohbet', l.slice(-60));
+  const gonderilenFoto = dodoFotoBase64;
+  dodoFotoBase64 = null;
+  dodoFotoOnizlemeGuncelle();
   if (giris && !hazir) giris.value = '';
   dodoMesgul = true;
   dodoSohbetCiz(true);
   try {
     const gecmis = l.slice(-10);
     while (gecmis.length && gecmis[0].r !== 'user') gecmis.shift();
-    const yanit = await geminiIstek(gecmis.map(x => ({role: x.r, parts: [{text: x.t}]})), dodoSistemMetni());
+    const yanit = await geminiIstek(
+      gecmis.map(x => ({role: x.r, parts: [{text: x.t}]})), 
+      dodoSistemMetni(),
+      gonderilenFoto
+    );
     const l2 = dodoOku('dodo_sohbet', []);
     l2.push({r: 'model', t: yanit.trim(), z: Date.now()});
     dodoYaz('dodo_sohbet', l2.slice(-60));
