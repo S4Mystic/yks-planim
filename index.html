@@ -21,6 +21,9 @@ main{flex:1;overflow-y:auto;padding:8px 16px 24px}
 .sayfa.acik{display:block}
 .kart{background:var(--yuzey);border-radius:14px;padding:16px;margin-bottom:12px}
 .kart h2{margin:0 0 8px;font-size:17px}
+.sifreSatir{display:flex;gap:8px;align-items:center}
+.sifreSatir input{flex:1;min-width:0;margin-top:0}
+.gozBtn{flex:none;width:48px;height:48px;border:0;border-radius:12px;background:rgba(255,255,255,.08);color:var(--soluk);font-size:18px;cursor:pointer}
 .soluk{color:var(--soluk);font-size:14px;margin:0}
 .btn{display:block;width:100%;min-height:52px;padding:0 18px;margin-top:10px;border:0;border-radius:12px;background:var(--vurgu);color:#10131a;font-weight:600;font-size:16px;font-family:inherit;text-align:center;line-height:52px}
 .btn.ikincil{background:var(--yuzey2);color:var(--yazi)}
@@ -855,9 +858,14 @@ function dodoSohbetEkrani() {
       '<button type="button" onclick="dodoYanlisAnaliz()">❌ Yanlışlarımı yorumla</button>' +
     '</div>' +
     '<div class="sohbetGiris">' +
-      '<textarea id="sohbetGiris" placeholder="Netlerini ya da yanlış sorunu yaz..."></textarea>' +
+      '<textarea id="sohbetGiris" placeholder="Netlerini ya da yanlış sorunu yaz..." onkeydown="return dodoEnterGonder(event)"></textarea>' +
       '<button class="btn" type="button" onclick="dodoMesajGonder()">↑</button>' +
     '</div>';
+}
+
+function dodoEnterGonder(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); dodoMesajGonder(); return false; }
+  return true;
 }
 
 function dodoSohbetCiz(yaziyor, hata) {
@@ -888,7 +896,7 @@ async function geminiIstek(icerikler, sistem) {
     body: JSON.stringify({
       systemInstruction: {parts: [{text: sistem}]},
       contents: icerikler,
-      generationConfig: {temperature: 0.7}
+      generationConfig: {temperature: 0.5, maxOutputTokens: 800, topP: 0.9, topK: 40}
     })
   });
   if (!r.ok) throw new Error('API bağlantı hatası (' + r.status + '). Anahtarını kontrol et.');
@@ -912,7 +920,7 @@ async function dodoMesajGonder(metin, gorunen) {
   dodoMesgul = true;
   dodoSohbetCiz(true);
   try {
-    const gecmis = l.slice(-20);
+    const gecmis = l.slice(-10);
     while (gecmis.length && gecmis[0].r !== 'user') gecmis.shift();
     const yanit = await geminiIstek(gecmis.map(x => ({role: x.r, parts: [{text: x.t}]})), dodoSistemMetni());
     const l2 = dodoOku('dodo_sohbet', []);
@@ -945,10 +953,18 @@ function dodoSohbetTemizle() {
 
 function dodoAyarKarti() {
   return kart('🦤 Ecoli AI (Gemini)',
-    '<label class="alan">Gemini API anahtarı<input type="password" id="d_key" value="' + esc(dodoAnahtar()) + '"></label>' +
+    '<label class="alan">Gemini API anahtarı<div class="sifreSatir"><input type="password" id="d_key" value="' + esc(dodoAnahtar()) + '"><button type="button" class="gozBtn" onclick="dodoGozToggle(this)" aria-label="Göster/Gizle">👁</button></div></label>' +
     '<label class="alan">Model adı<input type="text" id="d_model" value="' + esc(dodoModel()) + '"></label>' +
     '<button class="btn" onclick="dodoAyarKaydet()">Kaydet</button>');
 }
+
+function dodoGozToggle(btn) {
+  const inp = btn.previousElementSibling;
+  const acik = inp.type === 'text';
+  inp.type = acik ? 'password' : 'text';
+  btn.textContent = acik ? '👁' : '👁‍🗨';
+}
+
 function dodoAyarKaydet() {
   const k = document.getElementById('d_key').value.trim();
   const m = document.getElementById('d_model').value.trim() || DODO_MODEL;
@@ -982,7 +998,7 @@ const EKRAN = {
   program()   { return programEkrani(); },
   yanlislar() { return yanlislarEkrani(); },
   konular()   { return konuTakipEkrani(); },
-  ayarlar()   { return dodoAyarKarti() + kart('Yedekleme', '<button class="btn" onclick="yedekIndir()">JSON İndir</button>'); }
+  ayarlar()   { return dodoAyarKarti() + kart('Yedekleme', '<button class="btn" onclick="yedekIndir()">JSON İndir</button><input type="file" id="yedekYukle" accept=".json" hidden onchange="yedekYukle(this)"><button class="btn ikincil" style="margin-top:8px" onclick="document.getElementById(\'yedekYukle\').click()">JSON Yükle</button>'); }
 };
 
 let aktifTab = 'gorevler';
@@ -1004,6 +1020,24 @@ function yedekIndir() {
   const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'yks-yedek-' + bugun() + '.json';
   document.body.appendChild(a); a.click(); a.remove();
+}
+
+function yedekYukle(inp) {
+  const f = inp.files[0]; inp.value = '';
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const data = JSON.parse(r.result);
+      if (!data || !data.surum) throw new Error('Geçersiz yedek');
+      S = Object.assign(varsayilan(), data);
+      kaydet();
+      baslikGuncelle();
+      ekranCiz();
+      bildir('Yedek yüklendi ✓');
+    } catch (e) { alert('Yükleme hatası: ' + e.message); }
+  };
+  r.readAsText(f);
 }
 
 document.getElementById('tarih').textContent = new Date().toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long'});
