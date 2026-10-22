@@ -174,6 +174,13 @@ body.dodoAcik #dodoPanel{transform:translateY(0);opacity:1;visibility:visible;tr
 .durum.d1{background:rgba(255,209,102,.16);color:var(--sari);border-color:rgba(255,209,102,.45)}
 .durum.d2{background:rgba(91,227,176,.18);color:var(--yesil);border-color:rgba(91,227,176,.5)}
   
+/* ===== HAFTALIK ANALİZ TABLO ===== */
+table{width:100%;border-collapse:collapse}
+th,td{padding:6px 8px;text-align:left}
+th{color:var(--soluk);font-weight:600;font-size:12px}
+td{color:var(--yazi);font-size:13px;border-top:1px solid rgba(255,255,255,.04)}
+tr:first-child td{border-top:none}
+
 /* Netlify rozetini gizle */
 .netlify-badge, [class*="netlify"] {
   display: none !important;
@@ -755,7 +762,7 @@ function konuTakipEkrani() {
   return alt + ust + dersler;
 }
 
-/* ===== HAFTALIK GÜNCELLEME VE ANALİZ ===== */
+/* ===== HAFTALIK GÜNCELME VE ANALİZ ===== */
 const TYT_DERS = [['turkce','Türkçe',40],['sosyal','Sosyal Bilimler',20],['mat','Temel Matematik',40],['fen','Fen Bilimleri',20]];
 const AYT_DERS = {
   'SAY':[['mat','Matematik',40],['fizik','Fizik',14],['kimya','Kimya',13],['biyo','Biyoloji',13]],
@@ -765,23 +772,74 @@ const AYT_DERS = {
 };
 let haftaSecili = haftaBasi();
 let haftaAlt = 'form';
+let analizSecim = 'genel'; // 'genel' veya ders key'i (tyt_turkce, ayt_mat, vb.)
+
 function haftaBul(m) { return S.haftalar.find(h => h.hafta === m); }
+
 function netToplam(o) {
   let t = 0, var_ = false;
   Object.values(o || {}).forEach(x => { if (typeof x === 'number') { t += x; var_ = true; } });
   return var_ ? t : null;
 }
 function netYaz(n) { return n === null ? '-' : String(Math.round(n * 100) / 100).replace('.', ','); }
+
+// Tüm dersleri (TYT + AYT) tek listeye çevir
+function tumDersler(alan) {
+  const tyt = TYT_DERS.map(d => ({key: 'tyt_' + d[0], ad: d[1], max: d[2], tur: 'TYT'}));
+  const ayt = (AYT_DERS[alan] || []).map(d => ({key: 'ayt_' + d[0], ad: d[1], max: d[2], tur: 'AYT'}));
+  return [...tyt, ...ayt];
+}
+
+// Haftalık çalışma saatlerini hesapla (ders bazında)
+function haftaCalismaSaatleri(haftaBaslangic) {
+  const bas = tarihDon(haftaBaslangic);
+  const bit = new Date(bas); bit.setDate(bit.getDate() + 7);
+  const basStr = tarihStr(bas), bitStr = tarihStr(bit);
+  const sonuc = {toplam: 0, dersler: {}};
+  (S.sureler || []).forEach(s => {
+    if (s.gun >= basStr && s.gun < bitStr) {
+      sonuc.toplam += s.sn;
+      sonuc.dersler[s.ders] = (sonuc.dersler[s.ders] || 0) + s.sn;
+    }
+  });
+  return sonuc;
+}
+
 function haftaFormu() {
   const m = haftaBul(haftaSecili), alan = (m && m.alan) || S.profil.alan || 'SAY';
   const girdiler = (on, liste, veri) => liste.map(d =>
-    '<label class="alan">' + d[1] + '<input type="number" id="' + on + d[0] + '" step="0.25" value="' + (veri && typeof veri[d[0]] === 'number' ? veri[d[0]] : '') + '"></label>').join('');
+    '<label class="alan">' + d[1] + '<input type="number" id="' + on + d[0] + '" step="0.25" min="0" max="' + d[2] + '" value="' + (veri && typeof veri[d[0]] === 'number' ? veri[d[0]] : '') + '"></label>').join('');
+  const saatler = haftaCalismaSaatleri(haftaSecili);
+  const saatlerHtml = Object.entries(saatler.dersler).length ? 
+    '<div class="soluk" style="margin-top:8px"><b>Bu hafta çalışma:</b> ' + 
+    Object.entries(saatler.dersler).map(([d, sn]) => d + ': ' + sureYaz(sn)).join(' · ') + 
+    ' · Toplam: ' + sureYaz(saatler.toplam) + '</div>' : '';
+
+  // Kayıtlı haftalar listesi (yeniden eskiye)
+  const haftalarSirali = [...S.haftalar].sort((a, b) => b.hafta.localeCompare(a.hafta));
+  const listeHtml = haftalarSirali.length ? haftalarSirali.map(h => {
+    const tytNet = netToplam(h.tyt), aytNet = netToplam(h.ayt);
+    const saatlerH = haftaCalismaSaatleri(h.hafta);
+    return '<div class="kayit" style="padding:10px 0;border-top:1px solid rgba(255,255,255,.08)">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">' +
+      '<div><b>' + gunAdi(h.hafta) + '</b> <span class="soluk">(' + h.alan + ')</span></div>' +
+      '<div class="soluk" style="font-size:13px">TYT: ' + netYaz(tytNet) + ' · AYT: ' + netYaz(aytNet) + ' · ⏱ ' + sureYaz(saatlerH.toplam) + '</div>' +
+      '<button class="btn ikincil" style="padding:0 12px;min-height:36px;line-height:36px;font-size:13px" onclick="haftaSecili=\'' + h.hafta + '\';haftaAlt=\'form\';ekranCiz()">Düzenle</button>' +
+      '</div>' +
+      (saatlerH.toplam ? '<div class="soluk" style="font-size:12px;margin-top:4px">' + 
+        Object.entries(saatlerH.dersler).map(([d, sn]) => d + ': ' + sureYaz(sn)).join(' · ') + '</div>' : '') +
+      '</div>';
+  }).join('') : '<p class="soluk">Henüz kayıtlı hafta yok.</p>';
+
   return kart('Hafta Deneme Kaydı',
     '<label class="alan">Hafta başlangıcı (Pazartesi)<input type="date" id="h_tarih" value="' + haftaSecili + '" onchange="haftaSecili=this.value;ekranCiz()"></label>') +
     kart('TYT Netleri', girdiler('n_tyt_', TYT_DERS, m && m.tyt)) +
     kart('AYT Netleri (' + alan + ')', girdiler('n_ayt_', AYT_DERS[alan] || [], m && m.ayt) +
-    '<button class="btn" style="margin-top:14px" onclick="haftaKaydet()">Kaydet</button>');
+    '<button class="btn" style="margin-top:14px" onclick="haftaKaydet()">Kaydet</button>') +
+    saatlerHtml +
+    kart('Kayıtlı Haftalar (Yeni → Eski)', listeHtml);
 }
+
 function haftaKaydet() {
   const alan = S.profil.alan || 'SAY', al = id => document.getElementById(id).value.trim();
   const oku = (on, liste) => {
@@ -792,16 +850,144 @@ function haftaKaydet() {
   const kayit = {hafta: haftaSecili, alan: alan, tyt: oku('n_tyt_', TYT_DERS), ayt: oku('n_ayt_', AYT_DERS[alan] || [])};
   const i = S.haftalar.findIndex(h => h.hafta === haftaSecili);
   if (i >= 0) S.haftalar[i] = kayit; else S.haftalar.push(kayit);
+  // Haftalar dizisini tarihe göre sırala (eski → yeni) - depolama için
+  S.haftalar.sort((a, b) => a.hafta.localeCompare(b.hafta));
   kaydet(); ekranCiz(); bildir('Hafta kaydedildi ✓');
 }
+
+// Basit canvas grafik çizici
+function grafikCiz(canvasId, haftalar, veriAl, renk) {
+  const cvs = document.getElementById(canvasId);
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = cvs.clientWidth, h = 180;
+  cvs.width = w * dpr; cvs.height = h * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  const veri = haftalar.map(veriAl).filter(v => v !== null);
+  if (!veri.length) { ctx.fillStyle = '#9aa3ba'; ctx.font = '14px system-ui'; ctx.textAlign = 'center'; ctx.fillText('Veri yok', w/2, h/2); return; }
+  const minV = Math.min(...veri), maxV = Math.max(...veri);
+  const range = maxV - minV || 1;
+  const padding = 40, stepX = (w - 2 * padding) / (haftalar.length - 1 || 1);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,.05)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = padding + (h - 2 * padding) * i / 4;
+    ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(w - padding, y); ctx.stroke();
+  }
+
+  // Çizgi
+  ctx.strokeStyle = renk; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath();
+  haftalar.forEach((hafta, i) => {
+    const val = veriAl(hafta);
+    const x = padding + i * stepX;
+    const y = val !== null ? h - padding - (val - minV) / range * (h - 2 * padding) : null;
+    if (y !== null) {
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+  });
+  ctx.stroke();
+
+  // Noktalar
+  ctx.fillStyle = renk;
+  haftalar.forEach((hafta, i) => {
+    const val = veriAl(hafta);
+    const x = padding + i * stepX;
+    const y = val !== null ? h - padding - (val - minV) / range * (h - 2 * padding) : null;
+    if (y !== null) { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); }
+  });
+
+  // X eksen etiketleri
+  ctx.fillStyle = '#9aa3ba'; ctx.font = '11px system-ui'; ctx.textAlign = 'center';
+  haftalar.forEach((hafta, i) => {
+    const x = padding + i * stepX;
+    const d = tarihDon(hafta);
+    ctx.fillText((d.getMonth() + 1) + '/' + d.getDate(), x, h - 8);
+  });
+}
+
+function analizEkrani() {
+  const haftalar = [...S.haftalar].sort((a, b) => a.hafta.localeCompare(b.hafta));
+  if (!haftalar.length) return kart('Analiz', '<p class="soluk">Henüz deneme kaydı yok.</p>');
+
+  const alan = S.profil.alan || 'SAY';
+  const dersler = tumDersler(alan);
+  const secimler = ['genel', ...dersler.map(d => d.key)].map(k => {
+    const etiket = k === 'genel' ? 'Genel' : dersler.find(d => d.key === k)?.ad || k;
+    return '<option value="' + k + '"' + (analizSecim === k ? ' selected' : '') + '>' + etiket + '</option>';
+  }).join('');
+
+  // Grafik veri fonksiyonları
+  const veriFonksiyonlari = {
+    genel: h => {
+      const tyt = netToplam(h.tyt), ayt = netToplam(h.ayt);
+      return (tyt !== null || ayt !== null) ? (tyt || 0) + (ayt || 0) : null;
+    }
+  };
+  dersler.forEach(d => {
+    veriFonksiyonlari[d.key] = h => {
+      const src = d.tur === 'TYT' ? h.tyt : h.ayt;
+      return src && typeof src[d.key.replace(d.tur.toLowerCase() + '_', '')] === 'number' ? src[d.key.replace(d.tur.toLowerCase() + '_', '')] : null;
+    };
+  });
+
+  const seciliVeriAl = veriFonksiyonlari[analizSecim] || veriFonksiyonlari.genel;
+  const renk = analizSecim === 'genel' ? '#8fb0ff' : '#5be3b0';
+
+  // Haftalık çalışma saatleri tablo
+  const saatlerTablosu = haftalar.map(h => {
+    const s = haftaCalismaSaatleri(h.hafta);
+    return '<tr><td>' + gunAdi(h.hafta) + '</td><td>' + sureYaz(s.toplam) + '</td>' +
+      dersler.map(d => '<td>' + sureYaz(s.dersler[d.ad] || 0) + '</td>').join('') + '</tr>';
+  }).join('');
+
+  return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">' +
+    '<b style="font-size:17px">Analiz</b>' +
+    '<select onchange="analizSecim=this.value;ekranCiz()" style="min-width:160px;padding:8px 12px;border-radius:12px;border:1px solid var(--kenar);background:rgba(255,255,255,.07);color:var(--yazi);font-family:inherit">' + secimler + '</select>' +
+    '</div>' +
+    kart('Net Grafiği', '<canvas id="haftaGrafik" style="width:100%;height:180px"></canvas>') +
+    kart('Haftalık Çalışma Saatleri',
+      '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">' +
+      '<thead><tr style="text-align:left;color:var(--soluk);border-bottom:1px solid rgba(255,255,255,.08)">' +
+      '<th style="padding:8px">Hafta</th><th style="padding:8px">Toplam</th>' +
+      dersler.map(d => '<th style="padding:8px">' + d.ad + '</th>').join('') + '</tr></thead>' +
+      '<tbody>' + saatlerTablosu + '</tbody></table></div>') +
+    kart('Özet', haftalar.map(h => {
+      const tyt = netToplam(h.tyt), ayt = netToplam(h.ayt);
+      const s = haftaCalismaSaatleri(h.hafta);
+      return '<div class="kayit" style="padding:10px 0;border-top:1px solid rgba(255,255,255,.08)">' +
+        '<div><b>' + gunAdi(h.hafta) + '</b> <span class="soluk">(' + h.alan + ')</span></div>' +
+        '<div class="soluk" style="font-size:13px">TYT: ' + netYaz(tyt) + ' · AYT: ' + netYaz(ayt) + ' · Toplam: ' + netYaz((tyt||0)+(ayt||0)) + ' · ⏱ ' + sureYaz(s.toplam) + '</div>' +
+        '</div>';
+    }).join(''));
 
 function haftalikEkrani() {
   const alt = '<div class="alt"><button class="' + (haftaAlt === 'form' ? 'aktif' : '') + '" onclick="haftaAlt=\'form\';ekranCiz()">Güncelleme</button>' +
     '<button class="' + (haftaAlt === 'analiz' ? 'aktif' : '') + '" onclick="haftaAlt=\'analiz\';ekranCiz()">Analiz</button></div>';
   if (haftaAlt === 'form') return alt + haftaFormu();
-  const h = haftaBul(haftaSecili);
-  return alt + kart('Haftalık Özet', h ? '<p>TYT Net: ' + netYaz(netToplam(h.tyt)) + '<br>AYT Net: ' + netYaz(netToplam(h.ayt)) + '</p>' : '<p class="soluk">Bu hafta kayıt yok.</p>');
+  return alt + analizEkrani();
 }
+
+// Grafik çizimini tetikle (ekran çizildikten sonra)
+const eskiEkranCiz = ekranCiz;
+ekranCiz = function() {
+  eskiEkranCiz();
+  if (aktifTab === 'haftalik' && haftaAlt === 'analiz') {
+    const haftalar = [...S.haftalar].sort((a, b) => a.hafta.localeCompare(b.hafta));
+    const alan = S.profil.alan || 'SAY';
+    const dersler = tumDersler(alan);
+    const veriFonksiyonlari = { genel: h => { const tyt = netToplam(h.tyt), ayt = netToplam(h.ayt); return (tyt !== null || ayt !== null) ? (tyt || 0) + (ayt || 0) : null; }};
+    dersler.forEach(d => { veriFonksiyonlari[d.key] = h => { const src = d.tur === 'TYT' ? h.tyt : h.ayt; return src && typeof src[d.key.replace(d.tur.toLowerCase() + '_', '')] === 'number' ? src[d.key.replace(d.tur.toLowerCase() + '_', '')] : null; }; });
+    const seciliVeriAl = veriFonksiyonlari[analizSecim] || veriFonksiyonlari.genel;
+    const renk = analizSecim === 'genel' ? '#8fb0ff' : '#5be3b0';
+    grafikCiz('haftaGrafik', haftalar, seciliVeriAl, renk);
+  }
+};
 
 /* ===== HAFTALIK PROGRAM ===== */
 const GUN_ADLARI = ['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'];
