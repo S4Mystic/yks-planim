@@ -1203,8 +1203,8 @@ async function geminiIstek(icerikler, sistem) {
       headers: {'Content-Type': 'application/json', 'x-goog-api-key': anahtar},
       body: JSON.stringify({
         systemInstruction: {parts: [{text: sistem}]},
-        contents: [{role: 'user', parts: parcalar}],
-        generationConfig: {temperature: 0.2, responseMimeType: 'application/json'}
+        contents: icerikler,   // [{role:'user'|'model', parts:[{text}]}] sohbet geçmişi
+        generationConfig: {temperature: 0.7}
       })
     });
   } catch (e) { throw new Error('Google\'a ulaşılamadı. İnternetini kontrol et.'); }
@@ -1248,7 +1248,7 @@ async function dodoTest() {
   const e = document.getElementById('dodoTestSonuc');
   e.textContent = 'Test ediliyor...';
   try {
-    await geminiIstek([{text: 'Sadece {"durum":"ok"} JSON\'unu döndür.'}], 'Sadece geçerli JSON döndür.');
+    await geminiIstek([{role: 'user', parts: [{text: 'Sadece "ok" yaz.'}]}], 'Çok kısa yanıt ver.');
     e.textContent = '✓ Bağlantı çalışıyor (' + dodoModel() + ').';
   } catch (x) { e.textContent = '✗ ' + x.message; }
 }
