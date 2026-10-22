@@ -33,7 +33,7 @@ nav button span{font-size:22px;line-height:1}
 nav button.aktif{color:var(--vurgu)}
 a{color:var(--vurgu)}
 label.alan{display:block;margin-top:12px;font-size:14px;color:var(--soluk)}
-input[type=text],input[type=url],input[type=number],input[type=date],select,textarea{display:block;width:100%;min-height:48px;margin-top:6px;padding:10px 12px;border:1px solid var(--cizgi);border-radius:10px;background:var(--yuzey2);color:var(--yazi);font-family:inherit;font-size:16px}
+input[type=text],input[type=url],input[type=number],input[type=password],input[type=date],select,textarea{display:block;width:100%;min-height:48px;margin-top:6px;padding:10px 12px;border:1px solid var(--cizgi);border-radius:10px;background:var(--yuzey2);color:var(--yazi);font-family:inherit;font-size:16px}
 textarea{min-height:110px}
 .cipler{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .cip input{display:none}
@@ -155,12 +155,20 @@ body.dodoAcik #dodoPanel{transform:translateY(0);opacity:1;visibility:visible;tr
 .bal.hata{border-color:rgba(255,122,122,.5);color:var(--kirmizi)}
 .sohbetCip{display:flex;gap:8px;overflow-x:auto;padding:0 16px 8px}
 .sohbetCip button{flex:none;min-height:40px;padding:0 14px;border-radius:14px;border:1px solid var(--kenar);background:rgba(255,255,255,.07);color:var(--yazi);font-family:inherit;font-size:14px}
-.sohbetGiris{display:flex;gap:8px;padding:8px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.08)}
-.sohbetGiris textarea{flex:1;min-width:0;min-height:48px;height:48px;max-height:120px;margin:0;resize:none}
-.sohbetGiris .btn{flex:none;width:52px;margin:0;padding:0;min-height:48px;line-height:48px}
-.sohbetGiris{display:flex;flex-direction:column;gap:6px;padding:8px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.08)}.sohbetEkler{display:flex;gap:8px;align-items:center}.ekBtn{flex:none;width:44px;height:44px;border:0;border-radius:14px;background:rgba(255,255,255,.08);color:var(--soluk);font-size:20px;cursor:pointer;display:grid;place-items:center}.dodoFotoOnizleme{position:relative;max-height:180px;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.25)}.dodoFotoOnizleme img{width:100%;height:auto;display:block}.dodoFotoOnizleme button{position:absolute;top:6px;right:6px;width:28px;height:28px;border:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:14px;cursor:pointer}
-.sifreSatir{display:flex;gap:8px;align-items:center;margin-top:0}.sifreSatir input{flex:1;min-width:0;margin-top:0;width:auto}.gozBtn{flex:none;width:44px;height:44px;border:0;border-radius:14px;background:rgba(255,255,255,.08);color:var(--soluk);font-size:18px;cursor:pointer;display:grid;place-items:center}
-.gunBaslik{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}.gunBaslik span{font-weight:600;font-size:15px}.kisibtn{flex:none;width:42px;height:32px;border:0;border-radius:8px;background:rgba(255,255,255,.07);color:var(--soluk);font-size:11px;cursor:pointer;border:1px solid var(--kenar)}.kisibtn:disabled{opacity:.4;cursor:not-allowed}.kisibtn:hover:not(:disabled){background:rgba(255,255,255,.15)}
+.sohbetGiris{display:flex;flex-direction:column;gap:6px;padding:8px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.08)}
+.sohbetEkler{display:flex;gap:8px;align-items:center}
+.ekBtn{flex:none;width:44px;height:44px;border:0;border-radius:14px;background:rgba(255,255,255,.08);color:var(--soluk);font-size:20px;cursor:pointer;display:grid;place-items:center}
+.dodoFotoOnizleme{position:relative;max-height:180px;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.25)}
+.dodoFotoOnizleme img{width:100%;height:auto;display:block}
+.dodoFotoOnizleme button{position:absolute;top:6px;right:6px;width:28px;height:28px;border:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:14px;cursor:pointer}
+.sifreSatir{display:flex;gap:8px;align-items:center;margin-top:0}
+.sifreSatir input{flex:1;min-width:0;margin-top:0;width:auto}
+.gozBtn{flex:none;width:44px;height:44px;border:0;border-radius:14px;background:rgba(255,255,255,.08);color:var(--soluk);font-size:18px;cursor:pointer;display:grid;place-items:center}
+.gunBaslik{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.gunBaslik span{font-weight:600;font-size:15px}
+.kisibtn{flex:none;width:42px;height:32px;border:0;border-radius:8px;background:rgba(255,255,255,.07);color:var(--soluk);font-size:11px;cursor:pointer;border:1px solid var(--kenar)}
+.kisibtn:disabled{opacity:.4;cursor:not-allowed}
+.kisibtn:hover:not(:disabled){background:rgba(255,255,255,.15)}
 
 /* ===== YANLIŞLAR ===== */
 .yFoto{display:block;width:100%;max-height:260px;object-fit:contain;border-radius:12px;margin-top:10px;background:rgba(0,0,0,.25)}
@@ -173,7 +181,7 @@ body.dodoAcik #dodoPanel{transform:translateY(0);opacity:1;visibility:visible;tr
 .durum.d0{background:rgba(255,122,122,.14);color:var(--kirmizi);border-color:rgba(255,122,122,.4)}
 .durum.d1{background:rgba(255,209,102,.16);color:var(--sari);border-color:rgba(255,209,102,.45)}
 .durum.d2{background:rgba(91,227,176,.18);color:var(--yesil);border-color:rgba(91,227,176,.5)}
-  
+
 /* ===== HAFTALIK ANALİZ TABLO ===== */
 table{width:100%;border-collapse:collapse}
 th,td{padding:6px 8px;text-align:left}
@@ -592,7 +600,7 @@ function kalanGun() {
 function profilKaydet() {
   const al = id => document.getElementById(id).value.trim();
   const tyt = al('p_tyt'), ayt = al('p_ayt');
-  const alan = document.querySelector('input[name="p_alan"]:checked');
+  const alan = document.queryester('input[name="p_alan"]:checked');
   S.profil = {ad:al('p_ad'), alan:(alan ? alan.value : 'SAY'), universite:al('p_uni'), bolum:al('p_bolum'),
               hedefSiralama:al('p_sira'), tytHedef:tyt, aytHedef:ayt, sinavTarihi:al('p_tarih')};
   kaydet(); baslikGuncelle(); ekranCiz();
@@ -762,7 +770,7 @@ function konuTakipEkrani() {
   return alt + ust + dersler;
 }
 
-/* ===== HAFTALIK GÜNCELME VE ANALİZ ===== */
+/* ===== HAFTALIK GÜNCELLEME VE ANALİZ ===== */
 const TYT_DERS = [['turkce','Türkçe',40],['sosyal','Sosyal Bilimler',20],['mat','Temel Matematik',40],['fen','Fen Bilimleri',20]];
 const AYT_DERS = {
   'SAY':[['mat','Matematik',40],['fizik','Fizik',14],['kimya','Kimya',13],['biyo','Biyoloji',13]],
@@ -772,10 +780,9 @@ const AYT_DERS = {
 };
 let haftaSecili = haftaBasi();
 let haftaAlt = 'form';
-let analizSecim = 'genel'; // 'genel' veya ders key'i (tyt_turkce, ayt_mat, vb.)
+let analizSecim = 'genel';
 
 function haftaBul(m) { return S.haftalar.find(h => h.hafta === m); }
-
 function netToplam(o) {
   let t = 0, var_ = false;
   Object.values(o || {}).forEach(x => { if (typeof x === 'number') { t += x; var_ = true; } });
@@ -783,14 +790,12 @@ function netToplam(o) {
 }
 function netYaz(n) { return n === null ? '-' : String(Math.round(n * 100) / 100).replace('.', ','); }
 
-// Tüm dersleri (TYT + AYT) tek listeye çevir
 function tumDersler(alan) {
   const tyt = TYT_DERS.map(d => ({key: 'tyt_' + d[0], ad: d[1], max: d[2], tur: 'TYT'}));
   const ayt = (AYT_DERS[alan] || []).map(d => ({key: 'ayt_' + d[0], ad: d[1], max: d[2], tur: 'AYT'}));
   return [...tyt, ...ayt];
 }
 
-// Haftalık çalışma saatlerini hesapla (ders bazında)
 function haftaCalismaSaatleri(haftaBaslangic) {
   const bas = tarihDon(haftaBaslangic);
   const bit = new Date(bas); bit.setDate(bit.getDate() + 7);
@@ -815,7 +820,6 @@ function haftaFormu() {
     Object.entries(saatler.dersler).map(([d, sn]) => d + ': ' + sureYaz(sn)).join(' · ') + 
     ' · Toplam: ' + sureYaz(saatler.toplam) + '</div>' : '';
 
-  // Kayıtlı haftalar listesi (yeniden eskiye)
   const haftalarSirali = [...S.haftalar].sort((a, b) => b.hafta.localeCompare(a.hafta));
   const listeHtml = haftalarSirali.length ? haftalarSirali.map(h => {
     const tytNet = netToplam(h.tyt), aytNet = netToplam(h.ayt);
@@ -850,12 +854,10 @@ function haftaKaydet() {
   const kayit = {hafta: haftaSecili, alan: alan, tyt: oku('n_tyt_', TYT_DERS), ayt: oku('n_ayt_', AYT_DERS[alan] || [])};
   const i = S.haftalar.findIndex(h => h.hafta === haftaSecili);
   if (i >= 0) S.haftalar[i] = kayit; else S.haftalar.push(kayit);
-  // Haftalar dizisini tarihe göre sırala (eski → yeni) - depolama için
   S.haftalar.sort((a, b) => a.hafta.localeCompare(b.hafta));
   kaydet(); ekranCiz(); bildir('Hafta kaydedildi ✓');
 }
 
-// Basit canvas grafik çizici
 function grafikCiz(canvasId, haftalar, veriAl, renk) {
   const cvs = document.getElementById(canvasId);
   if (!cvs) return;
@@ -872,7 +874,6 @@ function grafikCiz(canvasId, haftalar, veriAl, renk) {
   const range = maxV - minV || 1;
   const padding = 40, stepX = (w - 2 * padding) / (haftalar.length - 1 || 1);
 
-  // Grid
   ctx.strokeStyle = 'rgba(255,255,255,.05)';
   ctx.lineWidth = 1;
   for (let i = 0; i <= 4; i++) {
@@ -880,7 +881,6 @@ function grafikCiz(canvasId, haftalar, veriAl, renk) {
     ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(w - padding, y); ctx.stroke();
   }
 
-  // Çizgi
   ctx.strokeStyle = renk; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   ctx.beginPath();
   haftalar.forEach((hafta, i) => {
@@ -893,7 +893,6 @@ function grafikCiz(canvasId, haftalar, veriAl, renk) {
   });
   ctx.stroke();
 
-  // Noktalar
   ctx.fillStyle = renk;
   haftalar.forEach((hafta, i) => {
     const val = veriAl(hafta);
@@ -902,7 +901,6 @@ function grafikCiz(canvasId, haftalar, veriAl, renk) {
     if (y !== null) { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); }
   });
 
-  // X eksen etiketleri
   ctx.fillStyle = '#9aa3ba'; ctx.font = '11px system-ui'; ctx.textAlign = 'center';
   haftalar.forEach((hafta, i) => {
     const x = padding + i * stepX;
@@ -922,7 +920,6 @@ function analizEkrani() {
     return '<option value="' + k + '"' + (analizSecim === k ? ' selected' : '') + '>' + etiket + '</option>';
   }).join('');
 
-  // Grafik veri fonksiyonları
   const veriFonksiyonlari = {
     genel: h => {
       const tyt = netToplam(h.tyt), ayt = netToplam(h.ayt);
@@ -932,14 +929,14 @@ function analizEkrani() {
   dersler.forEach(d => {
     veriFonksiyonlari[d.key] = h => {
       const src = d.tur === 'TYT' ? h.tyt : h.ayt;
-      return src && typeof src[d.key.replace(d.tur.toLowerCase() + '_', '')] === 'number' ? src[d.key.replace(d.tur.toLowerCase() + '_', '')] : null;
+      const field = d.key.replace(d.tur.toLowerCase() + '_', '');
+      return src && typeof src[field] === 'number' ? src[field] : null;
     };
   });
 
   const seciliVeriAl = veriFonksiyonlari[analizSecim] || veriFonksiyonlari.genel;
   const renk = analizSecim === 'genel' ? '#8fb0ff' : '#5be3b0';
 
-  // Haftalık çalışma saatleri tablo
   const saatlerTablosu = haftalar.map(h => {
     const s = haftaCalismaSaatleri(h.hafta);
     return '<tr><td>' + gunAdi(h.hafta) + '</td><td>' + sureYaz(s.toplam) + '</td>' +
@@ -965,6 +962,7 @@ function analizEkrani() {
         '<div class="soluk" style="font-size:13px">TYT: ' + netYaz(tyt) + ' · AYT: ' + netYaz(ayt) + ' · Toplam: ' + netYaz((tyt||0)+(ayt||0)) + ' · ⏱ ' + sureYaz(s.toplam) + '</div>' +
         '</div>';
     }).join(''));
+}
 
 function haftalikEkrani() {
   const alt = '<div class="alt"><button class="' + (haftaAlt === 'form' ? 'aktif' : '') + '" onclick="haftaAlt=\'form\';ekranCiz()">Güncelleme</button>' +
@@ -972,22 +970,6 @@ function haftalikEkrani() {
   if (haftaAlt === 'form') return alt + haftaFormu();
   return alt + analizEkrani();
 }
-
-// Grafik çizimini tetikle (ekran çizildikten sonra)
-const eskiEkranCiz = ekranCiz;
-ekranCiz = function() {
-  eskiEkranCiz();
-  if (aktifTab === 'haftalik' && haftaAlt === 'analiz') {
-    const haftalar = [...S.haftalar].sort((a, b) => a.hafta.localeCompare(b.hafta));
-    const alan = S.profil.alan || 'SAY';
-    const dersler = tumDersler(alan);
-    const veriFonksiyonlari = { genel: h => { const tyt = netToplam(h.tyt), ayt = netToplam(h.ayt); return (tyt !== null || ayt !== null) ? (tyt || 0) + (ayt || 0) : null; }};
-    dersler.forEach(d => { veriFonksiyonlari[d.key] = h => { const src = d.tur === 'TYT' ? h.tyt : h.ayt; return src && typeof src[d.key.replace(d.tur.toLowerCase() + '_', '')] === 'number' ? src[d.key.replace(d.tur.toLowerCase() + '_', '')] : null; }; });
-    const seciliVeriAl = veriFonksiyonlari[analizSecim] || veriFonksiyonlari.genel;
-    const renk = analizSecim === 'genel' ? '#8fb0ff' : '#5be3b0';
-    grafikCiz('haftaGrafik', haftalar, seciliVeriAl, renk);
-  }
-};
 
 /* ===== HAFTALIK PROGRAM ===== */
 const GUN_ADLARI = ['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'];
@@ -1152,7 +1134,7 @@ function dodoSohbetCiz(yaziyor, hata) {
 }
 
 const DODO_KEY = 'dodo_api_anahtari';
-const DODO_MODEL = 'gemini-3.8-flash';
+const DODO_MODEL = 'gemini-1.5-flash';
 function dodoOku(k, v) { try { const x = localStorage.getItem(k); return x ? JSON.parse(x) : v; } catch (e) { return v; } }
 function dodoYaz(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 function dodoAnahtar() { try { return localStorage.getItem(DODO_KEY) || ''; } catch (e) { return ''; } }
@@ -1161,7 +1143,6 @@ function dodoModel() { return (dodoOku('dodo_ayar', {}).model || '').trim() || D
 async function geminiIstek(icerikler, sistem, gorselBase64) {
   const anahtar = dodoAnahtar();
   if (!anahtar) throw new Error('API anahtarı yok. Ayarlar sekmesinden Gemini API anahtarını ekle.');
-  // Son kullanıcı mesajına görsel varsa ekle
   const iceriklerKopya = JSON.parse(JSON.stringify(icerikler));
   if (gorselBase64) {
     const sonKullanici = iceriklerKopya.length - 1;
@@ -1195,7 +1176,7 @@ async function dodoMesajGonder(metin, gorunen) {
   const giris = document.getElementById('sohbetGiris');
   const hazir = typeof metin === 'string';
   const m = String(hazir ? metin : (giris ? giris.value : '')).trim();
-  if (!m && !dodoFotoBase64) return; // Metin veya foto olmalı
+  if (!m && !dodoFotoBase64) return;
   const l = dodoOku('dodo_sohbet', []);
   const kullaniciMesaji = {r: 'user', t: m, g: gorunen || '', z: Date.now(), hasImage: !!dodoFotoBase64};
   l.push(kullaniciMesaji);
@@ -1276,7 +1257,7 @@ const TABLAR = [
   {id:'hedefler', ad:'Hedefler', ikon:IK('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>')},
   {id:'ayarlar', ad:'Ayarlar', ikon:IK('<path d="M4 7h10m4 0h2M4 17h2m4 0h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>')}
 ];
-                      
+
 const EKRAN = {
   gorevler()  { return gorevlerEkrani(); },
   kaynaklar() {
@@ -1301,6 +1282,17 @@ function tabCiz() {
 }
 function ekranCiz() {
   document.getElementById('icerik').innerHTML = '<section class="sayfa acik' + (animasyon ? ' anim' : '') + '">' + EKRAN[aktifTab]() + '</section>';
+  // Analiz grafiğini çiz
+  if (aktifTab === 'haftalik' && haftaAlt === 'analiz') {
+    const haftalar = [...S.haftalar].sort((a, b) => a.hafta.localeCompare(b.hafta));
+    const alan = S.profil.alan || 'SAY';
+    const dersler = tumDersler(alan);
+    const veriFonksiyonlari = { genel: h => { const tyt = netToplam(h.tyt), ayt = netToplam(h.ayt); return (tyt !== null || ayt !== null) ? (tyt || 0) + (ayt || 0) : null; }};
+    dersler.forEach(d => { veriFonksiyonlari[d.key] = h => { const src = d.tur === 'TYT' ? h.tyt : h.ayt; const field = d.key.replace(d.tur.toLowerCase() + '_', ''); return src && typeof src[field] === 'number' ? src[field] : null; }; });
+    const seciliVeriAl = veriFonksiyonlari[analizSecim] || veriFonksiyonlari.genel;
+    const renk = analizSecim === 'genel' ? '#8fb0ff' : '#5be3b0';
+    grafikCiz('haftaGrafik', haftalar, seciliVeriAl, renk);
+  }
 }
 function tabGit(id) {
   aktifTab = id; animasyon = true; tabCiz(); ekranCiz(); animasyon = false;
@@ -1336,7 +1328,7 @@ planYenile(); programUygula(); baslikGuncelle(); tabGit('gorevler');
 
 function dodoAc() {
   if (document.body.classList.contains('dodoAcik')) return;
-  document.getElementById('dodoSek').innerHTML = '<button type="type" onclick="dodoSohbetTemizle()">🗑 Sohbeti Temizle</button>';
+  document.getElementById('dodoSek').innerHTML = '<button type="button" onclick="dodoSohbetTemizle()">🗑 Sohbeti Temizle</button>';
   document.getElementById('dodoIcerik').innerHTML = dodoSohbetEkrani();
   dodoSohbetCiz();
   document.body.classList.add('dodoAcik');
