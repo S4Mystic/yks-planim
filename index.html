@@ -153,6 +153,37 @@ select:disabled{opacity:.4}
 .foto{position:relative}
 .foto img{width:84px;height:84px;object-fit:cover;border-radius:12px;display:block}
 .foto button{position:absolute;top:-6px;right:-6px;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:var(--kirmizi);color:#10131a;font-size:14px}
+
+/* ===== YENİ: renk, nav sıkıştırma (7 sekme) ===== */
+:root{--sari:#ffd166}
+nav{gap:4px;padding-left:6px;padding-right:6px}
+nav button{font-size:8.5px}
+
+/* ===== ECOLI AI: SOHBET ===== */
+#dodoIcerik{display:flex;flex-direction:column;overflow:hidden;padding:0}
+.sohbetAlan{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:6px 16px 10px;display:flex;flex-direction:column;gap:10px}
+.bal{max-width:86%;padding:10px 14px;border-radius:18px;font-size:15px;line-height:1.45;overflow-wrap:anywhere}
+.bal.ben{align-self:flex-end;background:var(--degrade);color:#0b0d14;border-bottom-right-radius:6px;box-shadow:0 6px 16px rgba(124,156,255,.3)}
+.bal.ai{align-self:flex-start;background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.05));border:1px solid var(--kenar);border-bottom-left-radius:6px}
+.bal.yaziyor{color:var(--soluk)}
+.bal.hata{border-color:rgba(255,122,122,.5);color:var(--kirmizi)}
+.sohbetCip{display:flex;gap:8px;overflow-x:auto;padding:0 16px 8px}
+.sohbetCip button{flex:none;min-height:40px;padding:0 14px;border-radius:14px;border:1px solid var(--kenar);background:rgba(255,255,255,.07);color:var(--yazi);font-family:inherit;font-size:14px}
+.sohbetGiris{display:flex;gap:8px;padding:8px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.08)}
+.sohbetGiris textarea{flex:1;min-width:0;min-height:48px;height:48px;max-height:120px;margin:0;resize:none}
+.sohbetGiris .btn{flex:none;width:52px;margin:0;padding:0;min-height:48px;line-height:48px}
+
+/* ===== YANLIŞLAR ===== */
+.yFoto{display:block;width:100%;max-height:260px;object-fit:contain;border-radius:12px;margin-top:10px;background:rgba(0,0,0,.25)}
+
+/* ===== KONU TAKİP ===== */
+.dersBaslik{display:block;width:100%;background:none;border:0;padding:0;color:inherit;font-family:inherit;font-size:inherit;text-align:left}
+.konuSatir{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.08)}
+.konuSatir span{flex:1;font-size:15px}
+.durum{flex:none;min-width:112px;min-height:44px;padding:0 10px;border-radius:12px;border:1px solid var(--kenar);font-family:inherit;font-size:12.5px;font-weight:600;transition:all .2s}
+.durum.d0{background:rgba(255,122,122,.14);color:var(--kirmizi);border-color:rgba(255,122,122,.4)}
+.durum.d1{background:rgba(255,209,102,.16);color:var(--sari);border-color:rgba(255,209,102,.45)}
+.durum.d2{background:rgba(91,227,176,.18);color:var(--yesil);border-color:rgba(91,227,176,.5)}
   
 /* Netlify rozetini gizle */
 .netlify-badge, [class*="netlify"] {
