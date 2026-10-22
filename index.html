@@ -643,8 +643,8 @@ function hedeflerEkrani() {
     '<label class="alan">Sınav tarihi<input type="date" id="p_tarih" value="' + esc(p.sinavTarihi) + '"></label>' +
     '<button class="btn" onclick="profilKaydet()">Kaydet</button>');
 
-  return kart('Sınava kalan süre', sayac) + hedef + form;
-}
+    return '<button class="btn ikincil" style="margin:0 0 12px" onclick="tabGit(\'konular\')">📚 Konu takip matrisi</button>' +
+    kart('Sınava kalan süre', sayac) + hedef + form;
 
 /* ===== ADIM 6A: HAFTALIK GÜNCELLEME ===== */
 const TYT_DERS = [['turkce','Türkçe',40],['sosyal','Sosyal Bilimler',20],['mat','Temel Matematik',40],['fen','Fen Bilimleri',20]];
