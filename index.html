@@ -789,11 +789,12 @@ function haftaKaydet() {
     for (const d of liste) { const n = parseFloat(al(on + d[0])); if (!isNaN(n)) o[d[0]] = n; }
     return o;
   };
-  const kayit = {hafta:haftaSecili, alan:alan, tyt:oku('n_tyt_', TYT_DERS), ayt:oku('n_ayt_', AYT_DERS[alan] || []), zorKonular:al('h_zor')};
+  const kayit = {hafta: haftaSecili, alan: alan, tyt: oku('n_tyt_', TYT_DERS), ayt: oku('n_ayt_', AYT_DERS[alan] || [])};
   const i = S.haftalar.findIndex(h => h.hafta === haftaSecili);
   if (i >= 0) S.haftalar[i] = kayit; else S.haftalar.push(kayit);
   kaydet(); ekranCiz(); bildir('Hafta kaydedildi ✓');
 }
+
 function haftalikEkrani() {
   const alt = '<div class="alt"><button class="' + (haftaAlt === 'form' ? 'aktif' : '') + '" onclick="haftaAlt=\'form\';ekranCiz()">Güncelleme</button>' +
     '<button class="' + (haftaAlt === 'analiz' ? 'aktif' : '') + '" onclick="haftaAlt=\'analiz\';ekranCiz()">Analiz</button></div>';
