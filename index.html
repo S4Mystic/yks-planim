@@ -1028,6 +1028,265 @@ function programEkrani() {
   return ust + gunler;
 }
 
+/* ===== YANLIŞLAR (HATA HAVUZU) ===== */
+let yanlisFiltre = {ders:'', konu:'', arsiv:false};
+let yanlisTaslak = {ders:'Matematik', konu:'', not:'', url:'', foto:''};  // form taslağı (yeniden çizimde kaybolmaz)
+let yanlisFormAcik = false;
+let yanlisPop = null;   // pop-quiz: {id, notAcik}
+
+/* Fotoğrafı küçült: uzun kenar 800 px, JPEG %55 (localStorage kotası için) */
+function yanlisFotoBoyut(f) {
+  return new Promise((ok, hata) => {
+    const u = URL.createObjectURL(f), im = new Image();
+    im.onload = () => {
+      const m = Math.max(im.width, im.height), o = m > 800 ? 800 / m : 1;
+      const c = document.createElement('canvas');
+      c.width = Math.round(im.width * o); c.height = Math.round(im.height * o);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(u);
+      ok(c.toDataURL('image/jpeg', 0.55));
+    };
+    im.onerror = () => { URL.revokeObjectURL(u); hata(new Error('okunamadı')); };
+    im.src = u;
+  });
+}
+
+/* --- Form --- */
+function yanlisAlan(k, v) { yanlisTaslak[k] = v; }
+function yanlisDersDegis(v) { yanlisTaslak.ders = v; ekranCiz(); }
+function yanlisFormToggle() { yanlisFormAcik = !yanlisFormAcik; ekranCiz(); }
+async function yanlisFotoSec(inp) {
+  const f = inp.files[0]; inp.value = '';
+  if (!f) return;
+  try { yanlisTaslak.foto = await yanlisFotoBoyut(f); } catch (e) { alert('Fotoğraf okunamadı.'); }
+  ekranCiz();
+}
+function yanlisFotoKaldir() { yanlisTaslak.foto = ''; ekranCiz(); }
+
+/* --- CRUD --- */
+function yanlisKaydet() {
+  const t = yanlisTaslak, konu = t.konu.trim(), url = t.url.trim();
+  if (!konu) return alert('Konuyu yaz. Örn: Türev');
+  if (url && !/^(https?:\/\/|data:image\/)/i.test(url)) return alert('Görsel linki http(s):// ile başlamalı.');
+  if (!t.not.trim() && !t.foto && !url) return alert('En az bir not ya da görsel ekle.');
+  S.yanlislar.push({id:yeniId(), tarih:bugun(), ders:t.ders, konu:konu, soruNotu:t.not.trim(), fotoUrl:t.foto || url, cozuldu:false});
+  try { kaydet(); } catch (e) {   // localStorage dolduysa geri al
+    S.yanlislar.pop();
+    return alert('Kayıt alanı doldu. Daha küçük fotoğraf kullan ya da çözülen soruları sil.');
+  }
+  yanlisTaslak = {ders:t.ders, konu:'', not:'', url:'', foto:''};
+  yanlisFormAcik = false;
+  ekranCiz(); bildir('Kaydedildi ✓');
+}
+
+function yanlisSil(id) {
+  if (!confirm('Bu soru silinsin mi?')) return;
+  S.yanlislar = S.yanlislar.filter(x => x.id !== id);
+  if (yanlisPop && yanlisPop.id === id) yanlisPop = null;
+  kaydet(); ekranCiz();
+}
+
+/* Çözüldü işareti: çözülenler Arşiv'e düşer, tekrar tikleyince geri gelir */
+function yanlisDurumTogle(id) {
+  const x = S.yanlislar.find(q => q.id === id);
+  if (!x) return;
+  x.cozuldu = !x.cozuldu;
+  if (x.cozuldu) { x.cozulduTarih = bugun(); if (yanlisPop && yanlisPop.id === id) yanlisPop = null; }
+  else delete x.cozulduTarih;
+  kaydet(); ekranCiz();
+}
+
+/* --- Filtre --- */
+function yanlisFiltreDegistir(k, v) {
+  yanlisFiltre[k] = v;
+  if (k === 'ders') yanlisFiltre.konu = '';
+  ekranCiz();
+}
+function yanlisSekme(arsiv) { yanlisFiltre.arsiv = arsiv; ekranCiz(); }
+function yanlisListe() {
+  const f = yanlisFiltre;
+  return S.yanlislar
+    .filter(x => !!x.cozuldu === f.arsiv && (!f.ders || x.ders === f.ders) && (!f.konu || x.konu === f.konu))
+    .sort((a, b) => a.tarih < b.tarih ? 1 : a.tarih > b.tarih ? -1 : 0);
+}
+
+/* --- Pop-quiz: çözülmemişlerden rastgele (aktif ders/konu filtresine uyar) --- */
+function rastgeleSoruGetir() {
+  const f = yanlisFiltre;
+  let havuz = S.yanlislar.filter(x => !x.cozuldu && (!f.ders || x.ders === f.ders) && (!f.konu || x.konu === f.konu));
+  if (!havuz.length) return alert('Çözülmemiş yanlış soru yok (filtreyi de kontrol et).');
+  if (havuz.length > 1 && yanlisPop) havuz = havuz.filter(x => x.id !== yanlisPop.id);
+  yanlisPop = {id: havuz[Math.floor(Math.random() * havuz.length)].id, notAcik: false};
+  ekranCiz();
+  document.getElementById('icerik').scrollTop = 0;
+}
+function yanlisPopNot() { if (yanlisPop) { yanlisPop.notAcik = true; ekranCiz(); } }
+function yanlisPopKapat() { yanlisPop = null; ekranCiz(); }
+
+/* Ecoli AI için özet metin (çözülmemişler, konuya göre gruplu) */
+function yanlisOzetMetni() {
+  const l = S.yanlislar.filter(x => !x.cozuldu);
+  if (!l.length) return '';
+  const g = {};
+  l.forEach(x => { const a = x.ders + ' - ' + x.konu; (g[a] = g[a] || []).push(x.soruNotu || '(not yok)'); });
+  const s = ['YANLIŞ SORU DEPOM (çözülmemiş ' + l.length + ' soru):'];
+  Object.entries(g).sort((a, b) => b[1].length - a[1].length)
+    .forEach(e => s.push('- ' + e[0] + ': ' + e[1].length + ' soru. Notlarım: ' + e[1].slice(0, 3).join(' / ')));
+  s.push('', 'Bu yanlışlardan zayıf konularımı ve hata kalıplarımı çıkar, öncelik sırasıyla ne çalışmam gerektiğini söyle.');
+  return s.join('\n');
+}
+
+/* --- Ekran parçaları --- */
+function yanlisKonuOner(ders) {
+  const s = new Set();
+  MUF.filter(m => m.ders === ders).forEach(m => m.konular.forEach(k => s.add(k)));
+  S.yanlislar.filter(x => x.ders === ders).forEach(x => s.add(x.konu));
+  return [...s].sort((a, b) => a.localeCompare(b, 'tr'));
+}
+
+function yanlisKart(x) {
+  return '<div class="gorev' + (x.cozuldu ? ' bitti' : '') + '">' +
+    '<label class="tikalan"><input type="checkbox" title="Çözüldü"' + (x.cozuldu ? ' checked' : '') + ' onchange="yanlisDurumTogle(\'' + x.id + '\')"></label>' +
+    '<div class="gmetin"><b>' + esc(x.ders) + ' · ' + esc(x.konu) + '</b><br><span class="soluk">' + gunAdi(x.tarih) + '</span>' +
+    (x.soruNotu ? '<br>' + esc(x.soruNotu) : '') +
+    (x.fotoUrl ? '<img class="yFoto" alt="" src="' + esc(x.fotoUrl) + '">' : '') + '</div>' +
+    '<button class="sil" aria-label="Sil" onclick="yanlisSil(\'' + x.id + '\')">✕</button></div>';
+}
+
+function yanlisPopKart() {
+  if (!yanlisPop) return '';
+  const x = S.yanlislar.find(q => q.id === yanlisPop.id);
+  if (!x) { yanlisPop = null; return ''; }
+  return kart('🎲 Pop-quiz: ' + esc(x.ders) + ' · ' + esc(x.konu),
+    (x.fotoUrl ? '<img class="yFoto" alt="" src="' + esc(x.fotoUrl) + '">' : '<p class="soluk">Bu sorunun görseli yok.</p>') +
+    '<p class="soluk">Önce soruyu kendin çöz, sonra notuna bak.</p>' +
+    (yanlisPop.notAcik ? '<p>' + (x.soruNotu ? esc(x.soruNotu) : 'Not yazmamışsın.') + '</p>'
+      : '<button class="btn ikincil" onclick="yanlisPopNot()">Notumu göster</button>') +
+    '<div class="ikili"><button class="btn" onclick="yanlisDurumTogle(\'' + x.id + '\')">✓ Çözdüm</button>' +
+    '<button class="btn ikincil" onclick="rastgeleSoruGetir()">Sonraki 🎲</button></div>' +
+    '<button class="btn ikincil" onclick="yanlisPopKapat()">Kapat</button>');
+}
+
+function yanlisFormKart() {
+  if (!yanlisFormAcik) return '<button class="btn" onclick="yanlisFormToggle()">＋ Yanlış soru ekle</button>';
+  const t = yanlisTaslak;
+  const dersler = DERSLER.map(d => '<option' + (d === t.ders ? ' selected' : '') + '>' + d + '</option>').join('');
+  return kart('Yanlış soru ekle',
+    '<label class="alan">Ders<select onchange="yanlisDersDegis(this.value)">' + dersler + '</select></label>' +
+    '<datalist id="yKonuListe">' + yanlisKonuOner(t.ders).map(k => '<option value="' + esc(k) + '">').join('') + '</datalist>' +
+    '<label class="alan">Konu<input type="text" list="yKonuListe" placeholder="Örn: Türev" value="' + esc(t.konu) + '" oninput="yanlisAlan(\'konu\',this.value)"></label>' +
+    '<label class="alan">Neden yanlış yaptım? (not)<textarea oninput="yanlisAlan(\'not\',this.value)" placeholder="Örn: Limit tanımını karıştırdım">' + esc(t.not) + '</textarea></label>' +
+    '<button class="btn ikincil" onclick="document.getElementById(\'yDosya\').click()">📷 Fotoğraf ekle</button>' +
+    '<input type="file" id="yDosya" accept="image/*" hidden onchange="yanlisFotoSec(this)">' +
+    (t.foto ? '<img class="yFoto" alt="" src="' + t.foto + '"><button class="btn ikincil" onclick="yanlisFotoKaldir()">Fotoğrafı kaldır</button>'
+      : '<label class="alan">veya görsel linki<input type="url" placeholder="https://..." value="' + esc(t.url) + '" oninput="yanlisAlan(\'url\',this.value)"></label>') +
+    '<button class="btn" onclick="yanlisKaydet()">Kaydet</button>' +
+    '<button class="btn ikincil" onclick="yanlisFormToggle()">Vazgeç</button>');
+}
+
+function yanlislarEkrani() {
+  const f = yanlisFiltre;
+  const aktifSay = S.yanlislar.filter(x => !x.cozuldu).length, arsivSay = S.yanlislar.length - aktifSay;
+  const konular = [...new Set(S.yanlislar.filter(x => !f.ders || x.ders === f.ders).map(x => x.konu))].sort((a, b) => a.localeCompare(b, 'tr'));
+  const sec = (liste, v, bos) => '<option value="">' + bos + '</option>' +
+    liste.map(x => '<option' + (x === v ? ' selected' : '') + '>' + esc(x) + '</option>').join('');
+
+  const ust = '<button class="btn" style="margin:0 0 12px" onclick="rastgeleSoruGetir()">🎲 Rastgele soru getir (' + aktifSay + ')</button>';
+  const alt = '<div class="alt"><button class="' + (f.arsiv ? '' : 'aktif') + '" onclick="yanlisSekme(false)">Çözülmemiş (' + aktifSay + ')</button>' +
+    '<button class="' + (f.arsiv ? 'aktif' : '') + '" onclick="yanlisSekme(true)">Arşiv (' + arsivSay + ')</button></div>';
+  const filtre = kart('Filtre',
+    '<label class="alan">Ders<select onchange="yanlisFiltreDegistir(\'ders\',this.value)">' + sec(DERSLER, f.ders, 'Tüm dersler') + '</select></label>' +
+    '<label class="alan">Konu<select onchange="yanlisFiltreDegistir(\'konu\',this.value)">' + sec(konular, f.konu, 'Tüm konular') + '</select></label>');
+  const liste = yanlisListe();
+  const kartlar = kart((f.arsiv ? 'Arşiv' : 'Çözülmemiş sorular') + ' (' + liste.length + ')',
+    liste.length ? liste.map(yanlisKart).join('') + (f.arsiv ? '' : '<p class="soluk">Çözdüğünde kutuyu işaretle, soru arşive düşer.</p>')
+      : '<p class="soluk">' + (f.arsiv ? 'Arşivde soru yok.' : 'Burada soru yok. Aşağıdan yanlış yaptığın bir soruyu ekle.') + '</p>');
+
+  return ust + yanlisPopKart() + alt + filtre + kartlar + yanlisFormKart();
+}
+
+/* ===== TYT / AYT KONU TAKİP MATRİSİ ===== */
+// [sınav, ders, 'konu1|konu2|...']
+const MUF = [
+  ['TYT','Türkçe','Sözcükte Anlam|Cümlede Anlam|Paragraf|Ses Bilgisi|Yazım Kuralları|Noktalama İşaretleri|Sözcük Türleri|Fiiller ve Fiilimsiler|Cümlenin Ögeleri|Cümle Türleri|Anlatım Bozukluğu|Sözcükte Yapı'],
+  ['TYT','Matematik','Temel Kavramlar|Sayı Basamakları|Bölme ve Bölünebilme|EBOB-EKOK|Rasyonel Sayılar|Basit Eşitsizlikler|Mutlak Değer|Üslü Sayılar|Köklü Sayılar|Çarpanlara Ayırma|Oran-Orantı|Denklem Çözme|Problemler|Kümeler|Fonksiyonlar|Permütasyon-Kombinasyon-Olasılık|Veri ve İstatistik'],
+  ['TYT','Geometri','Temel Kavramlar ve Doğruda Açılar|Üçgende Açılar|Dik ve Özel Üçgenler|Açıortay-Kenarortay|Üçgende Alan ve Benzerlik|Çokgenler|Dörtgenler|Çember ve Daire|Analitik Geometri|Katı Cisimler'],
+  ['TYT','Fizik','Fizik Bilimine Giriş|Madde ve Özellikleri|Hareket ve Kuvvet|İş-Güç-Enerji|Isı-Sıcaklık-Genleşme|Basınç|Kaldırma Kuvveti|Elektrostatik|Elektrik Akımı ve Devreler|Manyetizma|Dalgalar|Optik'],
+  ['TYT','Kimya','Kimya Bilimi|Atom ve Periyodik Sistem|Kimyasal Türler Arası Etkileşimler|Maddenin Halleri|Kimyanın Temel Kanunları|Mol Kavramı|Kimyasal Hesaplamalar|Karışımlar|Asitler-Bazlar-Tuzlar|Kimya Her Yerde'],
+  ['TYT','Biyoloji','Canlıların Ortak Özellikleri|Canlıların Temel Bileşenleri|Hücre ve Organeller|Madde Geçişleri|Canlıların Sınıflandırılması|Hücre Bölünmeleri|Kalıtım|Ekosistem Ekolojisi'],
+  ['TYT','Tarih','Tarih ve Zaman|İlk ve Orta Çağlarda Türk Dünyası|İslam Medeniyetinin Doğuşu|İlk Türk-İslam Devletleri|Osmanlı Kuruluş ve Yükselme|Osmanlı Dünya Gücü|Değişim Çağı|Osmanlı Dağılma ve Yenileşme|Milli Mücadele|Atatürk İlke ve İnkılapları'],
+  ['TYT','Coğrafya','Doğa ve İnsan|Dünya\'nın Şekli ve Hareketleri|Harita Bilgisi|İklim Bilgisi|Yerin Şekillenmesi|Su-Toprak-Bitki|Nüfus ve Yerleşme|Ekonomik Faaliyetler|Bölgeler ve Ülkeler|Doğal Afetler'],
+  ['TYT','Felsefe','Felsefenin Konusu|Bilgi Felsefesi|Varlık Felsefesi|Ahlak Felsefesi|Siyaset Felsefesi|Sanat Felsefesi|Din Felsefesi|Bilim Felsefesi'],
+  ['TYT','Din Kültürü','İnanç|İbadet|Ahlak ve Değerler|Hz. Muhammed\'in Hayatı|Vahiy ve Akıl|Yaşayan Dinler|Din ve Hayat'],
+  ['AYT','Matematik','Polinomlar|İkinci Dereceden Denklemler|Karmaşık Sayılar|Parabol|Eşitsizlikler ve Mutlak Değer|Logaritma|Diziler|Trigonometri|Limit|Türev|İntegral|Binom ve Olasılık'],
+  ['AYT','Geometri','Üçgenler|Çokgenler ve Dörtgenler|Çember ve Daire|Analitik Geometri|Çemberin Analitik İncelenmesi|Katı Cisimler'],
+  ['AYT','Fizik','Vektörler|Bağıl Hareket|Newton\'un Hareket Yasaları|İki Boyutta Hareket|Enerji ve Hareket|İtme ve Momentum|Tork ve Denge|Elektriksel Kuvvet ve Alan|Elektriksel Potansiyel ve Sığa|Manyetizma ve İndüksiyon|Alternatif Akım ve Transformatör|Çembersel Hareket|Kütle Çekim ve Kepler|Basit Harmonik Hareket|Dalga Mekaniği|Modern Fizik'],
+  ['AYT','Kimya','Modern Atom Teorisi|Gazlar|Sıvı Çözeltiler|Kimyasal Tepkimelerde Enerji|Kimyasal Tepkimelerde Hız|Kimyasal Denge|Asit-Baz Dengesi|Çözünürlük Dengesi|Kimya ve Elektrik|Karbon Kimyasına Giriş|Organik Bileşikler'],
+  ['AYT','Biyoloji','Sinir Sistemi|Endokrin Sistem|Duyu Organları|Destek ve Hareket Sistemi|Sindirim Sistemi|Dolaşım Sistemi|Solunum Sistemi|Boşaltım Sistemi|Üreme ve Embriyonik Gelişim|Komünite ve Popülasyon Ekolojisi|Genden Proteine|Biyoteknoloji|Fotosentez-Kemosentez|Hücresel Solunum|Bitki Biyolojisi'],
+  ['AYT','Edebiyat','Güzel Sanatlar ve Edebiyat|Şiir Bilgisi|Edebi Sanatlar|İslamiyet Öncesi ve Geçiş Dönemi|Halk Edebiyatı|Divan Edebiyatı|Tanzimat Edebiyatı|Servet-i Fünun ve Fecr-i Ati|Milli Edebiyat|Cumhuriyet Dönemi Şiir|Cumhuriyet Dönemi Roman ve Hikâye|Edebi Akımlar|Dünya Edebiyatı'],
+  ['AYT','Tarih','Osmanlı Kuruluş ve Yükselme|Osmanlı Kültür ve Medeniyeti|XVII. Yüzyıl|XVIII. Yüzyıl|XIX. Yüzyıl|XX. Yüzyıl Başı|I. Dünya Savaşı|Milli Mücadele|Atatürkçülük ve İnkılaplar|İki Savaş Arası Dönem|II. Dünya Savaşı|Soğuk Savaş ve Sonrası'],
+  ['AYT','Coğrafya','Ekosistem ve Biyoçeşitlilik|Nüfus Politikaları|Türkiye\'de Nüfus|Şehirlerin Fonksiyonları|Tarım ve Hayvancılık|Madenler ve Enerji|Ulaşım ve Ticaret|Turizm|Bölgesel Kalkınma|Çevre ve Doğal Kaynaklar|Jeopolitik'],
+  ['AYT','Felsefe','Felsefenin Alanı|MÖ 6. yy - MS 2. yy Felsefesi|MS 2 - 15. yy Felsefesi|15 - 17. yy Felsefesi|18 - 19. yy Felsefesi|20. yy Felsefesi|Mantık|Psikoloji|Sosyoloji'],
+  ['AYT','Din Kültürü','Dünya ve Ahiret|Kur\'an\'a Göre Hz. Muhammed|Kur\'an\'da Bazı Kavramlar|İnançla İlgili Meseleler|Yahudilik ve Hristiyanlık|İslam ve Bilim|Anadolu\'da İslam|Çağdaş Sorunlar']
+].map(m => ({tur: m[0], ders: m[1], konular: m[2].split('|')}));
+
+const KONU_DURUM = ['Çalışılmadı', 'Konu Bitti', 'Tekrar/Soru ✓'];   // 0 kırmızı, 1 sarı, 2 yeşil
+let konuTur = 'TYT';
+let konuAcik = -1;   // açık olan dersin MUF indeksi
+
+function konuAnahtar(m, k) { return m.tur + '|' + m.ders + '|' + k; }
+
+/* Dokununca durum döner: 0 → 1 → 2 → 0 (0 ise kayıt silinir) */
+function konuDurumDegis(i, j) {
+  const m = MUF[i], a = konuAnahtar(m, m.konular[j]);
+  const n = ((S.konuTakip[a] || 0) + 1) % 3;
+  if (n) S.konuTakip[a] = n; else delete S.konuTakip[a];
+  kaydet(); ekranCiz();
+}
+function konuAc(i) { konuAcik = konuAcik === i ? -1 : i; ekranCiz(); }
+function konuTurDegis(t) { konuTur = t; konuAcik = -1; ekranCiz(); }
+
+/* Ders durumu: yeşil = 1 puan, sarı = 0.5 puan; yüzde = puan / konu sayısı */
+function konuSay(m) {
+  const s = [0, 0, 0];
+  m.konular.forEach(k => s[S.konuTakip[konuAnahtar(m, k)] || 0]++);
+  return s;
+}
+function konuPuan(s) { return s[2] + s[1] * 0.5; }
+function konuYuzde(m) { return Math.round(konuPuan(konuSay(m)) / m.konular.length * 100); }
+
+function konuTakipEkrani() {
+  const liste = MUF.map((m, i) => ({m: m, i: i})).filter(x => x.m.tur === konuTur);
+  let puan = 0, say = 0;
+  liste.forEach(x => { puan += konuPuan(konuSay(x.m)); say += x.m.konular.length; });
+  const genel = say ? Math.round(puan / say * 100) : 0;
+
+  const alt = '<div class="alt">' + ['TYT', 'AYT'].map(t =>
+    '<button class="' + (konuTur === t ? 'aktif' : '') + '" onclick="konuTurDegis(\'' + t + '\')">' + t + '</button>').join('') + '</div>';
+
+  const ust = kart('Konu takip · ' + konuTur,
+    '<div class="satir"><div class="sayi">%' + genel + '</div><div class="soluk">genel ilerleme</div></div>' +
+    '<div class="cubuk"><div style="width:' + genel + '%"></div></div>' +
+    '<p class="soluk">Konuya dokun: <span style="color:var(--kirmizi)">Çalışılmadı</span> → <span style="color:var(--sari)">Konu Bitti</span> → <span style="color:var(--yesil)">Tekrar/Soru ✓</span>. Yeşil tam, sarı yarım puan sayılır.</p>' +
+    '<button class="btn ikincil" onclick="tabGit(\'hedefler\')">← Hedeflere dön</button>');
+
+  const dersler = liste.map(x => {
+    const m = x.m, s = konuSay(m), y = konuYuzde(m), acik = konuAcik === x.i;
+    const baslik = '<button class="dersBaslik" onclick="konuAc(' + x.i + ')">' +
+      '<div class="toplam" style="border:0;padding:0"><b>' + esc(m.ders) + '</b><b>%' + y + ' ' + (acik ? '▲' : '▼') + '</b></div>' +
+      '<div class="cubuk"><div style="width:' + y + '%"></div></div>' +
+      '<span class="soluk">' + s[0] + ' çalışılmadı · ' + s[1] + ' bitti · ' + s[2] + ' tamam</span></button>';
+    const satirlar = acik ? m.konular.map((k, j) => {
+      const d = S.konuTakip[konuAnahtar(m, k)] || 0;
+      return '<div class="konuSatir"><span>' + esc(k) + '</span>' +
+        '<button class="durum d' + d + '" onclick="konuDurumDegis(' + x.i + ',' + j + ')">' + KONU_DURUM[d] + '</button></div>';
+    }).join('') : '';
+    return '<div class="kart">' + baslik + satirlar + '</div>';
+  }).join('');
+
+  return alt + ust + dersler;
+}    
+  
 /* ===== SEKMELER ===== */
 const IK = p => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>';
 let animasyon = false;
