@@ -85,7 +85,7 @@ a{color:#9db6ff}
 .btn{border-radius:18px;background:var(--degrade);color:#0b0d14;box-shadow:0 8px 22px rgba(124,156,255,.35),inset 0 1px 0 rgba(255,255,255,.5);transition:transform .15s,box-shadow .2s}
 .btn.ikincil{background:rgba(255,255,255,.09);color:var(--yazi);border:1px solid var(--kenar);box-shadow:inset 0 1px 0 rgba(255,255,255,.15)}
 .btn:active,nav button:active,.sil:active{transform:scale(.95)}
-input[type=text],input[type=url],input[type=number],input[type=date],select,textarea{background:rgba(255,255,255,.07);border:1px solid var(--kenar);border-radius:14px;transition:border-color .2s,box-shadow .2s}
+input[type=text],input[type=url],input[type=number],input[type=password],input[type=date],select,textarea{background:rgba(255,255,255,.07);border:1px solid var(--kenar);border-radius:14px;transition:border-color .2s,box-shadow .2s}
 input[type]:focus,select:focus,textarea:focus{outline:0;border-color:#8fb0ff;box-shadow:0 0 0 3px rgba(143,176,255,.25)}
 select option{background:#1a1d2b;color:#f1f3fa}
 .cip span{border-radius:14px;background:rgba(255,255,255,.07);border:1px solid var(--kenar);transition:all .2s}
@@ -158,6 +158,8 @@ body.dodoAcik #dodoPanel{transform:translateY(0);opacity:1;visibility:visible;tr
 .sohbetGiris{display:flex;gap:8px;padding:8px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.08)}
 .sohbetGiris textarea{flex:1;min-width:0;min-height:48px;height:48px;max-height:120px;margin:0;resize:none}
 .sohbetGiris .btn{flex:none;width:52px;margin:0;padding:0;min-height:48px;line-height:48px}
+.sifreSatir{display:flex;gap:8px;align-items:center;margin-top:0}.sifreSatir input{flex:1;min-width:0;margin-top:0;width:auto}.gozBtn{flex:none;width:44px;height:44px;border:0;border-radius:14px;background:rgba(255,255,255,.08);color:var(--soluk);font-size:18px;cursor:pointer;display:grid;place-items:center}
+.gunBaslik{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}.gunBaslik span{font-weight:600;font-size:15px}.kisibtn{flex:none;width:42px;height:32px;border:0;border-radius:8px;background:rgba(255,255,255,.07);color:var(--soluk);font-size:11px;cursor:pointer;border:1px solid var(--kenar)}.kisibtn:disabled{opacity:.4;cursor:not-allowed}.kisibtn:hover:not(:disabled){background:rgba(255,255,255,.15)}
 
 /* ===== YANLIŞLAR ===== */
 .yFoto{display:block;width:100%;max-height:260px;object-fit:contain;border-radius:12px;margin-top:10px;background:rgba(0,0,0,.25)}
@@ -434,27 +436,40 @@ function gorevSatir(g) {
 }
 
 function gorevlerEkrani() {
+  const bg = bugun();
   const liste = bugunGorevleri().sort((a, b) => (a.bitti ? 1 : 0) - (b.bitti ? 1 : 0));
-  const biten = liste.filter(g => g.bitti);
-  const yuzde = liste.length ? Math.round(biten.length / liste.length * 100) : 0;
+
+  // Günlük rutınleri yüzde ve sayıya ekle
+  const rutinlerListesi = RUTIN_LISTESI.map(rutin => ({
+    adi: rutin,
+    bitti: (S.rutinler || []).some(r => r.tarih === bg && r.rutin === rutin)
+  }));
+  const rutinBitti = rutinlerListesi.filter(r => r.bitti).length;
+  const rutinToplam = rutinlerListesi.length;
+
+  const gorevBitti = liste.filter(g => g.bitti).length;
+  const toplamGorev = liste.length + rutinToplam;
+  const toplamBitti = gorevBitti + rutinBitti;
+  const yuzde = toplamGorev ? Math.round(toplamBitti / toplamGorev * 100) : 0;
+
   const seri = seriHesapla();
   const st = toplamlar().bugun;
 
   const ust = kart('Bugün ne yaptım',
-    '<div class="satir"><div class="sayi">%' + yuzde + '</div><div class="soluk">' + biten.length + ' / ' + liste.length + ' görev tamam</div></div>' +
+    '<div class="satir"><div class="sayi">%' + yuzde + '</div><div class="soluk">' + toplamBitti + ' / ' + toplamGorev + ' görev tamam</div></div>' +
     '<div class="cubuk"><div style="width:' + yuzde + '%"></div></div>' +
     '<p>🔥 ' + (seri ? seri + ' gün seri' : 'Seri yok. Bugün bir görev bitirip seriyi başlat.') + '</p>' +
     (st ? '<p>⏱️ Bugün ' + sureYaz(st) + ' çalıştın.</p>': ''));
 
-  const gorevler = kart('Bugünün görevleri', liste.length ? liste.map(gorevSatir).join('')
-    : '<p class="soluk">Bugün için görev yok. Aşağıdan kendi görevini yazabilirsin.</p>');
+  const gorevlerHtml = kart('Bugünün görevleri', liste.length ? liste.map(gorevSatir).join('')
+    : '<p class="soluk">Bugün için kaynak veya elle eklenmiş görev yok.</p>');
 
   const form = kart('Görev ekle',
     '<label class="alan">Türü<select id="e_tur"><option>Soru çözümü</option><option>Deneme</option><option>Konu tekrarı</option><option>Diğer</option></select></label>' +
     '<label class="alan">Ne yapacaksın?<input type="text" id="e_metin" placeholder="Örn: Matematik 40 soru"></label>' +
     '<button class="btn" onclick="elleEkle()">Ekle</button>');
 
-  return '<button class="btn ikincil" style="margin:0 0 12px" onclick="tabGit(\'program\')">📅 Haftalık program</button>' + rutinlerKart() + ust + gorevler + form;
+  return '<button class="btn ikincil" style="margin:0 0 12px" onclick="tabGit(\'program\')">📅 Haftalık program</button>' + rutinlerKart() + ust + gorevlerHtml + form;
 }
 
 /* ===== SÜRE TUTUCU ===== */
@@ -789,6 +804,7 @@ function haftalikEkrani() {
 /* ===== HAFTALIK PROGRAM ===== */
 const GUN_ADLARI = ['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'];
 let programHafta = haftaBasi();
+let programKopilamisGun = null;
 function gunTarihi(m, i) { const d = tarihDon(m); d.setDate(d.getDate() + i); return tarihStr(d); }
 function programAl(m) { if (!S.program[m]) S.program[m] = [[], [], [], [], [], [], []]; return S.program[m]; }
 function programUygula() {
@@ -819,15 +835,44 @@ function programSil(i, id) {
   if (k >= 0) l.splice(k, 1);
   programUygula(); ekranCiz();
 }
+function programKopala(i) {
+  const m = programHafta;
+  const liste = (S.program[m] || [])[i] || [];
+  programKopilamisGun = {hafta: m, gun: i, liste: JSON.parse(JSON.stringify(liste))};
+  bildir(GUN_ADLARI[i] + ' kopyalandı');
+  ekranCiz();
+}
+function programYapistir(i) {
+  if (!programKopilamisGun) return bildir('Önce bir gün kopyalayın');
+  const m = programHafta;
+  if (!S.program[m]) S.program[m] = [[],[],[],[],[],[],[]];
+  S.program[m][i] = JSON.parse(JSON.stringify(programKopilamisGun.liste));
+  programUygula();
+  ekranCiz();
+  bildir('Yapıştırıldı');
+}
+function programKopalaHafta() {
+  const onceki = gunTarihi(programHafta, -7);
+  const oncekiListe = S.program[onceki];
+  if (!oncekiListe) return bildir('Önceki haftada program yok');
+  S.program[programHafta] = JSON.parse(JSON.stringify(oncekiListe));
+  programUygula();
+  ekranCiz();
+  bildir('Önceki hafta kopyalandı');
+}
 function programEkrani() {
   const m = programHafta, bg = bugun();
   const ust = kart('Haftalık Program',
-    '<div class="ikili"><button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,-7);ekranCiz()">◀ Önceki</button>' +
-    '<button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,7);ekranCiz()">Sonraki ▶</button></div>' +
+    '<div class="ikili"><button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,-7);ekranCiz()">◀ Önceki Hafta</button>' +
+    '<button class="btn" onclick="programKopalaHafta()">📋 Önceki Haftadan Kopyala</button>' +
+    '<button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,7);ekranCiz()">Sonraki Hafta ▶</button></div>' +
     '<button class="btn ikincil" onclick="tabGit(\'gorevler\')" style="margin-top:10px">← Görevlere Dön</button>');
   const gunler = GUN_ADLARI.map((ad, i) => {
     const ds = gunTarihi(m, i), liste = (S.program[m] || [])[i] || [];
-    return kart(ad + (ds === bg ? ' (Bugün)' : ''),
+    return kart('',
+      '<div class="gunBaslik"><span>' + esc(ad) + (ds === bg ? ' (Bugün)' : '') + '</span>' +
+      '<button class="kisibtn" onclick="programKopala(' + i + ')">Kopla</button>' +
+      '<button class="kisibtn" onclick="programYapistir(' + i + ')"' + (!programKopilamisGun ? ' disabled' : '') + '>Yapıştır</button></div>' +
       liste.map(it => '<div class="kayit"><div>' + esc(it.metin) + '</div><button class="sil" onclick="programSil(' + i + ',\'' + it.id + '\')">✕</button></div>').join('') +
       '<div class="ekleSatir"><input type="text" id="pg_' + i + '" placeholder="Örn: 40 soru" onkeydown="if(event.key===\'Enter\')programEkle(' + i + ')"><button class="btn" onclick="programEkle(' + i + ')">Ekle</button></div>');
   }).join('');
@@ -953,7 +998,7 @@ function dodoSohbetTemizle() {
 
 function dodoAyarKarti() {
   return kart('🦤 Ecoli AI (Gemini)',
-    '<label class="alan">Gemini API anahtarı<div class="sifreSatir"><input type="password" id="d_key" value="' + esc(dodoAnahtar()) + '"><button type="button" class="gozBtn" onclick="dodoGozToggle(this)" aria-label="Göster/Gizle">👁</button></div></label>' +
+    '<label class="alan">Gemini API anahtarı<div class="sifreSatir"><input type="password" id="d_key" value="' + esc(dodoAnahtar()) + '"><button type="button" class="gozBtn" onclick="dodoGozToggle(this)" aria-label="Şifreyi göster/gizle">👁</button></div></label>' +
     '<label class="alan">Model adı<input type="text" id="d_model" value="' + esc(dodoModel()) + '"></label>' +
     '<button class="btn" onclick="dodoAyarKaydet()">Kaydet</button>');
 }
@@ -985,7 +1030,7 @@ const TABLAR = [
   {id:'hedefler', ad:'Hedefler', ikon:IK('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>')},
   {id:'ayarlar', ad:'Ayarlar', ikon:IK('<path d="M4 7h10m4 0h2M4 17h2m4 0h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>')}
 ];
-
+                      
 const EKRAN = {
   gorevler()  { return gorevlerEkrani(); },
   kaynaklar() {
