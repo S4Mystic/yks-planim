@@ -821,20 +821,22 @@ function haftaFormu() {
     ' · Toplam: ' + sureYaz(saatler.toplam) + '</div>' : '';
 
   const haftalarSirali = [...S.haftalar].sort((a, b) => b.hafta.localeCompare(a.hafta));
-  const listeHtml = haftalarSirali.length ? haftalarSirali.map(h => {
+    const listeHtml = haftalarSirali.length ? haftalarSirali.map(h => {
     const tytNet = netToplam(h.tyt), aytNet = netToplam(h.ayt);
     const saatlerH = haftaCalismaSaatleri(h.hafta);
-    return '<div class="kayit" style="padding:10px 0;border-top:1px solid rgba(255,255,255,.08)">' +
+    const dersDagilim = saatlerH.toplam ? '<div class="soluk" style="font-size:12px;margin-top:4px">' + 
+        Object.entries(saatlerH.dersler).map(([d, sn]) => d + ': ' + sureYaz(sn)).join(' · ') + '</div>' : '';
+    return '<div class="kayit" style="padding:10px 0;border-top:1px solid rgba(255,255,255,.08);position:relative">' +
+      '<button class="btn ikincil" style="position:absolute;top:10px;right:0;padding:0 12px;min-height:32px;line-height:32px;font-size:12px" onclick="haftaSecili=\'' + h.hafta + '\';haftaAlt=\'form\';ekranCiz()">Düzenle</button>' +
+      '<div style="padding-right:80px">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
       '<div style="flex:1;min-width:0"><b>' + gunAdi(h.hafta) + '</b> <span class="soluk">(' + h.alan + ')</span></div>' +
       '<div class="soluk" style="font-size:13px;white-space:nowrap;flex-shrink:0">TYT: ' + netYaz(tytNet) + ' · AYT: ' + netYaz(aytNet) + ' · ⏱ ' + sureYaz(saatlerH.toplam) + '</div>' +
-      '<button class="btn ikincil" style="padding:0 12px;min-height:36px;line-height:36px;font-size:13px;flex-shrink:0;margin-left:8px" onclick="haftaSecili=\'' + h.hafta + '\';haftaAlt=\'form\';ekranCiz()">Düzenle</button>' +
       '</div>' +
-      (saatlerH.toplam ? '<div class="soluk" style="font-size:12px;margin-top:4px">' + 
-        Object.entries(saatlerH.dersler).map(([d, sn]) => d + ': ' + sureYaz(sn)).join(' · ') + '</div>' : '') +
-      '</div>';
+      dersDagilim +
+      '</div></div>';
   }).join('') : '<p class="soluk">Henüz kayıtlı hafta yok.</p>';
-
+  
   return kart('Hafta Deneme Kaydı',
     '<label class="alan">Hafta başlangıcı (Pazartesi)<input type="date" id="h_tarih" value="' + haftaSecili + '" onchange="haftaSecili=this.value;ekranCiz()"></label>') +
     kart('TYT Netleri', girdiler('n_tyt_', TYT_DERS, m && m.tyt)) +
@@ -1043,8 +1045,14 @@ function programUygula() {
 function programEkle(i) {
   const m = document.getElementById('pg_' + i).value.trim();
   if (!m) return;
+  // Eğer bu gün bugünse, programHafta ne olursa olsun bu haftanın tarihini kullan
+  const ds = gunTarihi(programHafta, i);
+  const bugunStr = bugun();
+  const hedefTarih = (ds === bugunStr) ? bugunStr : ds;
+  
   programAl(programHafta)[i].push({id:yeniId(), metin:m});
-  programUygula(); ekranCiz();
+  programUygula(); 
+  ekranCiz();
 }
 function programSil(i, id) {
   const l = programAl(programHafta)[i];
@@ -1079,10 +1087,17 @@ function programKopalaHafta() {
 }
 function programEkrani() {
   const m = programHafta, bg = bugun();
+  const buHafta = haftaBasi();
+  const fark = Math.round((tarihDon(programHafta) - tarihDon(buHafta)) / 86400000 / 7);
+  const haftaEtiket = fark === 0 ? 'Bu Hafta' : (fark > 0 ? '+' + fark + ' Hafta Sonra' : fark + ' Hafta Önce');
   const ust = kart('Haftalık Program',
-    '<div class="ikili"><button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,-7);ekranCiz()">◀ Önceki Hafta</button>' +
-    '<button class="btn" onclick="programKopalaHafta()">📋 Önceki Haftadan Kopyala</button>' +
-    '<button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,7);ekranCiz()">Sonraki Hafta ▶</button></div>' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px">' +
+    '<span style="font-size:14px;color:var(--soluk)">Görüntülenen: <b>' + haftaEtiket + '</b> (' + gunAdi(programHafta) + ' - ' + gunAdi(gunTarihi(programHafta, 6)) + ')</span>' +
+    '<div class="ikili" style="gap:4px"><button class="btn ikincil" onclick="programHafta=buHafta;ekranCiz()" style="min-height:36px;padding:0 12px;font-size:13px">📍 Bu Hafta</button>' +
+    '<button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,-7);ekranCiz()">◀</button>' +
+    '<button class="btn" onclick="programKopalaHafta()">📋 Kopyala</button>' +
+    '<button class="btn ikincil" onclick="programHafta=gunTarihi(programHafta,7);ekranCiz()">▶</button></div>' +
+    '</div>' +
     '<button class="btn ikincil" onclick="tabGit(\'gorevler\')" style="margin-top:10px">← Görevlere Dön</button>');
   const gunler = GUN_ADLARI.map((ad, i) => {
     const ds = gunTarihi(m, i), liste = (S.program[m] || [])[i] || [];
