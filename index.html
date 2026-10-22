@@ -1133,24 +1133,15 @@ tabGit('gorevler');
 /* ===== DODO AI: panel (Adım 1) ===== */
 let dodoSekme = 'analiz';
 
+/* Üstteki sekme şeridi artık tek bir "Sohbeti temizle" düğmesi */
 function dodoSekmeCiz() {
-  document.getElementById('dodoSek').innerHTML = [['analiz', 'Analiz'], ['sohbet', 'Sohbet']].map(t =>
-    '<button type="button" class="' + (dodoSekme === t[0] ? 'aktif' : '') + '" onclick="dodoSekmeGit(\'' + t[0] + '\')">' + t[1] + '</button>').join('');
+  document.getElementById('dodoSek').innerHTML =
+    '<button type="button" onclick="dodoSohbetTemizle()">🗑 Sohbeti temizle</button>';
 }
 
 function dodoIcerikCiz() {
-  const el = document.getElementById('dodoIcerik');
-  const govde = dodoSekme === 'analiz'
-    ? dodoAnalizForm()
-    : kart('Sohbet', '<p class="soluk">Sohbet ekranı sonraki adımlarda gelecek.</p>');
-  el.innerHTML = '<div class="anim">' + govde + '</div>';
-}
-
-function dodoSekmeGit(t) {
-  dodoSekme = t;
-  dodoSekmeCiz();
-  dodoIcerikCiz();
-  document.getElementById('dodoIcerik').scrollTop = 0;
+  document.getElementById('dodoIcerik').innerHTML = dodoSohbetEkrani();
+  dodoSohbetCiz();
 }
 
 function dodoAc() {
@@ -1201,7 +1192,7 @@ function dodoHataMetni(d, m) {
   if (d >= 500) return 'Google sunucusunda geçici sorun (' + d + '). Biraz sonra tekrar dene.';
   return 'Beklenmeyen hata (' + d + ').' + ek;
 }
-async function geminiIstek(parcalar, sistem) {
+async function geminiIstek(icerikler, sistem) {
   const anahtar = dodoAnahtar();
   if (!anahtar) throw new Error('API anahtarı yok. Ayarlar sekmesinden Gemini API anahtarını ekle.');
   if (!navigator.onLine) throw new Error('İnternet bağlantısı yok. Bağlanınca tekrar dene.');
