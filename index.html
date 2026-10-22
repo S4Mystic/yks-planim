@@ -209,10 +209,6 @@ tr:first-child td{border-top:none}
 /* Kayıtlı hafta kartı - Düzenle butonu her zaman sağ üstte */
 .kayit{position:relative}
 .kayit .btn.ikincil{position:absolute;top:6px;right:6px;z-index:2}
-
-/* Kayıtlı hafta kartı - Flex column, buton sağ üstte */
-.kayit{display:flex;flex-direction:column;gap:4px;position:relative}
-.kayit .btn.ikincil{position:absolute;top:0;right:0;z-index:2;flex-shrink:0}
 }
 </style>
 </head>
@@ -840,14 +836,12 @@ function haftaFormu() {
     const saatlerH = haftaCalismaSaatleri(h.hafta);
     const dersDagilim = saatlerH.toplam ? '<div class="soluk" style="font-size:11px;margin-top:4px">' + 
         Object.entries(saatlerH.dersler).map(([d, sn]) => d + ': ' + sureYaz(sn)).join(' · ') + '</div>' : '';
-    return '<div class="kayit" style="display:flex;flex-direction:column;gap:4px;padding:8px 0;border-top:1px solid rgba(255,255,255,.08);position:relative">' +
-      // Üst satır: Tarih + Alan (sol) | Netler (sağ) | Düzenle butonu (sağ üst, mutlak)
-      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;position:relative;min-height:36px">' +
+    return '<div class="kayit" style="padding:8px 0;border-top:1px solid rgba(255,255,255,.08)">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">' +
       '<div style="flex:1;min-width:0"><b>' + gunAdi(h.hafta) + '</b> <span class="soluk">(' + h.alan + ')</span></div>' +
       '<div class="soluk" style="font-size:12px;white-space:nowrap;flex-shrink:0">TYT: ' + netYaz(tytNet) + ' · AYT: ' + netYaz(aytNet) + '</div>' +
-      '<button class="btn ikincil" style="position:absolute;top:0;right:0;padding:0 10px;min-height:28px;line-height:28px;font-size:11px;z-index:2;flex-shrink:0" onclick="haftaSecili=\'' + h.hafta + '\';haftaAlt=\'form\';ekranCiz()">Düzenle</button>' +
+      '<button class="btn ikincil" style="padding:0 10px;min-height:28px;line-height:28px;font-size:11px;flex-shrink:0" onclick="haftaSecili=\'' + h.hafta + '\';haftaAlt=\'form\';ekranCiz()">Düzenle</button>' +
       '</div>' +
-      // Alt satır: Ders dağılımı (butonun altına iner, çakışmaz)
       dersDagilim +
       '</div>';
   }).join('') : '<p class="soluk">Henüz kayıtlı hafta yok.</p>';
