@@ -600,7 +600,7 @@ function kalanGun() {
 function profilKaydet() {
   const al = id => document.getElementById(id).value.trim();
   const tyt = al('p_tyt'), ayt = al('p_ayt');
-  const alan = document.queryester('input[name="p_alan"]:checked');
+  const alan = document.querySelector('input[name="p_alan"]:checked');
   S.profil = {ad:al('p_ad'), alan:(alan ? alan.value : 'SAY'), universite:al('p_uni'), bolum:al('p_bolum'),
               hedefSiralama:al('p_sira'), tytHedef:tyt, aytHedef:ayt, sinavTarihi:al('p_tarih')};
   kaydet(); baslikGuncelle(); ekranCiz();
@@ -825,10 +825,10 @@ function haftaFormu() {
     const tytNet = netToplam(h.tyt), aytNet = netToplam(h.ayt);
     const saatlerH = haftaCalismaSaatleri(h.hafta);
     return '<div class="kayit" style="padding:10px 0;border-top:1px solid rgba(255,255,255,.08)">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">' +
-      '<div><b>' + gunAdi(h.hafta) + '</b> <span class="soluk">(' + h.alan + ')</span></div>' +
-      '<div class="soluk" style="font-size:13px">TYT: ' + netYaz(tytNet) + ' · AYT: ' + netYaz(aytNet) + ' · ⏱ ' + sureYaz(saatlerH.toplam) + '</div>' +
-      '<button class="btn ikincil" style="padding:0 12px;min-height:36px;line-height:36px;font-size:13px" onclick="haftaSecili=\'' + h.hafta + '\';haftaAlt=\'form\';ekranCiz()">Düzenle</button>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
+      '<div style="flex:1;min-width:0"><b>' + gunAdi(h.hafta) + '</b> <span class="soluk">(' + h.alan + ')</span></div>' +
+      '<div class="soluk" style="font-size:13px;white-space:nowrap;flex-shrink:0">TYT: ' + netYaz(tytNet) + ' · AYT: ' + netYaz(aytNet) + ' · ⏱ ' + sureYaz(saatlerH.toplam) + '</div>' +
+      '<button class="btn ikincil" style="padding:0 12px;min-height:36px;line-height:36px;font-size:13px;flex-shrink:0;margin-left:8px" onclick="haftaSecili=\'' + h.hafta + '\';haftaAlt=\'form\';ekranCiz()">Düzenle</button>' +
       '</div>' +
       (saatlerH.toplam ? '<div class="soluk" style="font-size:12px;margin-top:4px">' + 
         Object.entries(saatlerH.dersler).map(([d, sn]) => d + ': ' + sureYaz(sn)).join(' · ') + '</div>' : '') +
@@ -879,12 +879,18 @@ function grafikCiz(canvasId, haftalar, cizilecekler) {
   const range = maxV - minV || 1;
   const padding = 40, stepX = (w - 2 * padding) / (haftalar.length - 1 || 1);
 
-  // Grid
+  // Grid çizgileri + Y eksen değerleri (sol tarafta)
   ctx.strokeStyle = 'rgba(255,255,255,.05)';
   ctx.lineWidth = 1;
+  ctx.fillStyle = '#9aa3ba';
+  ctx.font = '10px system-ui';
+  ctx.textAlign = 'right';
   for (let i = 0; i <= 4; i++) {
     const y = padding + (h - 2 * padding) * i / 4;
     ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(w - padding, y); ctx.stroke();
+    // Y eksen sayısı
+    const val = maxV - (maxV - minV) * i / 4;
+    ctx.fillText(Math.round(val * 10) / 10, padding - 8, y + 3);
   }
 
   // Her çizgi için
@@ -902,17 +908,25 @@ function grafikCiz(canvasId, haftalar, cizilecekler) {
     });
     ctx.stroke();
 
-    // Noktalar
+    // Noktalar + Üzerine değer yaz
     ctx.fillStyle = renk;
     haftalar.forEach((hafta, i) => {
       const val = veriAl(hafta);
       const x = padding + i * stepX;
       const y = val !== null ? h - padding - (val - minV) / range * (h - 2 * padding) : null;
-      if (y !== null) { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); }
+      if (y !== null) {
+        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+        // Değer yaz (nokta üstü)
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 11px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText(netYaz(val), x, y - 8);
+        ctx.fillStyle = renk; // rengi geri al
+      }
     });
   });
 
-  // X eksen etiketleri
+  // X eksen etiketleri (tarih)
   ctx.fillStyle = '#9aa3ba'; ctx.font = '11px system-ui'; ctx.textAlign = 'center';
   haftalar.forEach((hafta, i) => {
     const x = padding + i * stepX;
