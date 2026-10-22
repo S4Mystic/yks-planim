@@ -74,7 +74,7 @@ body{background:var(--bg)}
 body::before{content:"";position:fixed;inset:-20%;z-index:0;pointer-events:none;background:radial-gradient(40% 35% at 20% 15%,rgba(99,102,241,.55),transparent 70%),radial-gradient(35% 30% at 85% 30%,rgba(45,212,191,.32),transparent 70%),radial-gradient(45% 35% at 60% 90%,rgba(192,132,252,.38),transparent 70%);animation:akis 26s ease-in-out infinite alternate;will-change:transform}
 #app{position:relative;z-index:1}
 header{padding:calc(18px + env(safe-area-inset-top)) 20px 6px}
-header h1{font-size:28px;font-weight:700;letter-spacing:-.6px;background:linear-gradient(120deg,#fff 30%,#a5b4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+header h1{font-size:32px;font-weight:800;letter-spacing:-.8px;background:linear-gradient(135deg,#fff 0%,#a5b4ff 50%,#8fb0ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 2px 8px rgba(134,168,255,.3)}
 header p{text-transform:capitalize}
 main{padding:10px 16px 170px}
 a{color:#9db6ff}
@@ -858,7 +858,7 @@ function haftaKaydet() {
   kaydet(); ekranCiz(); bildir('Hafta kaydedildi ✓');
 }
 
-function grafikCiz(canvasId, haftalar, veriAl, renk) {
+function grafikCiz(canvasId, haftalar, cizilecekler) {
   const cvs = document.getElementById(canvasId);
   if (!cvs) return;
   const ctx = cvs.getContext('2d');
@@ -868,12 +868,18 @@ function grafikCiz(canvasId, haftalar, veriAl, renk) {
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, w, h);
 
-  const veri = haftalar.map(veriAl).filter(v => v !== null);
-  if (!veri.length) { ctx.fillStyle = '#9aa3ba'; ctx.font = '14px system-ui'; ctx.textAlign = 'center'; ctx.fillText('Veri yok', w/2, h/2); return; }
-  const minV = Math.min(...veri), maxV = Math.max(...veri);
+  // Tüm verileri topla min/max için
+  let tumVeriler = [];
+  cizilecekler.forEach(c => {
+    const veri = haftalar.map(c.veriAl).filter(v => v !== null);
+    tumVeriler.push(...veri);
+  });
+  if (!tumVeriler.length) { ctx.fillStyle = '#9aa3ba'; ctx.font = '14px system-ui'; ctx.textAlign = 'center'; ctx.fillText('Veri yok', w/2, h/2); return; }
+  const minV = Math.min(...tumVeriler), maxV = Math.max(...tumVeriler);
   const range = maxV - minV || 1;
   const padding = 40, stepX = (w - 2 * padding) / (haftalar.length - 1 || 1);
 
+  // Grid
   ctx.strokeStyle = 'rgba(255,255,255,.05)';
   ctx.lineWidth = 1;
   for (let i = 0; i <= 4; i++) {
@@ -881,26 +887,32 @@ function grafikCiz(canvasId, haftalar, veriAl, renk) {
     ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(w - padding, y); ctx.stroke();
   }
 
-  ctx.strokeStyle = renk; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  ctx.beginPath();
-  haftalar.forEach((hafta, i) => {
-    const val = veriAl(hafta);
-    const x = padding + i * stepX;
-    const y = val !== null ? h - padding - (val - minV) / range * (h - 2 * padding) : null;
-    if (y !== null) {
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-  });
-  ctx.stroke();
+  // Her çizgi için
+  cizilecekler.forEach(({veriAl, renk, ad}) => {
+    ctx.strokeStyle = renk; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    let ilk = true;
+    haftalar.forEach((hafta, i) => {
+      const val = veriAl(hafta);
+      const x = padding + i * stepX;
+      const y = val !== null ? h - padding - (val - minV) / range * (h - 2 * padding) : null;
+      if (y !== null) {
+        if (ilk) { ctx.moveTo(x, y); ilk = false; } else ctx.lineTo(x, y);
+      }
+    });
+    ctx.stroke();
 
-  ctx.fillStyle = renk;
-  haftalar.forEach((hafta, i) => {
-    const val = veriAl(hafta);
-    const x = padding + i * stepX;
-    const y = val !== null ? h - padding - (val - minV) / range * (h - 2 * padding) : null;
-    if (y !== null) { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); }
+    // Noktalar
+    ctx.fillStyle = renk;
+    haftalar.forEach((hafta, i) => {
+      const val = veriAl(hafta);
+      const x = padding + i * stepX;
+      const y = val !== null ? h - padding - (val - minV) / range * (h - 2 * padding) : null;
+      if (y !== null) { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); }
+    });
   });
 
+  // X eksen etiketleri
   ctx.fillStyle = '#9aa3ba'; ctx.font = '11px system-ui'; ctx.textAlign = 'center';
   haftalar.forEach((hafta, i) => {
     const x = padding + i * stepX;
@@ -915,16 +927,22 @@ function analizEkrani() {
 
   const alan = S.profil.alan || 'SAY';
   const dersler = tumDersler(alan);
-  const secimler = ['genel', ...dersler.map(d => d.key)].map(k => {
-    const etiket = k === 'genel' ? 'Genel' : dersler.find(d => d.key === k)?.ad || k;
+  const secimler = ['genel', 'genel_tyt', 'genel_ayt', ...dersler.map(d => d.key)].map(k => {
+    let etiket;
+    if (k === 'genel') etiket = 'Genel (TYT+AYT)';
+    else if (k === 'genel_tyt') etiket = 'Genel (TYT)';
+    else if (k === 'genel_ayt') etiket = 'Genel (AYT)';
+    else etiket = (dersler.find(d => d.key === k)?.ad || k) + ' (' + (dersler.find(d => d.key === k)?.tur || '') + ')';
     return '<option value="' + k + '"' + (analizSecim === k ? ' selected' : '') + '>' + etiket + '</option>';
   }).join('');
-
+  
   const veriFonksiyonlari = {
     genel: h => {
       const tyt = netToplam(h.tyt), ayt = netToplam(h.ayt);
       return (tyt !== null || ayt !== null) ? (tyt || 0) + (ayt || 0) : null;
-    }
+    },
+    genel_tyt: h => netToplam(h.tyt),
+    genel_ayt: h => netToplam(h.ayt)
   };
   dersler.forEach(d => {
     veriFonksiyonlari[d.key] = h => {
@@ -934,25 +952,40 @@ function analizEkrani() {
     };
   });
 
-  const seciliVeriAl = veriFonksiyonlari[analizSecim] || veriFonksiyonlari.genel;
-  const renk = analizSecim === 'genel' ? '#8fb0ff' : '#5be3b0';
+  // Çoklu çizgi desteği için
+  let cizilecekler = [];
+  let grafikBaslik = 'Net Grafiği';
+  if (analizSecim === 'genel') {
+    cizilecekler = [
+      {key: 'genel_tyt', renk: '#8fb0ff', ad: 'TYT Genel'},
+      {key: 'genel_ayt', renk: '#5be3b0', ad: 'AYT Genel'}
+    ];
+    grafikBaslik = 'Genel Net Grafiği (TYT / AYT)';
+  } else if (analizSecim === 'genel_tyt') {
+    cizilecekler = [{key: 'genel_tyt', renk: '#8fb0ff', ad: 'TYT Genel'}];
+    grafikBaslik = 'TYT Genel Net Grafiği';
+  } else if (analizSecim === 'genel_ayt') {
+    cizilecekler = [{key: 'genel_ayt', renk: '#5be3b0', ad: 'AYT Genel'}];
+    grafikBaslik = 'AYT Genel Net Grafiği';
+  } else {
+    cizilecekler = [{key: analizSecim, renk: '#5be3b0', ad: dersler.find(d => d.key === analizSecim)?.ad || analizSecim}];
+    grafikBaslik = 'Ders Net Grafiği';
+  }
 
-  const saatlerTablosu = haftalar.map(h => {
+    const saatlerTablosu = haftalar.map(h => {
     const s = haftaCalismaSaatleri(h.hafta);
-    return '<tr><td>' + gunAdi(h.hafta) + '</td><td>' + sureYaz(s.toplam) + '</td>' +
-      dersler.map(d => '<td>' + sureYaz(s.dersler[d.ad] || 0) + '</td>').join('') + '</tr>';
+    return '<tr><td>' + gunAdi(h.hafta) + '</td><td>' + sureYaz(s.toplam) + '</td></tr>';
   }).join('');
 
   return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">' +
     '<b style="font-size:17px">Analiz</b>' +
     '<select onchange="analizSecim=this.value;ekranCiz()" style="min-width:160px;padding:8px 12px;border-radius:12px;border:1px solid var(--kenar);background:rgba(255,255,255,.07);color:var(--yazi);font-family:inherit">' + secimler + '</select>' +
     '</div>' +
-    kart('Net Grafiği', '<canvas id="haftaGrafik" style="width:100%;height:180px"></canvas>') +
+    kart(grafikBaslik, '<canvas id="haftaGrafik" style="width:100%;height:180px"></canvas><div class="lej" style="margin-top:8px;display:flex;gap:16px;flex-wrap:wrap">' + cizilecekler.map(c => '<span style="display:flex;align-items:center;gap:6px"><i style="width:12px;height:12px;border-radius:2px;background:' + c.renk + '"></i>' + c.ad + '</span>').join('') + '</div>') +
     kart('Haftalık Çalışma Saatleri',
       '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">' +
       '<thead><tr style="text-align:left;color:var(--soluk);border-bottom:1px solid rgba(255,255,255,.08)">' +
-      '<th style="padding:8px">Hafta</th><th style="padding:8px">Toplam</th>' +
-      dersler.map(d => '<th style="padding:8px">' + d.ad + '</th>').join('') + '</tr></thead>' +
+      '<th style="padding:8px">Hafta</th><th style="padding:8px">Toplam Süre</th></tr></thead>' +
       '<tbody>' + saatlerTablosu + '</tbody></table></div>') +
     kart('Özet', haftalar.map(h => {
       const tyt = netToplam(h.tyt), ayt = netToplam(h.ayt);
@@ -1287,11 +1320,27 @@ function ekranCiz() {
     const haftalar = [...S.haftalar].sort((a, b) => a.hafta.localeCompare(b.hafta));
     const alan = S.profil.alan || 'SAY';
     const dersler = tumDersler(alan);
-    const veriFonksiyonlari = { genel: h => { const tyt = netToplam(h.tyt), ayt = netToplam(h.ayt); return (tyt !== null || ayt !== null) ? (tyt || 0) + (ayt || 0) : null; }};
+    const veriFonksiyonlari = {
+      genel: h => { const tyt = netToplam(h.tyt), ayt = netToplam(h.ayt); return (tyt !== null || ayt !== null) ? (tyt || 0) + (ayt || 0) : null; },
+      genel_tyt: h => netToplam(h.tyt),
+      genel_ayt: h => netToplam(h.ayt)
+    };
     dersler.forEach(d => { veriFonksiyonlari[d.key] = h => { const src = d.tur === 'TYT' ? h.tyt : h.ayt; const field = d.key.replace(d.tur.toLowerCase() + '_', ''); return src && typeof src[field] === 'number' ? src[field] : null; }; });
-    const seciliVeriAl = veriFonksiyonlari[analizSecim] || veriFonksiyonlari.genel;
-    const renk = analizSecim === 'genel' ? '#8fb0ff' : '#5be3b0';
-    grafikCiz('haftaGrafik', haftalar, seciliVeriAl, renk);
+
+    let cizilecekler = [];
+    if (analizSecim === 'genel') {
+      cizilecekler = [
+        {veriAl: veriFonksiyonlari.genel_tyt, renk: '#8fb0ff', ad: 'TYT Genel'},
+        {veriAl: veriFonksiyonlari.genel_ayt, renk: '#5be3b0', ad: 'AYT Genel'}
+      ];
+    } else if (analizSecim === 'genel_tyt') {
+      cizilecekler = [{veriAl: veriFonksiyonlari.genel_tyt, renk: '#8fb0ff', ad: 'TYT Genel'}];
+    } else if (analizSecim === 'genel_ayt') {
+      cizilecekler = [{veriAl: veriFonksiyonlari.genel_ayt, renk: '#5be3b0', ad: 'AYT Genel'}];
+    } else {
+      cizilecekler = [{veriAl: veriFonksiyonlari[analizSecim], renk: '#5be3b0', ad: dersler.find(d => d.key === analizSecim)?.ad || analizSecim}];
+    }
+    grafikCiz('haftaGrafik', haftalar, cizilecekler);
   }
 }
 function tabGit(id) {
