@@ -1166,12 +1166,12 @@ async function dodoFotoSec(inp) {
   if (!f.type.startsWith('image/')) return alert('Sadece resim dosyası seçin.');
   const u = URL.createObjectURL(f), im = new Image();
   im.onload = () => {
-    const m = Math.max(im.width, im.height), o = m > 800 ? 800 / m : 1;
+    const m = Math.max(im.width, im.height), o = m > 1280 ? 1280 / m : 1;
     const c = document.createElement('canvas');
     c.width = Math.round(im.width * o); c.height = Math.round(im.height * o);
     c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
     URL.revokeObjectURL(u);
-    dodoFotoBase64 = c.toDataURL('image/jpeg', 0.55);
+    dodoFotoBase64 = c.toDataURL('image/jpeg', 0.7);
     dodoFotoOnizlemeGuncelle();
   };
   im.src = u;
