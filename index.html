@@ -1221,7 +1221,16 @@ let dodoSonModel = ''; // en son hangi model cevap verdi
 function dodoOku(k, v) { try { const x = localStorage.getItem(k); return x ? JSON.parse(x) : v; } catch (e) { return v; } }
 function dodoYaz(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 function dodoAnahtar() { try { return localStorage.getItem(DODO_KEY) || ''; } catch (e) { return ''; } }
-function dodoModel() { return (dodoOku('dodo_ayar', {}).model || '').trim() || DODO_MODEL; }
+function dodoModel() {
+  const m = (dodoOku('dodo_ayar', {}).model || '').trim();
+  return (m && m !== DODO_ESKI_MODEL) ? m : DODO_MODEL;
+}
+function dodoNvidiaAnahtar() { try { return localStorage.getItem(DODO_NVIDIA_KEY) || ''; } catch (e) { return ''; } }
+function dodoNvidiaUrl() { return (dodoOku('dodo_ayar', {}).nvidiaUrl || '').trim() || DODO_NVIDIA_URL; }
+function dodoNvidiaModeller() {
+  const l = dodoOku('dodo_ayar', {}).nvidiaModeller;
+  return (Array.isArray(l) && l.length) ? l : DODO_NVIDIA_MODELLER;
+      }
 
 async function geminiIstek(icerikler, sistem, gorselBase64) {
   const anahtar = dodoAnahtar();
