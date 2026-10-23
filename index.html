@@ -1148,7 +1148,7 @@ function dodoSohbetEkrani() {
       '<div id="dodoFotoOnizleme" class="dodoFotoOnizleme" style="display:none"></div>' +
       '<textarea id="sohbetGiris" placeholder="Netlerini ya da yanlış sorunu yaz..." onkeydown="return dodoEnterGonder(event)"></textarea>' +
       '<div class="sohbetEkler">' +
-        '<button type="button" class="ekBtn" onclick="document.getElementById(\'dodoFotoSec\').click()" aria-label="Fotoğraf ekle">📷</button>' +
+        '<button type="button" class="ekBtn" id="dodoFotoBtn" onclick="document.getElementById(\'dodoFotoSec\').click()" aria-label="Fotoğraf ekle">📷</button>' +
         '<input type="file" id="dodoFotoSec" accept="image/*" hidden onchange="dodoFotoSec(this)">' +
         '<button class="btn" type="button" onclick="dodoMesajGonder()">↑</button>' +
       '</div>' +
