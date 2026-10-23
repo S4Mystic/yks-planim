@@ -1421,12 +1421,33 @@ function dodoGozToggle(btn) {
   btn.textContent = acik ? '👁' : '👁‍🗨';
 }
 
-function dodoAyarKaydet() {
+// sessiz = true ise "Kaydedildi" bildirimi gösterilmez. Geçersiz anahtarda false döner.
+function dodoAyarKaydet(sessiz) {
+  const nk = document.getElementById('d_nkey').value.trim();
   const k = document.getElementById('d_key').value.trim();
+  if (/[^\x00-\x7F]/.test(nk) || /[^\x00-\x7F]/.test(k)) {
+    alert('API anahtarında Türkçe/özel karakter var. Anahtarı kopyalarken bozulmuş olabilir, tekrar yapıştır.');
+    return false;
+  }
   const m = document.getElementById('d_model').value.trim() || DODO_MODEL;
+  const url = document.getElementById('d_nurl').value.trim() || DODO_NVIDIA_URL;
+  const modeller = document.getElementById('d_nmodeller').value.split('\n').map(x => x.trim()).filter(Boolean);
+  if (nk) localStorage.setItem(DODO_NVIDIA_KEY, nk); else localStorage.removeItem(DODO_NVIDIA_KEY);
   if (k) localStorage.setItem(DODO_KEY, k); else localStorage.removeItem(DODO_KEY);
-  dodoYaz('dodo_ayar', {model: m});
-  bildir('Kaydedildi ✓');
+  dodoYaz('dodo_ayar', {model: m, nvidiaUrl: url, nvidiaModeller: modeller});
+  if (!sessiz) bildir('Kaydedildi ✓');
+  return true;
+}
+
+async function dodoTest() {
+  const el = document.getElementById('d_test');
+  if (!dodoAyarKaydet(true)) return;
+  el.textContent = 'Test ediliyor...';
+  const t0 = Date.now();
+  try {
+    await yapayZekaIstek([{role: 'user', parts: [{text: 'Sadece "tamam" yaz.'}]}], 'Çok kısa yanıt ver.');
+    el.textContent = '✓ Çalışıyor: ' + dodoSonModel + ' (' + ((Date.now() - t0) / 1000).toFixed(1) + ' sn)';
+  } catch (e) { el.textContent = '✕ ' + e.message; }
 }
 
 /* ===== SEKMELER ===== */
