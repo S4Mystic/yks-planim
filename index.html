@@ -1302,7 +1302,8 @@ async function nvidiaIstek(model, icerikler, sistem, gorselBase64) {
           messages: dodoOpenAIMesajlar(icerikler, sistem, gorselBase64),
           temperature: 0.7,
           max_tokens: 1500,
-          stream: false
+          stream: false,
+          chat_template_kwargs: {enable_thinking: false} // düşünmeyi kapat: çok daha hızlı yanıt
         })
       });
     } catch (e) {
