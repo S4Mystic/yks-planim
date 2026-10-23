@@ -1559,6 +1559,7 @@ function dodoAc() {
   document.getElementById('dodoSek').innerHTML = '<button type="button" onclick="dodoSohbetTemizle()">🗑 Sohbeti Temizle</button>';
   document.getElementById('dodoIcerik').innerHTML = dodoSohbetEkrani();
   dodoSohbetCiz();
+  dodoFotoOnizlemeGuncelle(); // panel yeniden açılınca 📷/✓ durumunu düzelt
   document.body.classList.add('dodoAcik');
 }
 function dodoKapat() { document.body.classList.remove('dodoAcik'); }
