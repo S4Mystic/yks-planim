@@ -1261,6 +1261,92 @@ async function geminiIstek(icerikler, sistem, gorselBase64) {
   return metin;
 }
 
+/* ===== YAPAY ZEKA YÖNLENDİRİCİ: önce NVIDIA modelleri, olmazsa Gemini ===== */
+
+// Gemini biçimindeki içerikleri OpenAI biçimine çevirir.
+// Fotoğraf: parts içinde inlineData olabilir ya da gorselBase64 (data URL) son kullanıcı mesajına eklenir.
+function dodoOpenAIMesajlar(icerikler, sistem, gorselBase64) {
+  const out = [{role: 'system', content: sistem}];
+  icerikler.forEach((c, i) => {
+    const rol = c.role === 'model' ? 'assistant' : 'user';
+    const parca = [];
+    (c.parts || []).forEach(p => {
+      if (p.text) parca.push({type: 'text', text: p.text});
+      const d = p.inlineData || p.inline_data;
+      if (d) parca.push({type: 'image_url', image_url: {url: 'data:' + (d.mimeType || d.mime_type || 'image/jpeg') + ';base64,' + d.data}});
+    });
+    if (gorselBase64 && rol === 'user' && i === icerikler.length - 1) {
+      parca.push({type: 'image_url', image_url: {url: gorselBase64}});
+    }
+    const sade = parca.every(p => p.type === 'text'); // sadece metin: düz string
+    out.push({role: rol, content: sade ? parca.map(p => p.text).join('\n') : parca});
+  });
+  return out;
+}
+
+// Tek bir NVIDIA modeline istek atar. Hata nesnesinde e.kes = true ise (401/403) döngü kesilir.
+async function nvidiaIstek(model, icerikler, sistem, gorselBase64) {
+  const ac = new AbortController();
+  const zaman = setTimeout(() => ac.abort(), 45000); // 45 sn zaman aşımı
+  try {
+    let r;
+    try {
+      r = await fetch(dodoNvidiaUrl(), {
+        method: 'POST',
+        signal: ac.signal,
+        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + dodoNvidiaAnahtar()},
+        body: JSON.stringify({
+          model: model,
+          messages: dodoOpenAIMesajlar(icerikler, sistem, gorselBase64),
+          temperature: 0.7,
+          max_tokens: 1500,
+          stream: false
+        })
+      });
+    } catch (e) {
+      if (e.name === 'AbortError') throw new Error('zaman aşımı (45 sn)');
+      throw new Error('ağ hatası / tarayıcı engeli (CORS olabilir)'); // fetch TypeError
+    }
+    if (r.status === 401 || r.status === 403) {
+      const h = new Error('anahtar hatası (' + r.status + ')'); h.kes = true; throw h;
+    }
+    if (!r.ok) throw new Error('HTTP ' + r.status); // 429, 5xx, 404...: sıradaki modele geç
+    const j = await r.json();
+    let metin = String(j.choices?.[0]?.message?.content || '');
+    // Düşünen modellerin <think>...</think> kısmını temizle (kapanmamışsa kalanını da)
+    metin = metin.replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/<think>[\s\S]*$/i, '').trim();
+    if (!metin) throw new Error('boş yanıt');
+    return metin;
+  } finally { clearTimeout(zaman); }
+}
+
+// Tek giriş noktası: dodoMesajGonder ve dodoTest bunu çağırır.
+async function yapayZekaIstek(icerikler, sistem, gorselBase64) {
+  const hatalar = [];
+  const nk = dodoNvidiaAnahtar(), liste = dodoNvidiaModeller();
+  if (nk && liste.length) {
+    for (const model of liste) {
+      try {
+        const yanit = await nvidiaIstek(model, icerikler, sistem, gorselBase64);
+        dodoSonModel = model;
+        return yanit;
+      } catch (e) {
+        hatalar.push(model.split('/').pop() + ': ' + e.message);
+        if (e.kes) break; // anahtar hatası: kalan NVIDIA modellerini deneme, Gemini'ye geç
+      }
+    }
+  } else if (nk) hatalar.push('NVIDIA: model listesi boş');
+  if (dodoAnahtar()) {
+    try {
+      const yanit = await geminiIstek(icerikler, sistem, gorselBase64);
+      dodoSonModel = 'Gemini · ' + dodoModel();
+      return yanit;
+    } catch (e) { hatalar.push('Gemini: ' + e.message); }
+  } else if (nk) hatalar.push('Gemini: anahtar yok');
+  if (!nk && !dodoAnahtar()) throw new Error('API anahtarı yok. Ayarlar sekmesinden NVIDIA veya Gemini anahtarı ekle.');
+  throw new Error('Yanıt alınamadı → ' + hatalar.join(' | '));
+}
+
 let dodoFotoBase64 = null;
 let dodoMesgul = false;
 async function dodoMesajGonder(metin, gorunen) {
