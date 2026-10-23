@@ -1355,37 +1355,42 @@ async function dodoMesajGonder(metin, gorunen) {
   if (dodoMesgul) return;
   const giris = document.getElementById('sohbetGiris');
   const hazir = typeof metin === 'string';
-  const m = String(hazir ? metin : (giris ? giris.value : '')).trim();
-  if (!m && !dodoFotoBase64) return;
-  const l = dodoOku('dodo_sohbet', []);
-  const kullaniciMesaji = {r: 'user', t: m, g: gorunen || '', z: Date.now(), hasImage: !!dodoFotoBase64};
-  l.push(kullaniciMesaji);
-  dodoYaz('dodo_sohbet', l.slice(-60));
+  const yazilan = String(hazir ? metin : (giris ? giris.value : '')).trim();
+  if (!yazilan && !dodoFotoBase64) return;
   const gonderilenFoto = dodoFotoBase64;
-  dodoFotoBase64 = null;
-  dodoFotoOnizlemeGuncelle();
+  const m = yazilan || DODO_FOTO_VARSAYILAN; // metin boşsa varsayılan soru
+  // Sohbette "📷 <mesaj>" görünür; fotoğrafın kendisi KAYDEDİLMEZ
+  const g = gorunen || (gonderilenFoto ? '📷 ' + yazilan : '');
+  const l = dodoOku('dodo_sohbet', []);
+  l.push({r: 'user', t: m, g: g, z: Date.now(), hasImage: !!gonderilenFoto});
+  dodoYaz('dodo_sohbet', l.slice(-60));
   if (giris && !hazir) giris.value = '';
   dodoMesgul = true;
   dodoSohbetCiz(true);
   try {
-    const gecmis = l.slice(-10);
+    const gecmis = l.slice(-20).filter(x => x.t); // API'ye en fazla son 20 mesaj
     while (gecmis.length && gecmis[0].r !== 'user') gecmis.shift();
-    const yanit = await geminiIstek(
-      gecmis.map(x => ({role: x.r, parts: [{text: x.t}]})), 
+    const yanit = await yapayZekaIstek(
+      gecmis.map(x => ({role: x.r, parts: [{text: x.t}]})),
       dodoSistemMetni(),
-      gonderilenFoto
+      gonderilenFoto // sadece son kullanıcı mesajına eklenir
     );
+    dodoFotoBase64 = null; // fotoğraf ancak başarıdan sonra temizlenir
+    dodoFotoOnizlemeGuncelle();
     const l2 = dodoOku('dodo_sohbet', []);
     l2.push({r: 'model', t: yanit.trim(), z: Date.now()});
     dodoYaz('dodo_sohbet', l2.slice(-60));
     dodoSohbetCiz();
   } catch (e) {
+    // Başarısız: mesajı geri al, yazı ve fotoğraf kaybolmasın
     const l2 = dodoOku('dodo_sohbet', []); l2.pop();
     dodoYaz('dodo_sohbet', l2);
-    if (giris && !hazir) giris.value = m;
+    if (giris && !hazir) giris.value = yazilan;
+    dodoFotoBase64 = gonderilenFoto;
+    dodoFotoOnizlemeGuncelle();
     dodoSohbetCiz(false, e.message);
   } finally { dodoMesgul = false; }
-}
+  }
 
 function dodoHaftaAnaliz() {
   const h = haftaBul(haftaBasi());
