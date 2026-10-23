@@ -1251,7 +1251,7 @@ async function geminiIstek(icerikler, sistem, gorselBase64) {
     body: JSON.stringify({
       systemInstruction: {parts: [{text: sistem}]},
       contents: iceriklerKopya,
-      generationConfig: {temperature: 0.5, maxOutputTokens: 800, topP: 0.9, topK: 40}
+      generationConfig: {temperature: 0.7, maxOutputTokens: 1024, topP: 0.9, topK: 40}
     })
   });
   if (!r.ok) throw new Error('API bağlantı hatası (' + r.status + '). Anahtarını kontrol et.');
