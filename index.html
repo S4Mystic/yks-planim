@@ -1206,7 +1206,18 @@ function dodoSohbetCiz(yaziyor, hata) {
 }
 
 const DODO_KEY = 'dodo_api_anahtari';
-const DODO_MODEL = 'gemini-1.5-flash';
+const DODO_MODEL = 'gemini-3.5-flash-lite'; // Gemini (yedek) varsayılan modeli
+const DODO_ESKI_MODEL = 'gemini-1.5-flash'; // eski kayıtlı ad: yeni varsayılana çevrilir
+const DODO_NVIDIA_KEY = 'dodo_nvidia_anahtari'; // NVIDIA anahtarı AYRI saklanır, yedeğe girmez
+const DODO_NVIDIA_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
+// Varsayılan NVIDIA model listesi (ilki ana model). ID'leri build.nvidia.com'dan kopyalayıp
+// buraya ya da Ayarlar'daki kutuya yaz. Boşsa NVIDIA atlanır, doğrudan Gemini kullanılır.
+const DODO_NVIDIA_MODELLER = [
+  // 'NEMOTRON_ID_BURAYA',
+  // 'DEEPSEEK_ID_BURAYA'
+];
+const DODO_FOTO_VARSAYILAN = 'Bu fotoğraftaki soruyu çöz ve neden yanlış yapmış olabileceğimi açıkla.';
+let dodoSonModel = ''; // en son hangi model cevap verdi
 function dodoOku(k, v) { try { const x = localStorage.getItem(k); return x ? JSON.parse(x) : v; } catch (e) { return v; } }
 function dodoYaz(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 function dodoAnahtar() { try { return localStorage.getItem(DODO_KEY) || ''; } catch (e) { return ''; } }
