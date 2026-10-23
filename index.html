@@ -1402,11 +1402,17 @@ function dodoSohbetTemizle() {
 }
 
 function dodoAyarKarti() {
-  return kart('🦤 Ecoli AI (Gemini)',
-    '<label class="alan">Gemini API anahtarı<div class="sifreSatir"><input type="password" id="d_key" value="' + esc(dodoAnahtar()) + '"><button type="button" class="gozBtn" onclick="dodoGozToggle(this)" aria-label="Şifreyi göster/gizle">👁</button></div></label>' +
-    '<label class="alan">Model adı<input type="text" id="d_model" value="' + esc(dodoModel()) + '"></label>' +
-    '<button class="btn" onclick="dodoAyarKaydet()">Kaydet</button>');
-}
+  const goz = '<button type="button" class="gozBtn" onclick="dodoGozToggle(this)" aria-label="Şifreyi göster/gizle">👁</button>';
+  return kart('🦤 Ecoli AI',
+    '<label class="alan">NVIDIA API anahtarı (nvapi-...)<div class="sifreSatir"><input type="password" id="d_nkey" value="' + esc(dodoNvidiaAnahtar()) + '">' + goz + '</div></label>' +
+    '<label class="alan">NVIDIA endpoint adresi<input type="text" id="d_nurl" value="' + esc(dodoNvidiaUrl()) + '"></label>' +
+    '<label class="alan">NVIDIA modelleri (her satıra bir ID, ilki ana model)<textarea id="d_nmodeller" rows="3" placeholder="model-id-1&#10;model-id-2">' + esc(dodoNvidiaModeller().join('\n')) + '</textarea></label>' +
+    '<label class="alan">Gemini API anahtarı (yedek)<div class="sifreSatir"><input type="password" id="d_key" value="' + esc(dodoAnahtar()) + '">' + goz + '</div></label>' +
+    '<label class="alan">Gemini model adı<input type="text" id="d_model" value="' + esc(dodoModel()) + '"></label>' +
+    '<button class="btn" onclick="dodoAyarKaydet()">Kaydet</button>' +
+    '<button class="btn ikincil" onclick="dodoTest()">Bağlantıyı test et</button>' +
+    '<p class="soluk" id="d_test" style="margin-top:10px"></p>');
+  }
 
 function dodoGozToggle(btn) {
   const inp = btn.previousElementSibling;
