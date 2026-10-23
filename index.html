@@ -1179,6 +1179,8 @@ async function dodoFotoSec(inp) {
 function dodoFotoKaldir() { dodoFotoBase64 = null; dodoFotoOnizlemeGuncelle(); }
 function dodoFotoOnizlemeGuncelle() {
   const el = document.getElementById('dodoFotoOnizleme');
+  const btn = document.getElementById('dodoFotoBtn');
+  if (btn) btn.textContent = dodoFotoBase64 ? '✓' : '📷'; // seçilince 📷 → ✓
   if (!el) return;
   if (dodoFotoBase64) {
     el.innerHTML = '<img src="' + dodoFotoBase64 + '" alt=""><button type="button" onclick="dodoFotoKaldir()">✕</button>';
