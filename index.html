@@ -950,6 +950,7 @@ function gorevTikle(id) {
   if (!g) return;
   const oncekiBitti = g.bitti;
   g.bitti = !g.bitti;
+  g.u = simdi();
   if (g.bitti) g.bitisGun = bugun(); else delete g.bitisGun;
   if (g.bitti !== oncekiBitti) {
     if (g.tur === 'elle') {
@@ -963,6 +964,11 @@ function gorevTikle(id) {
       programTamamGuncelle(g.progId, g.bitti);
     }
   }
+  planYenile();
+  sonTik = g.bitti ? id : null;
+  ekranCiz();
+  sonTik = null;
+}
   planYenile();
   sonTik = g.bitti ? id : null;
   ekranCiz();
@@ -1177,7 +1183,8 @@ function bildir(m) {
   setTimeout(() => t.remove(), 2000);
 }
 function baslikGuncelle() {
-  document.getElementById('baslik').textContent = S.profil.ad ? 'Merhaba, ' + S.profil.ad : 'Lyrica';
+  const p = S.profil || varsayilan().profil;
+  document.getElementById('baslik').textContent = p && p.ad ? 'Merhaba, ' + esc(p.ad) : 'Lyrica';
   if (!document.getElementById('syncDurum')) {
     const baslikEl = document.getElementById('baslik');
     baslikEl.insertAdjacentHTML('beforeend', '<span id="syncDurum" style="font-size:12px;margin-left:8px;opacity:.75;vertical-align:middle;display:inline-block"></span>');
@@ -1200,7 +1207,7 @@ function profilKaydet() {
   bildir('Kaydedildi ✓');
 }
 function hedeflerEkrani() {
-  const p = S.profil, g = kalanGun();
+  const p = S.profil || varsayilan().profil, g = kalanGun();
   let sayac = g === null ? '<p class="soluk">Sınav tarihini aşağıdan gir.</p>' : (g < 0 ? '<p class="soluk">Tarih geçmiş.</p>' : '<div class="sayi">' + g + ' gün</div>');
   const alanlar = ['SAY', 'EA', 'SÖZ', 'DİL'].map(a =>
     '<label class="cip"><input type="radio" name="p_alan" value="' + a + '"' + (p.alan === a ? ' checked' : '') + '><span>' + a + '</span></label>').join('');
@@ -1595,14 +1602,18 @@ function gunTarihi(m, i) { const d = tarihDon(m); d.setDate(d.getDate() + i); re
 function programAl(m) { if (!S.program[m]) S.program[m] = [[], [], [], [], [], [], []]; return S.program[m]; }
 function programUygula() {
   const idler = new Set();
+  if (!S.program) S.program = {};
   Object.keys(S.program).forEach(m => {
+    if (!Array.isArray(S.program[m])) S.program[m] = [[],[],[],[],[],[],[]];
     S.program[m].forEach((liste, i) => {
+      if (!Array.isArray(liste)) liste = [];
       const ds = gunTarihi(m, i);
       liste.forEach(it => {
+        if (!it || !it.id) return;
         idler.add(it.id);
         const g = S.gorevler.find(x => x.progId === it.id);
-        if (!g) S.gorevler.push({id:yeniId(), tarih:ds, metin:it.metin, kaynakId:null, videoNos:[], linkler:[], tur:'program', progId:it.id, bitti:false});
-        else if (!g.bitti) { g.tarih = ds; g.metin = it.metin; }
+        if (!g) S.gorevler.push({id:yeniId(), tarih:ds, metin:it.metin, kaynakId:null, videoNos:[], linkler:[], tur:'program', progId:it.id, bitti:false, u:simdi()});
+        else if (!g.bitti) { g.tarih = ds; g.metin = it.metin; g.u = simdi(); }
       });
     });
   });
@@ -1666,7 +1677,7 @@ function programEkrani() {
     '</div></div>' +
     '<button class="btn ikincil" onclick="tabGit(\'gorevler\')" style="margin-top:8px;padding:0 12px;min-height:36px;font-size:13px">← Görevlere Dön</button>');
   const gunler = GUN_ADLARI.map((ad, i) => {
-    const ds = gunTarihi(m, i), liste = (S.program[m] || [])[i] || [];
+    const ds = gunTarihi(m, i), liste = (programAl(m) || [])[i] || [];
     return kart('',
       '<div class="gunBaslik" style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">' +
       '<span style="font-weight:600;font-size:15px">' + esc(ad) + (ds === bg ? ' <span style="color:var(--yesil)">●</span>' : '') + '</span>' +
@@ -2403,7 +2414,11 @@ async function manuelSenkkron() {
 async function uygulamaBaslat() {
   try {
     const k = localStorage.getItem(KEY);
-    if (k) S = Object.assign(varsayilan(), JSON.parse(k));
+    if (k) {
+      const parsed = JSON.parse(k);
+      if (parsed && !parsed.profil) parsed.profil = varsayilan().profil;
+      S = Object.assign(varsayilan(), parsed);
+    }
   } catch (e) { console.error('Veri okunamadı', e); }
   planYenile();
   programUygula();
