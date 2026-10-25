@@ -311,7 +311,12 @@ async function firebaseBaslat() {
   }
 }
 firebaseBaslat();
-window.FB = { auth, db, googleProvider, onAuthStateChanged, signOut, deleteUser, get fbReady() { return fbReady; } };
+window.FB = { 
+  auth, db, googleProvider, 
+  onAuthStateChanged, signOut, deleteUser,
+  doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, writeBatch, serverTimestamp,
+  get fbReady() { return fbReady; } 
+};
 </script>
 
 <script>
@@ -451,7 +456,7 @@ async function senkronYazGonder(bolumAd) {
         if (!ayGruplari[ay]) ayGruplari[ay] = {};
         ayGruplari[ay][id] = { ...kayit, u: kayit.u || simdi() };
       }
-      const batch = writeBatch(window.FB.db);
+      const batch = window.FB.writeBatch(window.FB.db);
       for (const [ay, kayitlar] of Object.entries(ayGruplari)) {
         const ref = doc(window.FB.db, bolumBelgeYolu(uid, bolumAd, ay));
         batch.set(ref, { kayitlar, guncellenme: serverTimestamp() }, { merge: true });
@@ -463,7 +468,7 @@ async function senkronYazGonder(bolumAd) {
       for (const [id, kayit] of Object.entries(veri)) {
         kayitlar[id] = { ...kayit, u: kayit.u || simdi() };
       }
-      await setDoc(ref, { kayitlar, guncellenme: serverTimestamp() }, { merge: true });
+      await window.FB.setDoc(ref, { kayitlar, guncellenme: window.FB.serverTimestamp() }, { merge: true });
     }
     const meta = syncMetaOku();
     meta[bolumAd] = item.hash;
@@ -548,8 +553,8 @@ async function senkronBaslat() {
     for (const b of SYNC_BOLUMLER) {
       if (b.shard) {
         const buAy = ayAnahtari(bugun());
-        const ref = doc(window.FB.db, bolumBelgeYolu(uid, b.ad, buAy));
-        const unsub = onSnapshot(ref, (snap) => {
+        const ref = window.FB.doc(window.FB.db, bolumBelgeYolu(uid, b.ad, buAy));
+        const unsub = window.FB.onSnapshot(ref, (snap) => {
           if (syncYankiKontrol(snap)) return;
           const uzak = kayitlaraDonustur(snap);
           tumBirlestir(b.ad, uzak);
@@ -557,8 +562,8 @@ async function senkronBaslat() {
         }, (e) => console.error('[Sync] Dinleme hatası:', b.ad, e));
         syncUnsubscribe.push(unsub);
       } else {
-        const ref = doc(window.FB.db, bolumBelgeYolu(uid, b.ad));
-        const unsub = onSnapshot(ref, (snap) => {
+        const ref = window.FB.doc(window.FB.db, bolumBelgeYolu(uid, b.ad));
+        const unsub = window.FB.onSnapshot(ref, (snap) => {
           if (syncYankiKontrol(snap)) return;
           const uzak = kayitlaraDonustur(snap);
           tumBirlestir(b.ad, uzak);
@@ -2161,7 +2166,7 @@ async function yerelVeriyiBulutaTasi(user) {
   let bulutBos = true;
   for (const b of SYNC_BOLUMLER) {
     const ref = doc(window.FB.db, bolumBelgeYolu(user.uid, b.ad));
-    const snap = await getDoc(ref);
+    const snap = await window.FB.getDoc(ref);
     if (snap.exists() && snap.data().kayitlar && Object.keys(snap.data().kayitlar).length > 0) {
       bulutBos = false;
       break;
@@ -2216,7 +2221,7 @@ async function hesapSilOnay() {
     for (const b of SYNC_BOLUMLER) {
       try {
         const ref = doc(window.FB.db, bolumBelgeYolu(user.uid, b.ad));
-        await deleteDoc(ref);
+        await window.FB.deleteDoc(ref);
       } catch {}
     }
     try {
