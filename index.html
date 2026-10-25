@@ -2197,6 +2197,17 @@ async function baslatUygulama() {
   }
 }
 
+// Global hata yakalayıcı: hiçbir durumda ekran boş kalmasın
+window.addEventListener('error', (e) => {
+  console.error('[Global] Yakalanamaz hata:', e.message);
+  if (
+    document.getElementById('app').style.display === 'none' &&
+    document.getElementById('girisEkrani').style.display === 'none'
+  ) {
+    girisEkraniGoster();
+  }
+});
+
 function girisSekme(hangi) {
   girisSekmeAktif = hangi;
   document.querySelectorAll('.girisSekmeler button').forEach((b, i) => {
@@ -2441,7 +2452,7 @@ async function uygulamaBaslat() {
   } catch (e) { console.error('Veri okunamadı', e); }
   try { planYenile(); } catch (e) { console.error('[planYenile]', e); }
   try { programUygula(); } catch (e) { console.error('[programUygula]', e); }
-  baslikGuncelle();
+  try { baslikGuncelle(); } catch (e) { console.error('[baslikGuncelle]', e); }
   try { tabGit('gorevler'); } catch (e) {
     console.error('[tabGit]', e);
     const icerik = document.getElementById('icerik');
