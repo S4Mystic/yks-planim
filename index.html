@@ -115,6 +115,7 @@ nav button.aktif svg{animation:zipla .5s cubic-bezier(.3,1.6,.5,1)}
 @keyframes akis{to{transform:translate3d(4%,6%,0) scale(1.15)}}
 @keyframes gir{from{opacity:0;transform:translateY(18px) scale(.98)}}
 @keyframes dolum{from{transform:scaleX(0)}}
+@keyframes yukle{0%,100%{transform:scaleX(0.2)}50%{transform:scaleX(1)}}
 @keyframes zipla{from{transform:scale(.7) translateY(4px)}}
 @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
 @keyframes nabiz{0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 10px rgba(143,176,255,.06),0 0 40px rgba(143,176,255,.15)}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 18px rgba(143,176,255,.10),0 0 70px rgba(167,139,250,.35)}}
@@ -234,6 +235,11 @@ tr:first-child td{border-top:none}
 </style>
 </head>
 <body>
+<div id="yuklemeEkrani" style="position:fixed;inset:0;background:#090b12;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#f1f3fa;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif">
+  <div style="font-size:22px;font-weight:800;letter-spacing:-0.8px;background:linear-gradient(135deg,#fff,#a5b4ff);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:12px">Lyrica</div>
+  <div class="cubuk" style="width:220px;height:9px;border-radius:6px;background:rgba(255,255,255,.08)"><div style="width:100%;height:100%;border-radius:6px;background:linear-gradient(90deg,#5be3b0,#8fb0ff);animation:yukle 1.2s ease-in-out infinite"></div></div>
+  <p class="soluk" style="margin-top:12px;font-size:13px">Uygulama hazırlanıyor...</p>
+</div>
 
 <!-- Giriş Ekranı -->
 <div id="girisEkrani" class="girisEkrani" style="display:none">
@@ -435,7 +441,7 @@ function hesaplaDiff(bolumAd, yeniVeri) {
 }
 
 function senkronYazPlanla(bolumAd, veri) {
-  if (!syncAktif || !window.currentUser) return;
+  if (!window.currentUser || window.currentUser.uid === 'local') return;
   const diff = hesaplaDiff(bolumAd, veri);
   if (!diff) return;
   const onceki = yazmaKuyrugu.get(bolumAd);
@@ -551,7 +557,15 @@ function tumBirlestir(bolumAd, uzakVeri) {
     return;
   }
   
-  const DIZI_ALANLARI = ['kaynaklar', 'sureler', 'haftalar', 'yanlislar', 'rutinler', 'gorevler'];
+  // 'gorevler' kaynak/elle/program verilerinden planYenile() ile yeniden türetilir,
+  // doğrudan senkronize edilmez (veri kaybına yol açar).
+  if (alanAdi === 'gorevler') {
+    planYenile();
+    guvenliEkranCiz();
+    return;
+  }
+  
+  const DIZI_ALANLARI = ['kaynaklar', 'sureler', 'haftalar', 'yanlislar', 'rutinler'];
   
   if (DIZI_ALANLARI.includes(alanAdi)) {
     const birlesikMap = {};
@@ -623,7 +637,41 @@ async function senkronBaslat() {
   }
 }
 
+// Çevrimiçi gelindiğinde senkronu yeniden aç (PC↔telefon senkronu için kritik)
+window.addEventListener('online', () => {
+  if (window.currentUser && window.currentUser.uid !== 'local' && !syncAktif) {
+    senkronBaslat().catch(() => {});
+  }
+});
+
+let sonSenkronZamani = null;
 function syncDurumGuncelle(durum, hataMesaj = null) {
+  syncDurum = durum;
+  if (durum === 'guncel') sonSenkronZamani = new Date().toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'});
+  ['syncDurum', 'syncDetayText'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const renk = {
+      guncel: 'var(--yesil)',
+      senkronlaniyor: 'var(--sari)',
+      cevrimdisi: 'var(--soluk)',
+      hata: 'var(--kirmizi)',
+      bekliyor: 'var(--soluk)'
+    }[durum] || 'var(--soluk)';
+    let metin = {
+      guncel: '✓ Güncel',
+      senkronlaniyor: '⟳ Senkronlanıyor',
+      cevrimdisi: '⚠ Çevrimdışı',
+      hata: '✗ Hata',
+      bekliyor: '⏳ Bekliyor'
+    }[durum] || '';
+    if (bekleyenYazma > 0) metin += `, ${bekleyenYazma} bekliyor`;
+    if (sonSenkronZamani) metin += ` (${sonSenkronZamani})`;
+    if (hataMesaj) metin += `: ${hataMesaj}`;
+    el.innerHTML = `<span style="color:${renk}">${metin}</span>`;
+  });
+}
+
   syncDurum = durum;
   ['syncDurum', 'syncDetayText'].forEach(id => {
     const el = document.getElementById(id);
@@ -914,25 +962,42 @@ function kaynakFormu() {
 let sonTik = null;
 function bugunGorevleri() {
   const bg = bugun();
-  const liste = [...(S.gorevler || [])];
-  
+  const map = new Map();
+  // Türetilen S.gorevler'i kaynağa al (zaten kaynak+elle+program içerir)
+  (S.gorevler || []).forEach(g => {
+    if (g && g.id) map.set(g.id, g);
+  });
+  // Elle görev haritası yedek/authoritative kaynaktan: eksik olanları ekle, asla silme
   if (S.elleGorevler) {
     for (const [id, g] of Object.entries(S.elleGorevler)) {
-      if (g.s) continue;
-      liste.push({
-        id: id,
-        tarih: g.tarih || bg,
-        metin: g.metin || '',
-        kaynakId: null,
-        videoNos: [],
-        linkler: [],
-        tur: 'elle',
-        bitti: !!g.bitti,
-        bitisGun: g.bitisGun
-      });
+      if (!g || g.s) continue;
+      if (!map.has(id)) {
+        map.set(id, {
+          id: id,
+          tarih: g.tarih || bg,
+          metin: g.metin || '',
+          kaynakId: null,
+          videoNos: [],
+          linkler: [],
+          tur: 'elle',
+          bitti: !!g.bitti,
+          bitisGun: g.bitisGun,
+          u: g.u || 0
+        });
+      } else {
+      // Zaten S.gorevler'de varsa elle haritasındaki son durumu yansıt (bitti/tarih)
+        const cur = map.get(id);
+        if (cur.tur === 'elle') {
+          cur.bitti = !!g.bitti;
+          cur.bitisGun = g.bitisGun;
+          cur.tarih = g.tarih || cur.tarih;
+          cur.metin = g.metin || cur.metin;
+          cur.u = g.u || cur.u;
+        }
+      }
     }
   }
-  
+  const liste = [...map.values()];
   return liste.filter(g => g.s !== 1 && (g.tarih === bg || g.bitisGun === bg || (g.tur === 'elle' && !g.bitti && g.tarih < bg)));
 }
 
@@ -2126,31 +2191,42 @@ let girisSekmeAktif = 'eposta';
 
 async function baslatUygulama() {
   let deneme = 0;
-  while (!window.FB?.fbReady && deneme < 30) {
+  while (!window.FB?.fbReady && deneme < 20) {
     await new Promise(r => setTimeout(r, 100));
     deneme++;
   }
   const auth = window.FB?.auth;
+  const sonlandir = () => {
+    const yukleme = document.getElementById('yuklemeEkrani');
+    if (yukleme) yukleme.style.display = 'none';
+  };
   if (auth) {
     window.FB.onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        await kullaniciGirisYapti(user);
-      } else {
-        girisEkraniGoster();
+      try {
+        if (user) {
+          await kullaniciGirisYapti(user);
+        } else {
+          girisEkraniGoster();
+        }
+      } finally {
+        sonlandir();
       }
     });
     try {
       const result = await getRedirectResult(auth);
       if (result?.user) {
         await kullaniciGirisYapti(result.user);
+        sonlandir();
         return;
       }
     } catch (e) {
       console.warn('[Auth] Redirect sonucu alınamadı:', e.message);
     }
+    sonlandir();
   } else {
     console.log('[Auth] Firebase yok, yerel mod');
     girisEkraniGoster(true);
+    sonlandir();
   }
 }
 
@@ -2166,6 +2242,8 @@ function girisSekme(hangi) {
 }
 
 function girisEkraniGoster(yerelMod = false) {
+  const yukleme = document.getElementById('yuklemeEkrani');
+  if (yukleme) yukleme.style.display = 'none';
   document.getElementById('girisEkrani').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('dodoBtn').style.display = 'none';
@@ -2178,6 +2256,8 @@ function girisEkraniGoster(yerelMod = false) {
 }
 
 function girisEkraniGizle() {
+  const yukleme = document.getElementById('yuklemeEkrani');
+  if (yukleme) yukleme.style.display = 'none';
   document.getElementById('girisEkrani').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
   document.getElementById('dodoBtn').style.display = 'grid';
@@ -2427,6 +2507,13 @@ async function uygulamaBaslat() {
 }
 
 baslatUygulama();
+
+// Service Worker: kabuk dosyalarını önbelleğe alır, uygulama çözmesini hızlandırır
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    console.log('[SW] Kaydedildi:', reg.scope);
+  }).catch(e => console.warn('[SW] Kayıt hatası:', e));
+}
 
 function dodoAc() {
   if (document.body.classList.contains('dodoAcik')) return;
