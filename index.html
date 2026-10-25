@@ -200,6 +200,13 @@ tr:first-child td{border-top:none}
 /* Kayıtlı hafta kartı - Düzenle butonu her zaman sağ üstte */
 .kayit{position:relative}
 .kayit .btn.ikincil{position:absolute;top:6px;right:6px;z-index:2}
+/* ===== DENEME KAYIT BLOKU ===== */
+.denemeBlok{border:1px solid var(--kenar);border-radius:14px;padding:14px;margin-bottom:10px;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.denemeSol{flex:1;min-width:0}
+.denemeSatir{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--yazi);margin:2px 0}
+.denemeSatir b{color:var(--vurgu);min-width:40px;display:inline-block}
+.denemeSag{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.denemeSil{width:36px;height:36px;border:0;border-radius:10px;background:rgba(255,122,122,.2);color:var(--kirmizi);font-size:18px;cursor:pointer;display:grid;place-items:center}
 /* ===== GİRİŞ EKRANI ===== */
 .girisEkrani{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:20px}
 .girisKart{width:100%;max-width:380px;background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.04));border:1px solid var(--kenar);border-radius:24px;padding:28px;-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);box-shadow:0 20px 50px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.2)}
@@ -408,9 +415,9 @@ function bolumBelgeYolu(uid, bolumAd, ay) {
   const b = SYNC_BOLUMLER.find(x => x.ad === bolumAd);
   if (!b) return null;
   if (b.shard && ay) {
-    return `users/${uid}/veri/${bolumAd}/${ay}/ana`; // 6 segment (çift)
+    return `users/${uid}/veri/${bolumAd}/${ay}/ana`;
   }
-  return `users/${uid}/veri/${bolumAd}`; // 4 segment (çift)
+  return `users/${uid}/veri/${bolumAd}`;
 }
 
 function ayAnahtari(tarih) {
@@ -449,7 +456,6 @@ async function senkronYazGonder(bolumAd) {
     if (!b) return;
     const veri = temizleDataURL(item.veri);
     
-    // Dizi alanlarını Firestore için map'e çevir: [{id, ...}, ...] -> {id: {...}, ...}
     const DIZI_ALANLARI = ['kaynaklar', 'sureler', 'haftalar', 'yanlislar', 'rutinler', 'gorevler'];
     let yazilacakVeri = veri;
     if (DIZI_ALANLARI.includes(bolumAd) && Array.isArray(veri)) {
@@ -459,7 +465,6 @@ async function senkronYazGonder(bolumAd) {
       }
       yazilacakVeri = { kayitlar: map };
     } else if (!DIZI_ALANLARI.includes(bolumAd)) {
-      // Nesne alanları için direkt kayitlar sarmala
       yazilacakVeri = { kayitlar: veri };
     }
     
@@ -478,10 +483,6 @@ async function senkronYazGonder(bolumAd) {
       await batch.commit();
     } else {
       const ref = doc(window.FB.db, bolumBelgeYolu(uid, bolumAd));
-      const kayitlar = {};
-      for (const [id, kayit] of Object.entries(veri)) {
-        kayitlar[id] = { ...kayit, u: kayit.u || simdi() };
-      }
       await setDoc(ref, yazilacakVeri, { merge: true });
     }
     const meta = syncMetaOku();
@@ -529,25 +530,20 @@ function tumBirlestir(bolumAd, uzakVeri) {
   if (!b) return;
   const alanAdi = b.alan || bolumAd;
   
-  // Firestore'dan gelen uzakVeri: {kayitlar: {id: record}} şeklinde gelir
-  // Eğer uzakVeri direkt bir map ise (kayitlar yoksa) onu kullan, yoksa kayitlar'ı al
   const uzakKayitlar = uzakVeri.kayitlar || uzakVeri || {};
   
-  // Dizi alanları (array): map'ten dizi'ye çevir
   const DIZI_ALANLARI = ['kaynaklar', 'sureler', 'haftalar', 'yanlislar', 'rutinler', 'gorevler'];
   
   if (DIZI_ALANLARI.includes(alanAdi)) {
-    // Map'i diziye çevir
     const diziyeCevir = (map) => {
       const sonuc = [];
       for (const [id, kayit] of Object.entries(map)) {
-        if (kayit && kayit.s === 1) continue; // silinmiş
+        if (kayit && kayit.s === 1) continue;
         sonuc.push(kayit);
       }
       return sonuc;
     };
     
-    // Birleştirme: map bazlı
     const birlesikMap = { ...yerelVeri };
     for (const [id, uzakKayit] of Object.entries(uzakKayitlar)) {
       const yerelKayit = birlesikMap[id];
@@ -569,7 +565,6 @@ function tumBirlestir(bolumAd, uzakVeri) {
     return;
   }
   
-  // Nesne/map alanları: kacan, konuTakip, profil, program, kaynakTamam, programTamam, elleGorevler
   const yerelVeri = S[alanAdi];
   if (bolumAd === 'kacan') {
     const birlesik = { ...yerelVeri };
@@ -582,17 +577,12 @@ function tumBirlestir(bolumAd, uzakVeri) {
     return;
   }
   
-  if (bolumAd === 'yanlislar') {
-    // yanlislar zaten DIZI_ALANLARI içinde yukarıda işlendi, buraya gelmez
-    return;
-  }
-  
-  // Genel nesne birleştirme
   S[alanAdi] = birlestirYerelUzak(yerelVeri, uzakKayitlar);
 }
 
 async function senkronBaslat() {
-  if (!window.currentUser || syncAktif) return;
+  if (!window.currentUser) return;
+  if (syncAktif) return; // zaten çalışıyor
   syncAktif = true;
   syncDurumGuncelle('senkronlaniyor');
   for (const unsub of syncUnsubscribe) unsub();
@@ -604,7 +594,7 @@ async function senkronBaslat() {
         const buAy = ayAnahtari(bugun());
         const ref = window.FB.doc(window.FB.db, bolumBelgeYolu(uid, b.ad, buAy));
         const unsub = window.FB.onSnapshot(ref, (snap) => {
-          if (syncYankiKontrol(snap)) return;
+          if (snap.metadata.hasPendingWrites) return;
           const uzak = kayitlaraDonustur(snap);
           tumBirlestir(b.ad, uzak);
           guvenliEkranCiz();
@@ -613,7 +603,7 @@ async function senkronBaslat() {
       } else {
         const ref = window.FB.doc(window.FB.db, bolumBelgeYolu(uid, b.ad));
         const unsub = window.FB.onSnapshot(ref, (snap) => {
-          if (syncYankiKontrol(snap)) return;
+          if (snap.metadata.hasPendingWrites) return;
           const uzak = kayitlaraDonustur(snap);
           tumBirlestir(b.ad, uzak);
           guvenliEkranCiz();
@@ -626,30 +616,13 @@ async function senkronBaslat() {
   } catch (e) {
     console.error('[Sync] Başlatma hatası:', e);
     syncDurumGuncelle('hata', e.message);
-  }
-}
-
-function syncYankiKontrol(snap) {
-  return snap.metadata.hasPendingWrites;
-}
-
-async function ilkSenkronYaz() {
-  for (const b of SYNC_BOLUMLER) {
-    const alanAdi = b.alan || b.ad;
-    const veri = S[alanAdi];
-    const DIZI_ALANLARI = ['kaynaklar', 'sureler', 'haftalar', 'yanlislar', 'rutinler', 'gorevler'];
-    const varMi = DIZI_ALANLARI.includes(alanAdi) 
-      ? (Array.isArray(veri) && veri.length > 0)
-      : (veri && Object.keys(veri).length > 0);
-    if (varMi) {
-      await senkronYazGonder(b.ad);
-    }
+    syncAktif = false;
   }
 }
 
 function syncDurumGuncelle(durum, hataMesaj = null) {
   syncDurum = durum;
-  const el = document.getElementById('syncDurum') || document.getElementById('syncDetay');
+  const el = document.getElementById('syncDurum') || document.getElementById('syncDetayText');
   if (!el) return;
   const renk = {
     guncel: 'var(--yesil)',
@@ -667,11 +640,7 @@ function syncDurumGuncelle(durum, hataMesaj = null) {
   }[durum] || '';
   if (bekleyenYazma > 0) metin += `, ${bekleyenYazma} bekliyor`;
   if (hataMesaj) metin += `: ${hataMesaj}`;
-  if (el.id === 'syncDurum') {
-    el.innerHTML = `<span style="color:${renk};font-size:12px;margin-left:8px">${metin}</span>`;
-  } else {
-    el.innerHTML = `<span style="color:${renk}">${metin}</span>`;
-  }
+  el.innerHTML = `<span style="color:${renk}">${metin}</span>`;
 }
 
 function guvenliEkranCiz() {
@@ -691,7 +660,7 @@ const varsayilan = () => ({
   rutinler: [],     
   kaynakTamam: {},
   programTamam: {},
-  elleGorevler: {}   // elle görevler map olarak saklanır, gorevler dizisi türetilir
+  elleGorevler: {}
 });
 
 let S = varsayilan();
@@ -813,7 +782,6 @@ function planYenile() {
       }
     }
   }
-  // Elle görevler map'inden gorevler dizisine yansıt (türetilmiş görünüm)
   if (S.elleGorevler) {
     const mevcutElleIds = new Set(S.gorevler.filter(g => g.tur === 'elle').map(g => g.id));
     for (const [id, g] of Object.entries(S.elleGorevler)) {
@@ -926,10 +894,9 @@ function bugunGorevleri() {
   const bg = bugun();
   const liste = [...(S.gorevler || [])];
   
-  // Elle görevler map'inden eklenenleri ekle
   if (S.elleGorevler) {
     for (const [id, g] of Object.entries(S.elleGorevler)) {
-      if (g.s) continue; // silinmiş
+      if (g.s) continue;
       liste.push({
         id: id,
         tarih: g.tarih || bg,
@@ -1166,7 +1133,7 @@ function sureEkrani() {
     '<div class="toplam"><span>Bugün</span><b id="t_bugun">' + sureYaz(t.bugun) + '</b></div>' +
     '<div class="toplam"><span>Bu hafta</span><b id="t_hafta">' + sureYaz(t.hafta) + '</b></div>' +
     '<div class="toplam"><span>Toplam</span><b id="t_toplam">' + sureYaz(t.toplam) + '</b></div>');
-  const son = S.sureler.slice(-8).reverse().map(x =>
+  const son = S.sureler.filter(x => x.s !== 1).slice(-8).reverse().map(x =>
     '<div class="kayit"><div>' + esc(x.ders) + ': ' + sureYaz(x.sn) + '<br><span class="soluk">' + gunAdi(x.gun) + '</span></div>' +
     '<button class="sil" onclick="sureSil(\'' + x.id + '\')">✕</button></div>').join('');
   return kart('Kronometre', ust) + toplamKart + (son ? kart('Son kayıtlar', son) : '');
@@ -1406,13 +1373,18 @@ function haftaFormu() {
     const saatlerH = haftaCalismaSaatleri(h.hafta);
     const dersDagilim = saatlerH.toplam ? '<div class="soluk" style="font-size:11px;margin-top:4px">' + 
         Object.entries(saatlerH.dersler).map(([d, sn]) => d + ': ' + sureYaz(sn)).join(' · ') + '</div>' : '';
-    return '<div class="kayit" style="padding:8px 0;border-top:1px solid rgba(255,255,255,.08)">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">' +
-      '<div style="flex:1;min-width:0"><b>' + gunAdi(h.hafta) + '</b> <span class="soluk">(' + h.alan + ')</span></div>' +
-      '<div class="soluk" style="font-size:12px;white-space:nowrap;flex-shrink:0">TYT: ' + netYaz(tytNet) + ' · AYT: ' + netYaz(aytNet) + '</div>' +
-      '<button class="btn ikincil" style="padding:0 10px;min-height:28px;line-height:28px;font-size:11px;flex-shrink:0" onclick="haftaSecili=\'' + h.hafta + '\';haftaAlt=\'form\';ekranCiz()">Düzenle</button>' +
+    return '<div class="denemeBlok">' +
+      '<div class="denemeSol">' +
+      '<div class="denemeSatir"><span></span></div>' +
+      '<div class="denemeSatir"><b>TYT:</b> ' + netYaz(tytNet) + '</div>' +
+      '<div class="denemeSatir"><b>AYT:</b> ' + netYaz(aytNet) + '</div>' +
+      '<div class="denemeSatir"><b>Süre:</b> ' + sureYaz(saatlerH.toplam) + '</div>' +
+      '<div class="denemeSatir"><span></span></div>' +
       '</div>' +
-      dersDagilim +
+      '<div class="denemeSag">' +
+      '<button class="btn ikincil" style="padding:0 12px;min-height:36px;line-height:36px;font-size:11px;flex-shrink:0" onclick="haftaSecili=\'' + h.hafta + '\';haftaAlt=\'form\';ekranCiz()">Düzenle</button>' +
+      '<button class="denemeSil" onclick="haftaSil(\'' + h.hafta + '\')">✕</button>' +
+      '</div>' +
       '</div>';
   }).join('') : '<p class="soluk">Henüz kayıtlı hafta yok.</p>';
   return kart('Hafta Deneme Kaydı',
@@ -1421,6 +1393,11 @@ function haftaFormu() {
     kart('AYT Netleri (' + alan + ')', girdiler('n_ayt_', AYT_DERS[alan] || [], m && m.ayt) +
     '<button class="btn" style="margin-top:14px" onclick="haftaKaydet()">Kaydet</button>') +
     kart('Kayıtlı Haftalar (Yeni → Eski)', listeHtml);
+}
+function haftaSil(hafta) {
+  if (!confirm('Bu hafta kaydı silinsin mi?')) return;
+  S.haftalar = S.haftalar.filter(h => h.hafta !== hafta);
+  kaydet(); ekranCiz(); bildir('Hafta silindi ✓');
 }
 function haftaKaydet() {
   const alan = S.profil.alan || 'SAY', al = id => document.getElementById(id).value.trim();
@@ -1564,7 +1541,7 @@ function analizEkrani() {
       const s = haftaCalismaSaatleri(h.hafta);
       return '<div class="kayit" style="padding:10px 0;border-top:1px solid rgba(255,255,255,.08)">' +
         '<div><b>' + gunAdi(h.hafta) + '</b> <span class="soluk">(' + h.alan + ')</span></div>' +
-        '<div class="soluk" style="font-size:13px">TYT: ' + netYaz(tyt) + ' · AYT: ' + netYaz(ayt) + ' · Toplam: ' + netYaz((tyt||0)+(ayt||0)) + ' · ⏱ ' + sureYaz(s.toplam) + '</div>' +
+        '<div class="soluk" style="font-size:13px">TYT: ' + netYaz(tyt) + ' · AYT: ' + netYaz(ayt) + ' · ⏱ ' + sureYaz(s.toplam) + '</div>' +
         '</div>';
     }).join(''));
 }
@@ -1843,7 +1820,7 @@ async function nvidiaIstek(model, icerikler, sistem, gorselBase64) {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const j = await r.json();
     let metin = String(j.choices?.[0]?.message?.content || '');
-    metin = metin.replace(/<\/think>/gi, '').replace(/<think>[\s\S]*$/i, '').trim();
+    metin = metin.replace(/<\/think>/gi, '').replace(/\[object Object\]/gi, '').trim();
     if (!metin) throw new Error('boş yanıt');
     return metin;
   } finally { clearTimeout(zaman); }
@@ -2243,7 +2220,6 @@ async function kullaniciGirisYapti(user) {
     const oncekiUid = localStorage.getItem(UID_KEY);
     const yeniUid = user.uid;
   
-    // Kullanıcı değişimi kontrolü (Farklı uid ile giriş)
     if (oncekiUid && oncekiUid !== yeniUid && oncekiUid !== 'local') {
       const secim = confirm(
         `Başka bir hesapla giriş yapıyorsunuz (${user.email}).\n` +
@@ -2272,7 +2248,6 @@ async function kullaniciGirisYapti(user) {
   
     girisEkraniGizle();
     await uygulamaBaslat();
-    // Senkronu arkaplanda başlat, UI'yi engelleme (hata olsa uygulama kapanmasın)
     senkronBaslat().catch(e => console.error('[Sync] Başlatma hatası:', e));
   } catch (e) {
     console.error('[Auth] Giriş hatası:', e);
@@ -2300,6 +2275,20 @@ async function yerelVeriyiBulutaTasi(user) {
     bildir('Verileriniz birleştiriliyor...');
     await senkronBaslat();
     setTimeout(() => bildir('Senkron tamamlandı ✓'), 1000);
+  }
+}
+
+async function ilkSenkronYaz() {
+  for (const b of SYNC_BOLUMLER) {
+    const alanAdi = b.alan || b.ad;
+    const veri = S[alanAdi];
+    const DIZI_ALANLARI = ['kaynaklar', 'sureler', 'haftalar', 'yanlislar', 'rutinler', 'gorevler'];
+    const varMi = DIZI_ALANLARI.includes(alanAdi) 
+      ? (Array.isArray(veri) && veri.length > 0)
+      : (veri && Object.keys(veri).length > 0);
+    if (varMi) {
+      await senkronYazGonder(b.ad);
+    }
   }
 }
 
@@ -2365,7 +2354,11 @@ async function hesapSilOnay() {
 }
 
 async function manuelSenkkron() {
-  if (!window.currentUser || window.currentUser.uid === 'local') return;
+  if (!window.currentUser || window.currentUser.uid === 'local') {
+    bildir('Giriş yapmalısınız');
+    return;
+  }
+  bildir('Senkron başlatılıyor...');
   await senkronBaslat();
 }
 
