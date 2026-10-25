@@ -2190,16 +2190,11 @@ function yedekYukle(inp) {
 let girisSekmeAktif = 'eposta';
 
 async function baslatUygulama() {
-  let deneme = 0;
-  while (!window.FB?.fbReady && deneme < 20) {
-    await new Promise(r => setTimeout(r, 100));
-    deneme++;
-  }
-  const auth = window.FB?.auth;
   const sonlandir = () => {
     const yukleme = document.getElementById('yuklemeEkrani');
     if (yukleme) yukleme.style.display = 'none';
   };
+  const auth = window.FB?.auth;
   if (auth) {
     window.FB.onAuthStateChanged(auth, async (user) => {
       try {
@@ -2507,13 +2502,6 @@ async function uygulamaBaslat() {
 }
 
 baslatUygulama();
-
-// Service Worker: kabuk dosyalarını önbelleğe alır, uygulama çözmesini hızlandırır
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').then(reg => {
-    console.log('[SW] Kaydedildi:', reg.scope);
-  }).catch(e => console.warn('[SW] Kayıt hatası:', e));
-}
 
 function dodoAc() {
   if (document.body.classList.contains('dodoAcik')) return;
