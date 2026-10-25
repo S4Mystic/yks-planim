@@ -696,8 +696,16 @@ const GUNLER = [[1,'Pzt'],[2,'Sal'],[3,'Çar'],[4,'Per'],[5,'Cum'],[6,'Cmt'],[0,
 
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function tarihStr(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
-function tarihDon(s) { const p = s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
-function gunAdi(s) { return tarihDon(s).toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long'}); }
+function tarihDon(s) { 
+  if (!s || typeof s !== 'string') return new Date(NaN); 
+  const p = s.split('-'); 
+  return new Date(+p[0], +p[1]-1, +p[2]); 
+}
+function gunAdi(s) { 
+  const d = tarihDon(s); 
+  if (isNaN(d.getTime())) return ''; 
+  return d.toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long'}); 
+}
 
 function videoEtiket(k, nos) {
   if (nos.some(n => k.videolar[n-1] && k.videolar[n-1].baslik))
@@ -1172,13 +1180,15 @@ function baslikGuncelle() {
   document.getElementById('baslik').textContent = S.profil.ad ? 'Merhaba, ' + S.profil.ad : 'Lyrica';
   if (!document.getElementById('syncDurum')) {
     const baslikEl = document.getElementById('baslik');
-    baslikEl.insertAdjacentHTML('beforeend', '<span id="syncDurum"></span>');
+    baslikEl.insertAdjacentHTML('beforeend', '<span id="syncDurum" style="font-size:12px;margin-left:8px;opacity:.75;vertical-align:middle;display:inline-block"></span>');
   }
 }
 function kalanGun() {
   const s = S.profil.sinavTarihi;
-  if (!s) return null;
-  return Math.round((tarihDon(s) - tarihDon(bugun())) / 86400000);
+  if (!s || typeof s !== 'string') return null;
+  const d = tarihDon(s);
+  if (isNaN(d.getTime())) return null;
+  return Math.round((d - tarihDon(bugun())) / 86400000);
 }
 function profilKaydet() {
   const al = id => document.getElementById(id).value.trim();
@@ -2277,6 +2287,7 @@ async function kullaniciGirisYapti(user) {
     senkronBaslat().catch(e => console.error('[Sync] Başlatma hatası:', e));
   } catch (e) {
     console.error('[Auth] Giriş hatası:', e);
+    bildir('Giriş hatası: ' + (e.message || 'Bilinmeyen'));
     girisEkraniGoster();
   }
 }
@@ -2400,7 +2411,7 @@ async function uygulamaBaslat() {
   tabGit('gorevler');
   if (!document.getElementById('syncDurum')) {
     const baslikEl = document.getElementById('baslik');
-    baslikEl.insertAdjacentHTML('beforeend', '<span id="syncDurum"></span>');
+    baslikEl.insertAdjacentHTML('beforeend', '<span id="syncDurum" style="font-size:12px;margin-left:8px;opacity:.75;vertical-align:middle;display:inline-block"></span>');
   }
   syncDurumGuncelle('bekliyor');
 }
