@@ -2190,45 +2190,34 @@ async function baslatUygulama() {
     );
   }
 
-  try {
-    const auth = window.FB?.auth;
-    if (auth) {
-      window.FB.onAuthStateChanged(auth, async (user) => {
-        try {
-          if (user) {
-            await kullaniciGirisYapti(user);
-          } else {
-            girisEkraniGoster();
-          }
-        } catch (e) {
-          console.error('[Auth] hata:', e);
-          girisEkraniGoster(true);
-        }
-      });
-      try {
-        const result = await getRedirectResult(auth);
-        if (result?.user) await kullaniciGirisYapti(result.user);
-      } catch (e) {
-        console.warn('[Auth] redirect:', e.message);
-      }
-    } else {
-      console.log('[Auth] Firebase yok, yerel mod');
-      girisEkraniGoster(true);
-    }
-  } catch (e) {
-    console.error('[Baslat] hata:', e);
-    girisEkraniGoster(true);
-  }
+  const auth = window.FB?.auth;
 
-  // Güvenlik: Firebase/auth asla yanıtsız kalırsa bile asla kilitlenme olmasın
-  setTimeout(() => {
-    if (
-      document.getElementById('app').style.display === 'none' &&
-      document.getElementById('girisEkrani').style.display === 'none'
-    ) {
-      girisEkraniGoster(true);
+  // Güvenlik: asla ekran boş kalmasın, 3 sn sonra normal giriş ekranı gösterilir
+  setTimeout(() => girisEkraniGoster(), 3000);
+
+  if (auth) {
+    window.FB.onAuthStateChanged(auth, async (user) => {
+      try {
+        if (user) {
+          await kullaniciGirisYapti(user);
+        } else {
+          girisEkraniGoster();
+        }
+      } catch (e) {
+        console.error('[Auth] hata:', e);
+        girisEkraniGoster();
+      }
+    });
+    try {
+      const result = await getRedirectResult(auth);
+      if (result?.user) await kullaniciGirisYapti(result.user);
+    } catch (e) {
+      console.warn('[Auth] redirect:', e.message);
     }
-  }, 5000);
+  } else {
+    console.log('[Auth] Firebase yok, yerel mod');
+    girisEkraniGoster();
+  }
 }
 
 function girisSekme(hangi) {
@@ -2242,16 +2231,10 @@ function girisSekme(hangi) {
   document.getElementById('girisHataGoogle').textContent = '';
 }
 
-function girisEkraniGoster(yerelMod = false) {
+function girisEkraniGoster() {
   document.getElementById('girisEkrani').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('dodoBtn').style.display = 'none';
-  if (yerelMod) {
-    document.querySelector('.girisKart p').textContent = 'Yerel mod (Firebase erişilemedi)';
-    document.getElementById('formEposta').style.display = 'none';
-    document.getElementById('formGoogle').style.display = 'none';
-    document.querySelector('.girisSekmeler').style.display = 'none';
-  }
 }
 
 function girisEkraniGizle() {
@@ -2492,10 +2475,14 @@ async function uygulamaBaslat() {
       S = Object.assign(varsayilan(), parsed);
     }
   } catch (e) { console.error('Veri okunamadı', e); }
-  planYenile();
-  programUygula();
+  try { planYenile(); } catch (e) { console.error('[planYenile]', e); }
+  try { programUygula(); } catch (e) { console.error('[programUygula]', e); }
   baslikGuncelle();
-  tabGit('gorevler');
+  try { tabGit('gorevler'); } catch (e) {
+    console.error('[tabGit]', e);
+    const icerik = document.getElementById('icerik');
+    if (icerik) icerik.innerHTML = '<section class="sayfa acik"><div class="kart"><h2>Hata</h2><p class="soluk">Sekme yüklenemedi: ' + esc(e.message) + '</p></div></section>';
+  }
   if (!document.getElementById('syncDurum')) {
     const baslikEl = document.getElementById('baslik');
     baslikEl.insertAdjacentHTML('beforeend', '<span id="syncDurum" style="font-size:12px;margin-left:8px;opacity:.75;vertical-align:middle;display:inline-block"></span>');
