@@ -665,29 +665,6 @@ function syncDurumGuncelle(durum, hataMesaj = null) {
   });
 }
 
-  syncDurum = durum;
-  ['syncDurum', 'syncDetayText'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const renk = {
-      guncel: 'var(--yesil)',
-      senkronlaniyor: 'var(--sari)',
-      cevrimdisi: 'var(--soluk)',
-      hata: 'var(--kirmizi)',
-      bekliyor: 'var(--soluk)'
-    }[durum] || 'var(--soluk)';
-    let metin = {
-      guncel: '✓ Güncel',
-      senkronlaniyor: '⟳ Senkronlanıyor',
-      cevrimdisi: '⚠ Çevrimdışı',
-      hata: '✗ Hata',
-      bekliyor: '⏳ Bekliyor'
-    }[durum] || '';
-    if (bekleyenYazma > 0) metin += `, ${bekleyenYazma} bekliyor`;
-    if (hataMesaj) metin += `: ${hataMesaj}`;
-    el.innerHTML = `<span style="color:${renk}">${metin}</span>`;
-  });
-}
 
 function guvenliEkranCiz() {
   const aktifEl = document.activeElement;
