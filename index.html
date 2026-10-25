@@ -201,11 +201,13 @@ tr:first-child td{border-top:none}
 .kayit{position:relative}
 .kayit .btn.ikincil{position:absolute;top:6px;right:6px;z-index:2}
 /* ===== DENEME KAYIT BLOKU ===== */
-.denemeBlok{border:1px solid var(--kenar);border-radius:14px;padding:14px;margin-bottom:10px;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.denemeSol{flex:1;min-width:0}
-.denemeSatir{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--yazi);margin:2px 0}
-.denemeSatir b{color:var(--vurgu);min-width:40px;display:inline-block}
-.denemeSag{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.denemeBlok{border:1px solid var(--kenar);border-radius:14px;padding:14px;margin-bottom:10px;background:rgba(255,255,255,.04);display:flex;flex-direction:column;gap:10px}
+.denemeUst{font-weight:600;font-size:15px;color:var(--vurgu)}
+.denemeGovde{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%}
+.denemeSol{display:flex;gap:14px;flex-wrap:wrap;align-items:center;flex:1;min-width:0}
+.denemeBilgi{font-size:13px;color:var(--yazi);display:flex;align-items:center;gap:8px}
+.denemeBilgi b{color:var(--yazi)}
+.denemeSag{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .denemeSil{width:36px;height:36px;border:0;border-radius:10px;background:rgba(255,122,122,.2);color:var(--kirmizi);font-size:18px;cursor:pointer;display:grid;place-items:center}
 /* ===== GİRİŞ EKRANI ===== */
 .girisEkrani{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:20px}
@@ -454,37 +456,24 @@ async function senkronYazGonder(bolumAd) {
   try {
     const b = SYNC_BOLUMLER.find(x => x.ad === bolumAd);
     if (!b) return;
+    const uid = window.currentUser.uid;
+    const alanAdi = b.alan || bolumAd;
     const veri = temizleDataURL(item.veri);
     
     const DIZI_ALANLARI = ['kaynaklar', 'sureler', 'haftalar', 'yanlislar', 'rutinler', 'gorevler'];
     let yazilacakVeri = veri;
-    if (DIZI_ALANLARI.includes(bolumAd) && Array.isArray(veri)) {
+    if (DIZI_ALANLARI.includes(alanAdi) && Array.isArray(veri)) {
       const map = {};
-      for (const kayit of veri) {
-        if (kayit && kayit.id) map[kayit.id] = kayit;
-      }
+      veri.forEach((kayit, i) => {
+        if (kayit) map[kayit.id || kayit.hafta || ('x' + i)] = kayit;
+      });
       yazilacakVeri = { kayitlar: map };
-    } else if (!DIZI_ALANLARI.includes(bolumAd)) {
+    } else if (!DIZI_ALANLARI.includes(alanAdi)) {
       yazilacakVeri = { kayitlar: veri };
     }
     
-    if (b.shard) {
-      const ayGruplari = {};
-      for (const [id, kayit] of Object.entries(veri)) {
-        const ay = kayit.tarih ? ayAnahtari(kayit.tarih) : ayAnahtari(bugun());
-        if (!ayGruplari[ay]) ayGruplari[ay] = {};
-        ayGruplari[ay][id] = { ...kayit, u: kayit.u || simdi() };
-      }
-      const batch = window.FB.writeBatch(window.FB.db);
-      for (const [ay, kayitlar] of Object.entries(ayGruplari)) {
-        const ref = doc(window.FB.db, bolumBelgeYolu(uid, bolumAd, ay));
-        batch.set(ref, yazilacakVeri, { merge: true });
-      }
-      await batch.commit();
-    } else {
-      const ref = doc(window.FB.db, bolumBelgeYolu(uid, bolumAd));
-      await setDoc(ref, yazilacakVeri, { merge: true });
-    }
+    const ref = doc(window.FB.db, bolumBelgeYolu(uid, bolumAd));
+    await setDoc(ref, yazilacakVeri, { merge: true });
     const meta = syncMetaOku();
     meta[bolumAd] = item.hash;
     syncMetaYaz(meta);
@@ -535,33 +524,29 @@ function tumBirlestir(bolumAd, uzakVeri) {
   const DIZI_ALANLARI = ['kaynaklar', 'sureler', 'haftalar', 'yanlislar', 'rutinler', 'gorevler'];
   
   if (DIZI_ALANLARI.includes(alanAdi)) {
-    const diziyeCevir = (map) => {
-      const sonuc = [];
-      for (const [id, kayit] of Object.entries(map)) {
-        if (kayit && kayit.s === 1) continue;
-        sonuc.push(kayit);
-      }
-      return sonuc;
-    };
-    
-    const birlesikMap = { ...yerelVeri };
+    const birlesikMap = {};
+    const yerelArr = Array.isArray(S[alanAdi]) ? S[alanAdi] : [];
+    yerelArr.forEach(k => { if (k) birlesikMap[k.id || k.hafta || String(k)] = { ...k }; });
     for (const [id, uzakKayit] of Object.entries(uzakKayitlar)) {
-      const yerelKayit = birlesikMap[id];
+      if (!uzakKayit || typeof uzakKayit !== 'object') continue;
+      const key = uzakKayit.id || uzakKayit.hafta || id;
+      const yerelKayit = birlesikMap[key];
       if (!yerelKayit) {
-        if (!uzakKayit.s) birlesikMap[id] = { ...uzakKayit };
+        if (!uzakKayit.s) birlesikMap[key] = { ...uzakKayit };
         continue;
       }
       const uYerel = yerelKayit.u || 0;
       const uUzak = uzakKayit.u || 0;
       if (uUzak > uYerel) {
-        if (uzakKayit.s) delete birlesikMap[id];
-        else birlesikMap[id] = { ...uzakKayit };
+        if (uzakKayit.s) delete birlesikMap[key];
+        else birlesikMap[key] = { ...uzakKayit };
       } else if (uUzak === uYerel && uzakKayit.s && !yerelKayit.s) {
-        delete birlesikMap[id];
+        delete birlesikMap[key];
       }
     }
-    
-    S[alanAdi] = diziyeCevir(birlesikMap);
+    let sonuc = Object.values(birlesikMap).filter(x => x && x.s !== 1);
+    if (alanAdi === 'haftalar') sonuc.sort((a, b) => (a.hafta || '').localeCompare(b.hafta || ''));
+    S[alanAdi] = sonuc;
     return;
   }
   
@@ -582,34 +567,22 @@ function tumBirlestir(bolumAd, uzakVeri) {
 
 async function senkronBaslat() {
   if (!window.currentUser) return;
-  if (syncAktif) return; // zaten çalışıyor
-  syncAktif = true;
-  syncDurumGuncelle('senkronlaniyor');
   for (const unsub of syncUnsubscribe) unsub();
   syncUnsubscribe = [];
+  syncAktif = true;
+  syncDurumGuncelle('senkronlaniyor');
   const uid = window.currentUser.uid;
   try {
     for (const b of SYNC_BOLUMLER) {
-      if (b.shard) {
-        const buAy = ayAnahtari(bugun());
-        const ref = window.FB.doc(window.FB.db, bolumBelgeYolu(uid, b.ad, buAy));
-        const unsub = window.FB.onSnapshot(ref, (snap) => {
-          if (snap.metadata.hasPendingWrites) return;
-          const uzak = kayitlaraDonustur(snap);
-          tumBirlestir(b.ad, uzak);
-          guvenliEkranCiz();
-        }, (e) => console.error('[Sync] Dinleme hatası:', b.ad, e));
-        syncUnsubscribe.push(unsub);
-      } else {
-        const ref = window.FB.doc(window.FB.db, bolumBelgeYolu(uid, b.ad));
-        const unsub = window.FB.onSnapshot(ref, (snap) => {
-          if (snap.metadata.hasPendingWrites) return;
-          const uzak = kayitlaraDonustur(snap);
-          tumBirlestir(b.ad, uzak);
-          guvenliEkranCiz();
-        }, (e) => console.error('[Sync] Dinleme hatası:', b.ad, e));
-        syncUnsubscribe.push(unsub);
-      }
+      const ref = window.FB.doc(window.FB.db, bolumBelgeYolu(uid, b.ad));
+      const unsub = window.FB.onSnapshot(ref, (snap) => {
+        if (snap.metadata.hasPendingWrites) return;
+        const uzak = kayitlaraDonustur(snap);
+        tumBirlestir(b.ad, uzak);
+        planYenile();
+        guvenliEkranCiz();
+      }, (e) => console.error('[Sync] Dinleme hatası:', b.ad, e));
+      syncUnsubscribe.push(unsub);
     }
     await ilkSenkronYaz();
     syncDurumGuncelle('guncel');
@@ -622,25 +595,27 @@ async function senkronBaslat() {
 
 function syncDurumGuncelle(durum, hataMesaj = null) {
   syncDurum = durum;
-  const el = document.getElementById('syncDurum') || document.getElementById('syncDetayText');
-  if (!el) return;
-  const renk = {
-    guncel: 'var(--yesil)',
-    senkronlaniyor: 'var(--sari)',
-    cevrimdisi: 'var(--soluk)',
-    hata: 'var(--kirmizi)',
-    bekliyor: 'var(--soluk)'
-  }[durum] || 'var(--soluk)';
-  let metin = {
-    guncel: '✓ Güncel',
-    senkronlaniyor: '⟳ Senkronlanıyor',
-    cevrimdisi: '⚠ Çevrimdışı',
-    hata: '✗ Hata',
-    bekliyor: '⏳ Bekliyor'
-  }[durum] || '';
-  if (bekleyenYazma > 0) metin += `, ${bekleyenYazma} bekliyor`;
-  if (hataMesaj) metin += `: ${hataMesaj}`;
-  el.innerHTML = `<span style="color:${renk}">${metin}</span>`;
+  ['syncDurum', 'syncDetayText'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const renk = {
+      guncel: 'var(--yesil)',
+      senkronlaniyor: 'var(--sari)',
+      cevrimdisi: 'var(--soluk)',
+      hata: 'var(--kirmizi)',
+      bekliyor: 'var(--soluk)'
+    }[durum] || 'var(--soluk)';
+    let metin = {
+      guncel: '✓ Güncel',
+      senkronlaniyor: '⟳ Senkronlanıyor',
+      cevrimdisi: '⚠ Çevrimdışı',
+      hata: '✗ Hata',
+      bekliyor: '⏳ Bekliyor'
+    }[durum] || '';
+    if (bekleyenYazma > 0) metin += `, ${bekleyenYazma} bekliyor`;
+    if (hataMesaj) metin += `: ${hataMesaj}`;
+    el.innerHTML = `<span style="color:${renk}">${metin}</span>`;
+  });
 }
 
 function guvenliEkranCiz() {
@@ -717,6 +692,7 @@ function gorevOlustur(k, nos, ds) {
 function planYenile() {
   const bg = bugun();
   S.kaynaklar.forEach(k => {
+    if (k.s === 1) return;
     const biten = new Set(); let bugunBiten = 0;
     S.gorevler.filter(g => g.kaynakId === k.id && g.bitti).forEach(g => {
       g.videoNos.forEach(n => biten.add(n));
@@ -784,20 +760,28 @@ function planYenile() {
   }
   if (S.elleGorevler) {
     const mevcutElleIds = new Set(S.gorevler.filter(g => g.tur === 'elle').map(g => g.id));
+    const bg = bugun();
     for (const [id, g] of Object.entries(S.elleGorevler)) {
       if (g.s) continue;
-      if (!mevcutElleIds.has(id)) {
-        S.gorevler.push({
-          id: id,
-          tarih: g.tarih || bugun(),
-          metin: g.metin || '',
-          kaynakId: null,
-          videoNos: [],
-          linkler: [],
-          tur: 'elle',
-          bitti: !!g.bitti,
-          bitisGun: g.bitisGun
-        });
+      const gorev = {
+        id: id,
+        tarih: g.tarih || bg,
+        metin: g.metin || '',
+        kaynakId: null,
+        videoNos: [],
+        linkler: [],
+        tur: 'elle',
+        bitti: !!g.bitti,
+        bitisGun: g.bitisGun
+      };
+      const mevcut = S.gorevler.find(x => x.id === id && x.tur === 'elle');
+      if (mevcut) {
+        mevcut.tarih = gorev.tarih;
+        mevcut.metin = gorev.metin;
+        mevcut.bitti = gorev.bitti;
+        mevcut.bitisGun = gorev.bitisGun;
+      } else {
+        S.gorevler.push(gorev);
       }
     }
   }
@@ -820,7 +804,7 @@ function kaynakEkle() {
   if (!al('k_baslangic')) return alert('Başlangıç tarihini seç.');
   if (!gunler.length) return alert('En az bir çalışma günü seç.');
   S.kaynaklar.push({id:yeniId(), ders:al('k_ders'), ad:al('k_ad'), link:al('k_link'), toplamVideo:toplam,
-                    gunlukVideo:gunluk, baslangic:al('k_baslangic'), gunler:gunler, videolar:videolar});
+                    u:simdi(), gunlukVideo:gunluk, baslangic:al('k_baslangic'), gunler:gunler, videolar:videolar});
   planYenile();
   tabGit('kaynaklar');
 }
@@ -859,7 +843,7 @@ function kaynakKart(k) {
 function planOnizleme() {
   const bas = bugun(); const d = tarihDon(bas); d.setDate(d.getDate() + 7);
   const bit = tarihStr(d);
-  const liste = S.gorevler.filter(g => g.tur === 'kaynak' && g.tarih >= bas && g.tarih < bit)
+  const liste = S.gorevler.filter(g => g.tur === 'kaynak' && g.s !== 1 && g.tarih >= bas && g.tarih < bit)
                           .sort((a, b) => a.tarih < b.tarih ? -1 : a.tarih > b.tarih ? 1 : 0);
   if (!liste.length) return kart('Önümüzdeki 7 gün', '<p class="soluk">Bu hafta planlı video yok.</p>');
   let html = '', son = '';
@@ -911,7 +895,7 @@ function bugunGorevleri() {
     }
   }
   
-  return liste.filter(g => g.tarih === bg || g.bitisGun === bg || (g.tur === 'elle' && !g.bitti && g.tarih < bg));
+  return liste.filter(g => g.s !== 1 && (g.tarih === bg || g.bitisGun === bg || (g.tur === 'elle' && !g.bitti && g.tarih < bg)));
 }
 
 function seriHesapla() {
@@ -930,7 +914,12 @@ function gorevTikle(id) {
   g.bitti = !g.bitti;
   if (g.bitti) g.bitisGun = bugun(); else delete g.bitisGun;
   if (g.bitti !== oncekiBitti) {
-    if (g.tur === 'kaynak' && g.kaynakId && g.videoNos.length) {
+    if (g.tur === 'elle') {
+      if (S.elleGorevler && S.elleGorevler[id]) {
+        S.elleGorevler[id].bitti = g.bitti;
+        S.elleGorevler[id].u = simdi();
+      }
+    } else if (g.tur === 'kaynak' && g.kaynakId && g.videoNos.length) {
       g.videoNos.forEach(n => kaynakTamamGuncelle(g.kaynakId, n, g.bitti));
     } else if (g.tur === 'program' && g.progId) {
       programTamamGuncelle(g.progId, g.bitti);
@@ -1060,7 +1049,10 @@ function haftaBasi() {
 function toplamlar() {
   const bg = bugun(), hb = haftaBasi();
   let b = 0, h = 0, t = 0;
-  S.sureler.forEach(x => { t += x.sn; if (x.gun === bg) b += x.sn; if (x.gun >= hb) h += x.sn; });
+  S.sureler.forEach(x => {
+    if (x.s === 1) return;
+    t += x.sn; if (x.gun === bg) b += x.sn; if (x.gun >= hb) h += x.sn;
+  });
   const a = S.aktifSayac;
   if (a) { const e = Math.floor(gecen(a) / 1000); t += e; b += e; h += e; }
   return {bugun:b, hafta:h, toplam:t};
@@ -1087,7 +1079,7 @@ function sayacBitir() {
   const a = S.aktifSayac;
   if (!a) return;
   const sn = Math.round(gecen(a) / 1000);
-  if (sn >= 1) S.sureler.push({id:yeniId(), ders:a.ders, baslangic:a.baslangic, bitis:Date.now(), sn:sn, gun:bugun()});
+  if (sn >= 1) S.sureler.push({id:yeniId(), ders:a.ders, baslangic:a.baslangic, bitis:Date.now(), sn:sn, gun:bugun(), u:simdi()});
   S.aktifSayac = null;
   kaydet(); ekranCiz();
 }
@@ -1163,7 +1155,7 @@ function profilKaydet() {
   const tyt = al('p_tyt'), ayt = al('p_ayt');
   const alan = document.querySelector('input[name="p_alan"]:checked');
   S.profil = {ad:al('p_ad'), alan:(alan ? alan.value : 'SAY'), universite:al('p_uni'), bolum:al('p_bolum'),
-              hedefSiralama:al('p_sira'), tytHedef:tyt, aytHedef:ayt, sinavTarihi:al('p_tarih')};
+              hedefSiralama:al('p_sira'), tytHedef:tyt, aytHedef:ayt, sinavTarihi:al('p_tarih'), u:simdi()};
   kaydet(); baslikGuncelle(); ekranCiz();
   bildir('Kaydedildi ✓');
 }
@@ -1210,7 +1202,7 @@ function yanlisFotoKaldir() { yanlisTaslak.foto = ''; ekranCiz(); }
 function yanlisKaydet() {
   const t = yanlisTaslak, konu = t.konu.trim();
   if (!konu) return alert('Konuyu yaz.');
-  S.yanlislar.push({id:yeniId(), tarih:bugun(), ders:t.ders, konu:konu, soruNotu:t.not.trim(), fotoUrl:t.foto, cozuldu:false});
+  S.yanlislar.push({id:yeniId(), tarih:bugun(), ders:t.ders, konu:konu, soruNotu:t.not.trim(), fotoUrl:t.foto, cozuldu:false, u:simdi()});
   kaydet();
   yanlisTaslak = {ders:t.ders, konu:'', not:'', foto:''};
   yanlisFormAcik = false;
@@ -1229,6 +1221,7 @@ function yanlisDurumTogle(id) {
   const x = S.yanlislar.find(q => q.id === id);
   if (!x) return;
   x.cozuldu = !x.cozuldu;
+  x.u = simdi();
   kaydet(); ekranCiz();
 }
 function yanlislarEkrani() {
@@ -1356,6 +1349,7 @@ function haftaCalismaSaatleri(haftaBaslangic) {
   const basStr = tarihStr(bas), bitStr = tarihStr(bit);
   const sonuc = {toplam: 0, dersler: {}};
   (S.sureler || []).forEach(s => {
+    if (s.s === 1) return;
     if (s.gun >= basStr && s.gun < bitStr) {
       sonuc.toplam += s.sn;
       sonuc.dersler[s.ders] = (sonuc.dersler[s.ders] || 0) + s.sn;
@@ -1374,16 +1368,17 @@ function haftaFormu() {
     const dersDagilim = saatlerH.toplam ? '<div class="soluk" style="font-size:11px;margin-top:4px">' + 
         Object.entries(saatlerH.dersler).map(([d, sn]) => d + ': ' + sureYaz(sn)).join(' · ') + '</div>' : '';
     return '<div class="denemeBlok">' +
+      '<div class="denemeUst">' + esc(gunAdi(h.hafta)) + ' · ' + h.hafta + (h.alan ? ' · ' + h.alan : '') + '</div>' +
+      '<div class="denemeGovde">' +
       '<div class="denemeSol">' +
-      '<div class="denemeSatir"><span></span></div>' +
-      '<div class="denemeSatir"><b>TYT:</b> ' + netYaz(tytNet) + '</div>' +
-      '<div class="denemeSatir"><b>AYT:</b> ' + netYaz(aytNet) + '</div>' +
-      '<div class="denemeSatir"><b>Süre:</b> ' + sureYaz(saatlerH.toplam) + '</div>' +
-      '<div class="denemeSatir"><span></span></div>' +
+      '<span class="denemeBilgi"><b>TYT:</b> ' + netYaz(tytNet) + '</span>' +
+      '<span class="denemeBilgi"><b>AYT:</b> ' + netYaz(aytNet) + '</span>' +
+      '<span class="denemeBilgi"><b>Süre:</b> ' + sureYaz(saatlerH.toplam) + '</span>' +
       '</div>' +
       '<div class="denemeSag">' +
-      '<button class="btn ikincil" style="padding:0 12px;min-height:36px;line-height:36px;font-size:11px;flex-shrink:0" onclick="haftaSecili=\'' + h.hafta + '\';haftaAlt=\'form\';ekranCiz()">Düzenle</button>' +
+      '<button class="btn ikincil" style="padding:0 12px;min-height:36px;line-height:36px;font-size:12px;flex-shrink:0" onclick="haftaSecili=\'' + h.hafta + '\';haftaAlt=\'form\';ekranCiz()">Düzenle</button>' +
       '<button class="denemeSil" onclick="haftaSil(\'' + h.hafta + '\')">✕</button>' +
+      '</div>' +
       '</div>' +
       '</div>';
   }).join('') : '<p class="soluk">Henüz kayıtlı hafta yok.</p>';
@@ -1406,7 +1401,7 @@ function haftaKaydet() {
     for (const d of liste) { const n = parseFloat(al(on + d[0])); if (!isNaN(n)) o[d[0]] = n; }
     return o;
   };
-  const kayit = {hafta: haftaSecili, alan: alan, tyt: oku('n_tyt_', TYT_DERS), ayt: oku('n_ayt_', AYT_DERS[alan] || [])};
+  const kayit = {hafta: haftaSecili, alan: alan, u: simdi(), tyt: oku('n_tyt_', TYT_DERS), ayt: oku('n_ayt_', AYT_DERS[alan] || [])};
   const i = S.haftalar.findIndex(h => h.hafta === haftaSecili);
   if (i >= 0) S.haftalar[i] = kayit; else S.haftalar.push(kayit);
   S.haftalar.sort((a, b) => a.hafta.localeCompare(b.hafta));
@@ -1965,7 +1960,8 @@ const TABLAR = [
 const EKRAN = {
   gorevler()  { return gorevlerEkrani(); },
   kaynaklar() {
-    const liste = S.kaynaklar.length ? S.kaynaklar.map(kaynakKart).join('') : kart('Kaynaklarım', '<p class="soluk">Henüz kaynak yok.</p>');
+    const aktifKaynaklar = S.kaynaklar.filter(k => k.s !== 1);
+    const liste = aktifKaynaklar.length ? aktifKaynaklar.map(kaynakKart).join('') : kart('Kaynaklarım', '<p class="soluk">Henüz kaynak yok.</p>');
     return liste + planOnizleme() + kaynakFormu();
   },
   sure()      { return sureEkrani(); },
@@ -2360,6 +2356,7 @@ async function manuelSenkkron() {
   }
   bildir('Senkron başlatılıyor...');
   await senkronBaslat();
+  bildir('Senkron tamamlandı ✓');
 }
 
 async function uygulamaBaslat() {
