@@ -115,7 +115,6 @@ nav button.aktif svg{animation:zipla .5s cubic-bezier(.3,1.6,.5,1)}
 @keyframes akis{to{transform:translate3d(4%,6%,0) scale(1.15)}}
 @keyframes gir{from{opacity:0;transform:translateY(18px) scale(.98)}}
 @keyframes dolum{from{transform:scaleX(0)}}
-@keyframes yukle{0%,100%{transform:scaleX(0.2)}50%{transform:scaleX(1)}}
 @keyframes zipla{from{transform:scale(.7) translateY(4px)}}
 @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
 @keyframes nabiz{0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 10px rgba(143,176,255,.06),0 0 40px rgba(143,176,255,.15)}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 18px rgba(143,176,255,.10),0 0 70px rgba(167,139,250,.35)}}
@@ -235,12 +234,6 @@ tr:first-child td{border-top:none}
 </style>
 </head>
 <body>
-<div id="yuklemeEkrani" style="position:fixed;inset:0;background:#090b12;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#f1f3fa;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif">
-  <div style="font-size:22px;font-weight:800;letter-spacing:-0.8px;background:linear-gradient(135deg,#fff,#a5b4ff);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:12px">Lyrica</div>
-  <div class="cubuk" style="width:220px;height:9px;border-radius:6px;background:rgba(255,255,255,.08)"><div style="width:100%;height:100%;border-radius:6px;background:linear-gradient(90deg,#5be3b0,#8fb0ff);animation:yukle 1.2s ease-in-out infinite"></div></div>
-  <p class="soluk" style="margin-top:12px;font-size:13px">Uygulama hazırlanıyor...</p>
-</div>
-
 <!-- Giriş Ekranı -->
 <div id="girisEkrani" class="girisEkrani" style="display:none">
   <div class="girisKart">
@@ -2190,57 +2183,50 @@ function yedekYukle(inp) {
 let girisSekmeAktif = 'eposta';
 
 async function baslatUygulama() {
-  const sonlandir = () => {
-    const yukleme = document.getElementById('yuklemeEkrani');
-    if (yukleme) yukleme.style.display = 'none';
-  };
   // Eski Service Worker kayıtlarını temizle (önceki bozuk önbelleği kaldırır)
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(regs => {
-      regs.forEach(r => r.unregister());
-    });
+    navigator.serviceWorker.getRegistrations().then(regs =>
+      regs.forEach(r => r.unregister())
+    );
   }
-  const auth = window.FB?.auth;
-  if (auth) {
-    window.FB.onAuthStateChanged(auth, async (user) => {
-      try {
-        if (user) {
-          await kullaniciGirisYapti(user);
-        } else {
-          girisEkraniGoster();
+
+  try {
+    const auth = window.FB?.auth;
+    if (auth) {
+      window.FB.onAuthStateChanged(auth, async (user) => {
+        try {
+          if (user) {
+            await kullaniciGirisYapti(user);
+          } else {
+            girisEkraniGoster();
+          }
+        } catch (e) {
+          console.error('[Auth] hata:', e);
+          girisEkraniGoster(true);
         }
-      } finally {
-        sonlandir();
+      });
+      try {
+        const result = await getRedirectResult(auth);
+        if (result?.user) await kullaniciGirisYapti(result.user);
+      } catch (e) {
+        console.warn('[Auth] redirect:', e.message);
       }
-    });
-    try {
-      const result = await getRedirectResult(auth);
-      if (result?.user) {
-        await kullaniciGirisYapti(result.user);
-        sonlandir();
-        return;
-      }
-    } catch (e) {
-      console.warn('[Auth] Redirect sonucu alınamadı:', e.message);
+    } else {
+      console.log('[Auth] Firebase yok, yerel mod');
+      girisEkraniGoster(true);
     }
-    sonlandir();
-  } else {
-    console.log('[Auth] Firebase yok, yerel mod');
+  } catch (e) {
+    console.error('[Baslat] hata:', e);
     girisEkraniGoster(true);
-    sonlandir();
   }
 
   // Güvenlik: Firebase/auth asla yanıtsız kalırsa bile asla kilitlenme olmasın
   setTimeout(() => {
-    const yukleme = document.getElementById('yuklemeEkrani');
-    if (yukleme && yukleme.style.display !== 'none') {
-      yukleme.style.display = 'none';
-      if (
-        document.getElementById('app').style.display === 'none' &&
-        document.getElementById('girisEkrani').style.display === 'none'
-      ) {
-        girisEkraniGoster(true);
-      }
+    if (
+      document.getElementById('app').style.display === 'none' &&
+      document.getElementById('girisEkrani').style.display === 'none'
+    ) {
+      girisEkraniGoster(true);
     }
   }, 5000);
 }
@@ -2257,8 +2243,6 @@ function girisSekme(hangi) {
 }
 
 function girisEkraniGoster(yerelMod = false) {
-  const yukleme = document.getElementById('yuklemeEkrani');
-  if (yukleme) yukleme.style.display = 'none';
   document.getElementById('girisEkrani').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('dodoBtn').style.display = 'none';
@@ -2271,8 +2255,6 @@ function girisEkraniGoster(yerelMod = false) {
 }
 
 function girisEkraniGizle() {
-  const yukleme = document.getElementById('yuklemeEkrani');
-  if (yukleme) yukleme.style.display = 'none';
   document.getElementById('girisEkrani').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
   document.getElementById('dodoBtn').style.display = 'grid';
