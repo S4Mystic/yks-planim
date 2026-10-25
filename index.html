@@ -120,7 +120,6 @@ nav button.aktif svg{animation:zipla .5s cubic-bezier(.3,1.6,.5,1)}
 @keyframes nabiz{0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 10px rgba(143,176,255,.06),0 0 40px rgba(143,176,255,.15)}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 18px rgba(143,176,255,.10),0 0 70px rgba(167,139,250,.35)}}
 @keyframes toastGir{from{opacity:0;transform:translate(-50%,12px)}}
 @media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
-
 /* ===== PROGRAM: gün kopyala/yapıştır simgeleri ===== */
 .kart>.gunAraclar{position:absolute;top:10px;right:12px;display:flex;gap:6px;z-index:2}
 .gunAraclar button{width:36px;height:36px;padding:0;display:grid;place-items:center;border-radius:12px;border:1px solid var(--kenar);background:rgba(255,255,255,.08);color:var(--yazi);transition:transform .15s,opacity .2s}
@@ -128,7 +127,6 @@ nav button.aktif svg{animation:zipla .5s cubic-bezier(.3,1.6,.5,1)}
 .gunAraclar button:active{transform:scale(.9)}
 .gunAraclar button.pasif{opacity:.35}
 .gunAraclar button.dolu{border-color:rgba(143,176,255,.7);background:rgba(143,176,255,.22)}
-
 /* ===== DODO AI: buton ve panel ===== */
 #dodoBtn{position:fixed;right:16px;bottom:calc(98px + env(safe-area-inset-bottom));z-index:8;width:56px;height:56px;border-radius:50%;border:1px solid rgba(190,205,255,.5);background:linear-gradient(145deg,rgba(143,176,255,.55),rgba(167,139,250,.4));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 8px 22px rgba(0,0,0,.45),0 0 18px rgba(143,176,255,.35),inset 0 1px 0 rgba(255,255,255,.45);font-size:28px;line-height:1;padding:0;display:grid;place-items:center;transition:transform .2s,opacity .2s}
 #dodoBtn:active{transform:scale(.92)}
@@ -144,7 +142,6 @@ body.dodoAcik #dodoPanel{transform:translateY(0);opacity:1;visibility:visible;tr
 .dodoSek button{flex:1;min-height:46px;border-radius:14px;border:1px solid var(--kenar);background:rgba(255,255,255,.06);color:var(--soluk);font-family:inherit;font-size:15px;transition:all .2s}
 .dodoSek button.aktif{background:var(--degrade);border-color:transparent;color:#0b0d14;font-weight:700;box-shadow:0 6px 18px rgba(124,156,255,.35)}
 #dodoIcerik{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:4px 16px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
-
 /* ===== ECOLI AI: SOHBET ===== */
 #dodoIcerik{display:flex;flex-direction:column;overflow:hidden;padding:0}
 .sohbetAlan{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:10px 16px;display:flex;flex-direction:column;gap:10px}
@@ -169,10 +166,8 @@ body.dodoAcik #dodoPanel{transform:translateY(0);opacity:1;visibility:visible;tr
 .kisibtn{flex:none;width:42px;height:32px;border:0;border-radius:8px;background:rgba(255,255,255,.07);color:var(--soluk);font-size:11px;cursor:pointer;border:1px solid var(--kenar)}
 .kisibtn:disabled{opacity:.4;cursor:not-allowed}
 .kisibtn:hover:not(:disabled){background:rgba(255,255,255,.15)}
-
 /* ===== YANLIŞLAR ===== */
 .yFoto{display:block;width:100%;max-height:260px;object-fit:contain;border-radius:12px;margin-top:10px;background:rgba(0,0,0,.25)}
-
 /* ===== KONU TAKİP ===== */
 .dersBaslik{display:block;width:100%;background:none;border:0;padding:0;color:inherit;font-family:inherit;font-size:inherit;text-align:left}
 .konuSatir{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.08)}
@@ -181,38 +176,89 @@ body.dodoAcik #dodoPanel{transform:translateY(0);opacity:1;visibility:visible;tr
 .durum.d0{background:rgba(255,122,122,.14);color:var(--kirmizi);border-color:rgba(255,122,122,.4)}
 .durum.d1{background:rgba(255,209,102,.16);color:var(--sari);border-color:rgba(255,209,102,.45)}
 .durum.d2{background:rgba(91,227,176,.18);color:var(--yesil);border-color:rgba(91,227,176,.5)}
-
 /* ===== HAFTALIK ANALİZ TABLO ===== */
 table{width:100%;border-collapse:collapse}
 th,td{padding:6px 8px;text-align:left}
 th{color:var(--soluk);font-weight:600;font-size:12px}
 td{color:var(--yazi);font-size:13px;border-top:1px solid rgba(255,255,255,.04)}
 tr:first-child td{border-top:none}
-
 /* Netlify rozetini gizle */
 .netlify-badge, [class*="netlify"] {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
-
+}
 /* Haftalık program - mobil öncelikli dokunmatik hedefler */
 .kisibtn{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid var(--kenar);background:rgba(255,255,255,.07);color:var(--soluk);transition:all .15s}
 .kisibtn:active{transform:scale(.92);background:rgba(255,255,255,.15)}
 .kisibtn:disabled{opacity:.35;cursor:not-allowed}
-
 /* Masaüstünde de görünür olsun */
 @media (min-width:600px){
   .kisibtn{opacity:1!important;visibility:visible!important}
   .gunBaslik{display:flex;align-items:center;justify-content:space-between;gap:8px}
 }
-
 /* Kayıtlı hafta kartı - Düzenle butonu her zaman sağ üstte */
 .kayit{position:relative}
 .kayit .btn.ikincil{position:absolute;top:6px;right:6px;z-index:2}
-}
+/* ===== GİRİŞ EKRANI ===== */
+.girisEkrani{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:20px}
+.girisKart{width:100%;max-width:380px;background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.04));border:1px solid var(--kenar);border-radius:24px;padding:28px;-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);box-shadow:0 20px 50px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.2)}
+.girisKart h1{margin:0 0 6px;font-size:28px;font-weight:800;background:linear-gradient(135deg,#fff,#a5b4ff);-webkit-background-clip:text;background-clip:text;color:transparent;text-align:center}
+.girisKart p{margin:0 0 24px;color:var(--soluk);text-align:center;font-size:14px}
+.girisSekmeler{display:flex;gap:8px;margin-bottom:20px;border-radius:14px;background:rgba(255,255,255,.07);padding:4px}
+.girisSekmeler button{flex:1;padding:10px 0;border:0;border-radius:10px;background:none;color:var(--soluk);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.girisSekmeler button.aktif{background:var(--degrade);color:#0b0d14;box-shadow:0 4px 12px rgba(124,156,255,.35)}
+.girisForm{display:flex;flex-direction:column;gap:14px}
+.girisForm .alan{margin-top:0}
+.girisForm label{font-size:13px;color:var(--soluk)}
+.girisForm input{width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--kenar);background:rgba(255,255,255,.07);color:var(--yazi);font-family:inherit;font-size:16px}
+.girisForm input:focus{outline:0;border-color:#8fb0ff;box-shadow:0 0 0 3px rgba(143,176,255,.25)}
+.girisBtn{margin-top:6px}
+.girisAyrac{display:flex;align-items:center;gap:12px;color:var(--soluk);font-size:13px;margin:8px 0}
+.girisAyrac::before,.girisAyrac::after{content:'';flex:1;height:1px;background:var(--kenar)}
+.girisHata{color:var(--kirmizi);font-size:13px;min-height:18px;text-align:center}
+.girisLink{color:var(--vurgu);text-decoration:none;font-size:13px}
+.girisLink:hover{text-decoration:underline}
+.girisAlt{margin-top:16px;padding-top:16px;border-top:1px solid var(--kenar);text-align:center;color:var(--soluk);font-size:13px}
+.gizlilikNotu{font-size:11px;color:var(--soluk);line-height:1.5;margin-top:16px;padding:12px;background:rgba(255,255,255,.04);border-radius:12px;border:1px solid var(--kenar)}
+#syncDetay{font-size:13px}
 </style>
 </head>
 <body>
+
+<!-- Giriş Ekranı -->
+<div id="girisEkrani" class="girisEkrani" style="display:none">
+  <div class="girisKart">
+    <h1>Lyrica</h1>
+    <p>YKS çalışma planlayıcı ve takip</p>
+    <div class="girisSekmeler">
+      <button class="aktif" onclick="girisSekme('eposta')">E-posta / Şifre</button>
+      <button onclick="girisSekme('google')">Google ile giriş</button>
+    </div>
+    <div id="formEposta" class="girisForm">
+      <label class="alan">E-posta<input type="email" id="gEmail" autocomplete="email" placeholder="sen@ornek.com"></label>
+      <label class="alan">Şifre<input type="password" id="gSifre" autocomplete="current-password" placeholder="••••••••"></label>
+      <div id="girisHata" class="girisHata"></div>
+      <button class="btn girisBtn" onclick="girisEposta()">Giriş Yap</button>
+      <button class="btn ikincil" style="margin-top:8px" onclick="sifreSifirla()">Şifremi Unuttum</button>
+    </div>
+    <div id="formGoogle" class="girisForm" style="display:none">
+      <p class="soluk" style="text-align:center;margin:0 0 16px">Google hesabınla hızlıca giriş yap.</p>
+      <div id="girisHataGoogle" class="girisHata"></div>
+      <button class="btn girisBtn" onclick="girisGoogle()">Google ile Devam Et</button>
+      <p class="soluk" style="font-size:12px;text-align:center;margin-top:10px">PWA/standalone modda popup engellenirse yönlendirme kullanılır.</p>
+    </div>
+    <div class="girisAyrac">veya</div>
+    <button class="btn ikincil" onclick="girisYok()">Girişsiz kullan (sadece bu cihaz)</button>
+    <div class="girisAlt">
+      <button class="girisLink" onclick="hesapSilOnay()">Hesabımı ve bulut verilerimi sil</button>
+    </div>
+    <div class="gizlilikNotu">
+      Verilerin Google Firebase'de, hesabına bağlı saklanır. Uygulama yöneticisi teknik olarak veritabanını görebilir. Fotoğraflar ve API anahtarları buluta gitmez.
+    </div>
+  </div>
+</div>
+
 <div id="app">
   <header>
     <h1 id="baslik">Lyrica</h1>
@@ -231,15 +277,362 @@ tr:first-child td{border-top:none}
   <div id="dodoIcerik"></div>
 </section>
 
+<!-- Firebase SDK v10+ modüler CDN yükleyici -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, sendPasswordResetEmail, reauthenticateWithCredential, EmailAuthProvider, deleteUser } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { getFirestore, enableIndexedDbPersistence, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, orderBy, limit, writeBatch, serverTimestamp, Timestamp, FieldPath } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAF2BbCMhHdkZfPwDYGMPZY1CmYi4wTMsM",
+  authDomain: "lyrica-app-bytensh.firebaseapp.com",
+  projectId: "lyrica-app-bytensh",
+  storageBucket: "lyrica-app-bytensh.firebasestorage.app",
+  messagingSenderId: "206932948764",
+  appId: "1:206932948764:web:459cf8cef5b4cd1c1a6cd9",
+  measurementId: "G-GYFJ7Y7F1P"
+};
+
+let app, auth, db, googleProvider;
+let fbReady = false;
+
+async function firebaseBaslat() {
+  try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    googleProvider = new GoogleAuthProvider();
+    await enableIndexedDbPersistence(db);
+    fbReady = true;
+    console.log('[Firebase] Hazır');
+  } catch (e) {
+    console.warn('[Firebase] Başlatılamadı, yerel mod:', e.message);
+    fbReady = false;
+  }
+}
+firebaseBaslat();
+window.FB = { auth, db, googleProvider, get fbReady() { return fbReady; } };
+</script>
+
 <script>
 const KEY = 'yks_v1';
+
+// ===== SENKRON KATMANI =====
+const SYNC_KEY = 'yks_sync_meta';
+const UID_KEY = 'yks_uid';
+const SYNC_DEBOUNCE_MS = 1500;
+const MAX_FUTURE_OFFSET_MS = 3600000;
+
+const SYNC_BOLUMLER = [
+  { ad: 'profil',        koleksiyon: 'profil',        shard: false, alan: 'profil' },
+  { ad: 'kaynaklar',     koleksiyon: 'kaynaklar',     shard: false, alan: 'kaynaklar' },
+  { ad: 'program',       koleksiyon: 'program',       shard: false, alan: 'program' },
+  { ad: 'elleGorevler',  koleksiyon: 'elleGorevler',  shard: true,  alan: 'gorevler', filtre: g => g.tur === 'elle' },
+  { ad: 'kaynakTamam',   koleksiyon: 'kaynakTamam',   shard: false, alan: 'kaynakTamam' },
+  { ad: 'programTamam',  koleksiyon: 'programTamam',  shard: false, alan: 'programTamam' },
+  { ad: 'sureler',       koleksiyon: 'sureler',       shard: true,  alan: 'sureler' },
+  { ad: 'haftalar',      koleksiyon: 'haftalar',      shard: false, alan: 'haftalar' },
+  { ad: 'kacan',         koleksiyon: 'kacan',         shard: false, alan: 'kacan' },
+  { ad: 'yanlislar',     koleksiyon: 'yanlislar',     shard: true,  alan: 'yanlislar' },
+  { ad: 'konuTakip',     koleksiyon: 'konuTakip',     shard: false, alan: 'konuTakip' },
+  { ad: 'rutinler',      koleksiyon: 'rutinler',      shard: false, alan: 'rutinler' },
+];
+
+let syncDurum = 'bekliyor';
+let bekleyenYazma = 0;
+let syncAktif = false;
+let syncUnsubscribe = [];
+let sonYerelHash = {};
+let syncTimer = null;
+let yazmaKuyrugu = new Map();
+
+function simdi() {
+  const now = Date.now();
+  return Math.min(now, now + MAX_FUTURE_OFFSET_MS);
+}
+
+function hashObj(obj) {
+  return JSON.stringify(obj).length + ':' + JSON.stringify(obj).slice(0, 200);
+}
+
+function derinKopyala(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function temizleDataURL(obj) {
+  const kopya = derinKopyala(obj);
+  function temizle(o) {
+    if (!o || typeof o !== 'object') return;
+    for (const k of Object.keys(o)) {
+      if (typeof o[k] === 'string' && o[k].startsWith('data:')) {
+        delete o[k];
+      } else if (typeof o[k] === 'object') {
+        temizle(o[k]);
+      }
+    }
+  }
+  temizle(kopya);
+  return kopya;
+}
+
+function fotoVarMi(obj) {
+  if (!obj || typeof obj !== 'object') return false;
+  if (obj.fotoUrl && typeof obj.fotoUrl === 'string' && obj.fotoUrl.startsWith('data:')) return true;
+  for (const v of Object.values(obj)) {
+    if (typeof v === 'object' && fotoVarMi(v)) return true;
+  }
+  return false;
+}
+
+function alYerelFoto(obj) {
+  if (obj && obj.fotoUrl && typeof obj.fotoUrl === 'string' && obj.fotoUrl.startsWith('data:')) {
+    return obj.fotoUrl;
+  }
+  return null;
+}
+
+function syncMetaOku() {
+  try { return JSON.parse(localStorage.getItem(SYNC_KEY) || '{}'); } catch { return {}; }
+}
+
+function syncMetaYaz(meta) {
+  localStorage.setItem(SYNC_KEY, JSON.stringify(meta));
+}
+
+function bolumBelgeYolu(uid, bolumAd, ay) {
+  const b = SYNC_BOLUMLER.find(x => x.ad === bolumAd);
+  if (!b) return null;
+  if (b.shard && ay) {
+    return `users/${uid}/veri/${bolumAd}/${ay}`;
+  }
+  return `users/${uid}/veri/${bolumAd}/ana`;
+}
+
+function ayAnahtari(tarih) {
+  return tarih.slice(0, 7);
+}
+
+function hesaplaDiff(bolumAd, yeniVeri) {
+  const meta = syncMetaOku();
+  const eskiHash = meta[bolumAd] || '';
+  const yeniHash = hashObj(yeniVeri);
+  if (eskiHash === yeniHash) return null;
+  return { bolum: bolumAd, veri: yeniVeri, hash: yeniHash };
+}
+
+function senkronYazPlanla(bolumAd, veri) {
+  if (!syncAktif || !window.currentUser) return;
+  const diff = hesaplaDiff(bolumAd, veri);
+  if (!diff) return;
+  const onceki = yazmaKuyrugu.get(bolumAd);
+  if (onceki) clearTimeout(onceki.timer);
+  yazmaKuyrugu.set(bolumAd, {
+    veri: diff.veri,
+    hash: diff.hash,
+    timer: setTimeout(() => senkronYazGonder(bolumAd), SYNC_DEBOUNCE_MS)
+  });
+}
+
+async function senkronYazGonder(bolumAd) {
+  const item = yazmaKuyrugu.get(bolumAd);
+  if (!item || !window.currentUser) return;
+  yazmaKuyrugu.delete(bolumAd);
+  bekleyenYazma++;
+  syncDurumGuncelle('senkronlaniyor');
+  try {
+    const b = SYNC_BOLUMLER.find(x => x.ad === bolumAd);
+    if (!b) return;
+    const uid = window.currentUser.uid;
+    const veri = temizleDataURL(item.veri);
+    if (b.shard) {
+      const ayGruplari = {};
+      for (const [id, kayit] of Object.entries(veri)) {
+        const ay = kayit.tarih ? ayAnahtari(kayit.tarih) : ayAnahtari(bugun());
+        if (!ayGruplari[ay]) ayGruplari[ay] = {};
+        ayGruplari[ay][id] = { ...kayit, u: kayit.u || simdi() };
+      }
+      const batch = writeBatch(window.FB.db);
+      for (const [ay, kayitlar] of Object.entries(ayGruplari)) {
+        const ref = doc(window.FB.db, bolumBelgeYolu(uid, bolumAd, ay));
+        batch.set(ref, { kayitlar, guncellenme: serverTimestamp() }, { merge: true });
+      }
+      await batch.commit();
+    } else {
+      const ref = doc(window.FB.db, bolumBelgeYolu(uid, bolumAd));
+      const kayitlar = {};
+      for (const [id, kayit] of Object.entries(veri)) {
+        kayitlar[id] = { ...kayit, u: kayit.u || simdi() };
+      }
+      await setDoc(ref, { kayitlar, guncellenme: serverTimestamp() }, { merge: true });
+    }
+    const meta = syncMetaOku();
+    meta[bolumAd] = item.hash;
+    syncMetaYaz(meta);
+  } catch (e) {
+    console.error('[Sync] Yazma hatası:', bolumAd, e);
+    syncDurumGuncelle('hata', e.message);
+    yazmaKuyrugu.set(bolumAd, item);
+    setTimeout(() => senkronYazGonder(bolumAd), 5000);
+  } finally {
+    bekleyenYazma--;
+    if (bekleyenYazma === 0) syncDurumGuncelle('guncel');
+  }
+}
+
+function kayitlaraDonustur(snap) {
+  if (!snap.exists()) return {};
+  const data = snap.data();
+  return data.kayitlar || {};
+}
+
+function birlestirYerelUzak(yerel, uzak) {
+  const sonuc = { ...yerel };
+  for (const [id, uzakKayit] of Object.entries(uzak)) {
+    const yerelKayit = yerel[id];
+    if (!yerelKayit) {
+      if (!uzakKayit.s) sonuc[id] = { ...uzakKayit };
+      continue;
+    }
+    const uYerel = yerelKayit.u || 0;
+    const uUzak = uzakKayit.u || 0;
+    if (uUzak > uYerel) {
+      if (uzakKayit.s) delete sonuc[id];
+      else sonuc[id] = { ...uzakKayit };
+    } else if (uUzak === uYerel && uzakKayit.s && !yerelKayit.s) {
+      delete sonuc[id];
+    }
+  }
+  return sonuc;
+}
+
+function tumBirlestir(bolumAd, uzakVeri) {
+  const b = SYNC_BOLUMLER.find(x => x.ad === bolumAd);
+  if (!b) return;
+  const alanAdi = b.alan || bolumAd;
+  const yerelVeri = S[alanAdi];
+  if (bolumAd === 'kacan') {
+    const birlesik = { ...yerelVeri };
+    for (const [tarih, sayi] of Object.entries(uzakVeri)) {
+      if (!birlesik[tarih] || (uzakVeri[tarih] || 0) > (birlesik[tarih] || 0)) {
+        birlesik[tarih] = uzakVeri[tarih];
+      }
+    }
+    S[alanAdi] = birlesik;
+    return;
+  }
+  if (bolumAd === 'yanlislar') {
+    const uzakTemiz = {};
+    for (const [id, kayit] of Object.entries(uzakVeri)) {
+      const yerelKayit = yerelVeri[id];
+      const yerelFoto = alYerelFoto(yerelKayit);
+      if (yerelFoto && (!kayit.fotoUrl || !kayit.fotoUrl.startsWith('data:'))) {
+        uzakTemiz[id] = { ...kayit, fotoUrl: yerelFoto };
+      } else {
+        uzakTemiz[id] = kayit;
+      }
+    }
+    S[alanAdi] = birlestirYerelUzak(yerelVeri, uzakTemiz);
+    return;
+  }
+  S[alanAdi] = birlestirYerelUzak(yerelVeri, uzakVeri);
+}
+
+async function senkronBaslat() {
+  if (!window.currentUser || syncAktif) return;
+  syncAktif = true;
+  syncDurumGuncelle('senkronlaniyor');
+  for (const unsub of syncUnsubscribe) unsub();
+  syncUnsubscribe = [];
+  const uid = window.currentUser.uid;
+  try {
+    for (const b of SYNC_BOLUMLER) {
+      if (b.shard) {
+        const buAy = ayAnahtari(bugun());
+        const ref = doc(window.FB.db, bolumBelgeYolu(uid, b.ad, buAy));
+        const unsub = onSnapshot(ref, (snap) => {
+          if (syncYankiKontrol(snap)) return;
+          const uzak = kayitlaraDonustur(snap);
+          tumBirlestir(b.ad, uzak);
+          guvenliEkranCiz();
+        }, (e) => console.error('[Sync] Dinleme hatası:', b.ad, e));
+        syncUnsubscribe.push(unsub);
+      } else {
+        const ref = doc(window.FB.db, bolumBelgeYolu(uid, b.ad));
+        const unsub = onSnapshot(ref, (snap) => {
+          if (syncYankiKontrol(snap)) return;
+          const uzak = kayitlaraDonustur(snap);
+          tumBirlestir(b.ad, uzak);
+          guvenliEkranCiz();
+        }, (e) => console.error('[Sync] Dinleme hatası:', b.ad, e));
+        syncUnsubscribe.push(unsub);
+      }
+    }
+    await ilkSenkronYaz();
+    syncDurumGuncelle('guncel');
+  } catch (e) {
+    console.error('[Sync] Başlatma hatası:', e);
+    syncDurumGuncelle('hata', e.message);
+  }
+}
+
+function syncYankiKontrol(snap) {
+  return snap.metadata.hasPendingWrites;
+}
+
+async function ilkSenkronYaz() {
+  for (const b of SYNC_BOLUMLER) {
+    const alanAdi = b.alan || b.ad;
+    const veri = S[alanAdi];
+    if (veri && Object.keys(veri).length > 0) {
+      await senkronYazGonder(b.ad);
+    }
+  }
+}
+
+function syncDurumGuncelle(durum, hataMesaj = null) {
+  syncDurum = durum;
+  const el = document.getElementById('syncDurum') || document.getElementById('syncDetay');
+  if (!el) return;
+  const renk = {
+    guncel: 'var(--yesil)',
+    senkronlaniyor: 'var(--sari)',
+    cevrimdisi: 'var(--soluk)',
+    hata: 'var(--kirmizi)',
+    bekliyor: 'var(--soluk)'
+  }[durum] || 'var(--soluk)';
+  let metin = {
+    guncel: '✓ Güncel',
+    senkronlaniyor: '⟳ Senkronlanıyor',
+    cevrimdisi: '⚠ Çevrimdışı',
+    hata: '✗ Hata',
+    bekliyor: '⏳ Bekliyor'
+  }[durum] || '';
+  if (bekleyenYazma > 0) metin += `, ${bekleyenYazma} bekliyor`;
+  if (hataMesaj) metin += `: ${hataMesaj}`;
+  if (el.id === 'syncDurum') {
+    el.innerHTML = `<span style="color:${renk};font-size:12px;margin-left:8px">${metin}</span>`;
+  } else {
+    el.innerHTML = `<span style="color:${renk}">${metin}</span>`;
+  }
+}
+
+function guvenliEkranCiz() {
+  const aktifEl = document.activeElement;
+  if (aktifEl && (aktifEl.tagName === 'INPUT' || aktifEl.tagName === 'TEXTAREA' || aktifEl.isContentEditable)) {
+    return;
+  }
+  ekranCiz();
+}
+
 const varsayilan = () => ({
   surum: 1,
   profil: {ad:'', alan:'SAY', universite:'', bolum:'', hedefSiralama:'', tytHedef:'', aytHedef:'', sinavTarihi:''},
   kaynaklar: [], gorevler: [], sureler: [], aktifSayac: null, haftalar: [], kacan: {}, program: {},
   yanlislar: [],   
   konuTakip: {},   
-  rutinler: []     
+  rutinler: [],     
+  kaynakTamam: {},
+  programTamam: {}
 });
 
 let S = varsayilan();
@@ -248,7 +641,15 @@ try {
   if (k) S = Object.assign(varsayilan(), JSON.parse(k));
 } catch (e) { console.error('Veri okunamadı', e); }
 
-function kaydet() { localStorage.setItem(KEY, JSON.stringify(S)); }
+function kaydet() {
+  localStorage.setItem(KEY, JSON.stringify(S));
+  if (window.currentUser && window.currentUser.uid !== 'local') {
+    for (const b of SYNC_BOLUMLER) {
+      const alanAdi = b.alan || b.ad;
+      senkronYazPlanla(b.ad, S[alanAdi]);
+    }
+  }
+}
 
 function bugun() {
   const d = new Date();
@@ -314,6 +715,45 @@ function planYenile() {
       d.setDate(d.getDate() + 1);
     }
   });
+  if (S.kaynakTamam) {
+    for (const [kaynakId, videolar] of Object.entries(S.kaynakTamam)) {
+      for (const [videoNo, info] of Object.entries(videolar)) {
+        if (info.bitti) {
+          const gorevVar = S.gorevler.some(g => 
+            g.kaynakId === kaynakId && g.videoNos.includes(+videoNo) && g.bitti
+          );
+          if (!gorevVar) {
+            const k = S.kaynaklar.find(x => x.id === kaynakId);
+            if (k) {
+              const g = gorevOlustur(k, [+videoNo], bugun());
+              g.bitti = true;
+              g.bitisGun = bugun();
+              g.id = `kaynak_${kaynakId}_v${videoNo}_${info.u || Date.now()}`;
+              S.gorevler.push(g);
+            }
+          }
+        }
+      }
+    }
+  }
+  if (S.programTamam) {
+    for (const [progId, info] of Object.entries(S.programTamam)) {
+      if (info.bitti) {
+        const gorevVar = S.gorevler.some(g => g.progId === progId && g.bitti);
+        if (!gorevVar) {
+          let metin = '';
+          for (const liste of Object.values(S.program || {})) {
+            const item = liste.find(x => x.id === progId);
+            if (item) { metin = item.metin; break; }
+          }
+          if (metin) {
+            const g = { id: `prog_${progId}_${info.u || Date.now()}`, tarih: bugun(), metin, kaynakId: null, videoNos: [], linkler: [], tur: 'program', progId, bitti: true, bitisGun: bugun() };
+            S.gorevler.push(g);
+          }
+        }
+      }
+    }
+  }
   kaydet();
 }
 
@@ -339,9 +779,13 @@ function kaynakEkle() {
 
 function kaynakSil(id) {
   if (!confirm('Bu kaynak ve görevleri silinsin mi?')) return;
-  S.kaynaklar = S.kaynaklar.filter(k => k.id !== id);
-  S.gorevler = S.gorevler.filter(g => g.kaynakId !== id);
-  kaydet();
+  const k = S.kaynaklar.find(x => x.id === id);
+  if (k) {
+    k.s = 1;
+    k.u = simdi();
+    S.gorevler.filter(g => g.kaynakId === id && !g.bitti).forEach(g => { g.s = 1; g.u = simdi(); });
+    kaydet();
+  }
   tabGit('kaynaklar');
 }
 
@@ -415,12 +859,33 @@ function seriHesapla() {
 function gorevTikle(id) {
   const g = S.gorevler.find(x => x.id === id);
   if (!g) return;
+  const oncekiBitti = g.bitti;
   g.bitti = !g.bitti;
   if (g.bitti) g.bitisGun = bugun(); else delete g.bitisGun;
+  if (g.bitti !== oncekiBitti) {
+    if (g.tur === 'kaynak' && g.kaynakId && g.videoNos.length) {
+      g.videoNos.forEach(n => kaynakTamamGuncelle(g.kaynakId, n, g.bitti));
+    } else if (g.tur === 'program' && g.progId) {
+      programTamamGuncelle(g.progId, g.bitti);
+    }
+  }
   planYenile();
   sonTik = g.bitti ? id : null;
   ekranCiz();
   sonTik = null;
+}
+
+function kaynakTamamGuncelle(kaynakId, videoNo, bitti) {
+  if (!S.kaynakTamam) S.kaynakTamam = {};
+  if (!S.kaynakTamam[kaynakId]) S.kaynakTamam[kaynakId] = {};
+  S.kaynakTamam[kaynakId][videoNo] = { u: simdi(), bitti };
+  kaydet();
+}
+
+function programTamamGuncelle(progId, bitti) {
+  if (!S.programTamam) S.programTamam = {};
+  S.programTamam[progId] = { u: simdi(), bitti };
+  kaydet();
 }
 
 const RUTIN_LISTESI = ['Paragraf', 'Problem', 'Geometri'];
@@ -455,8 +920,13 @@ function elleEkle() {
 }
 
 function elleSil(id) {
-  S.gorevler = S.gorevler.filter(g => g.id !== id);
-  kaydet(); ekranCiz();
+  const g = S.gorevler.find(x => x.id === id);
+  if (g && g.tur === 'elle') {
+    g.s = 1;
+    g.u = simdi();
+    kaydet();
+  }
+  ekranCiz();
 }
 
 function gorevSatir(g) {
@@ -469,37 +939,29 @@ function gorevSatir(g) {
 function gorevlerEkrani() {
   const bg = bugun();
   const liste = bugunGorevleri().sort((a, b) => (a.bitti ? 1 : 0) - (b.bitti ? 1 : 0));
-
-  // Günlük rutınleri yüzde ve sayıya ekle
   const rutinlerListesi = RUTIN_LISTESI.map(rutin => ({
     adi: rutin,
     bitti: (S.rutinler || []).some(r => r.tarih === bg && r.rutin === rutin)
   }));
   const rutinBitti = rutinlerListesi.filter(r => r.bitti).length;
   const rutinToplam = rutinlerListesi.length;
-
   const gorevBitti = liste.filter(g => g.bitti).length;
   const toplamGorev = liste.length + rutinToplam;
   const toplamBitti = gorevBitti + rutinBitti;
   const yuzde = toplamGorev ? Math.round(toplamBitti / toplamGorev * 100) : 0;
-
   const seri = seriHesapla();
   const st = toplamlar().bugun;
-
   const ust = kart('Bugün ne yaptım',
     '<div class="satir"><div class="sayi">%' + yuzde + '</div><div class="soluk">' + toplamBitti + ' / ' + toplamGorev + ' görev tamam</div></div>' +
     '<div class="cubuk"><div style="width:' + yuzde + '%"></div></div>' +
     '<p>🔥 ' + (seri ? seri + ' gün seri' : 'Seri yok. Bugün bir görev bitirip seriyi başlat.') + '</p>' +
     (st ? '<p>⏱️ Bugün ' + sureYaz(st) + ' çalıştın.</p>': ''));
-
   const gorevlerHtml = kart('Bugünün görevleri', liste.length ? liste.map(gorevSatir).join('')
     : '<p class="soluk">Bugün için kaynak veya elle eklenmiş görev yok.</p>');
-
   const form = kart('Görev ekle',
     '<label class="alan">Türü<select id="e_tur"><option>Soru çözümü</option><option>Deneme</option><option>Konu tekrarı</option><option>Diğer</option></select></label>' +
     '<label class="alan">Ne yapacaksın?<input type="text" id="e_metin" placeholder="Örn: Matematik 40 soru"></label>' +
     '<button class="btn" onclick="elleEkle()">Ekle</button>');
-
   return '<button class="btn ikincil" style="margin:0 0 12px" onclick="tabGit(\'program\')">📅 Haftalık program</button>' + rutinlerKart() + ust + gorevlerHtml + form;
 }
 
@@ -555,8 +1017,13 @@ function sayacBitir() {
   kaydet(); ekranCiz();
 }
 function sureSil(id) {
-  S.sureler = S.sureler.filter(x => x.id !== id);
-  kaydet(); ekranCiz();
+  const s = S.sureler.find(x => x.id === id);
+  if (s) {
+    s.s = 1;
+    s.u = simdi();
+    kaydet();
+  }
+  ekranCiz();
 }
 
 function guncelleCanli() {
@@ -606,6 +1073,10 @@ function bildir(m) {
 }
 function baslikGuncelle() {
   document.getElementById('baslik').textContent = S.profil.ad ? 'Merhaba, ' + S.profil.ad : 'Lyrica';
+  if (!document.getElementById('syncDurum')) {
+    const baslikEl = document.getElementById('baslik');
+    baslikEl.insertAdjacentHTML('beforeend', '<span id="syncDurum"></span>');
+  }
 }
 function kalanGun() {
   const s = S.profil.sinavTarihi;
@@ -626,7 +1097,6 @@ function hedeflerEkrani() {
   let sayac = g === null ? '<p class="soluk">Sınav tarihini aşağıdan gir.</p>' : (g < 0 ? '<p class="soluk">Tarih geçmiş.</p>' : '<div class="sayi">' + g + ' gün</div>');
   const alanlar = ['SAY', 'EA', 'SÖZ', 'DİL'].map(a =>
     '<label class="cip"><input type="radio" name="p_alan" value="' + a + '"' + (p.alan === a ? ' checked' : '') + '><span>' + a + '</span></label>').join('');
-
   const form = kart('Profil ve hedefler',
     '<label class="alan">Adın<input type="text" id="p_ad" value="' + esc(p.ad) + '"></label>' +
     '<label class="alan">Alanın</label><div class="cipler">' + alanlar + '</div>' +
@@ -637,7 +1107,6 @@ function hedeflerEkrani() {
     '<label class="alan">AYT hedef net<input type="number" id="p_ayt" value="' + esc(p.aytHedef) + '"></label>' +
     '<label class="alan">Sınav tarihi<input type="date" id="p_tarih" value="' + esc(p.sinavTarihi) + '"></label>' +
     '<button class="btn" onclick="profilKaydet()">Kaydet</button>');
-
   return '<button class="btn ikincil" style="margin:0 0 12px" onclick="tabGit(\'konular\')">📚 Konu takip matrisi</button>' +
     kart('Sınava kalan süre', sayac) + form;
 }
@@ -673,9 +1142,13 @@ function yanlisKaydet() {
   ekranCiz(); bildir('Depoya eklendi ✓');
 }
 function yanlisSil(id) {
-  if (!confirm('Silinsin mi?')) return;
-  S.yanlislar = S.yanlislar.filter(x => x.id !== id);
-  kaydet(); ekranCiz();
+  const y = S.yanlislar.find(x => x.id === id);
+  if (y) {
+    y.s = 1;
+    y.u = simdi();
+    kaydet();
+  }
+  ekranCiz();
 }
 function yanlisDurumTogle(id) {
   const x = S.yanlislar.find(q => q.id === id);
@@ -686,18 +1159,20 @@ function yanlisDurumTogle(id) {
 function yanlislarEkrani() {
   const cozulmeyenler = S.yanlislar.filter(x => !x.cozuldu);
   const cozulenler = S.yanlislar.filter(x => x.cozuldu);
-
   const listeHtml = (liste, baslik) => {
     if (!liste.length) return '';
-    return '<h3 class="gun">' + baslik + '</h3>' + liste.map(y =>
-      '<div class="gorev' + (y.cozuldu ? ' bitti' : '') + '">' +
-      '<label class="tikalan"><input type="checkbox"' + (y.cozuldu ? ' checked' : '') + ' onchange="yanlisDurumTogle(\'' + y.id + '\')"></label>' +
-      '<div class="gmetin"><b>' + esc(y.ders) + ' - ' + esc(y.konu) + '</b><br><span class="soluk">' + esc(y.soruNotu || 'Not yok') + '</span>' +
-      (y.fotoUrl ? '<img class="yFoto" alt="" src="' + y.fotoUrl + '">' : '') + '</div>' +
-      '<button class="sil" onclick="yanlisSil(\'' + y.id + '\')">✕</button></div>'
-    ).join('');
+    return '<h3 class="gun">' + baslik + '</h3>' + liste.map(y => {
+      const yerelFoto = y.fotoUrl && y.fotoUrl.startsWith('data:');
+      const gosterFoto = y.fotoUrl && (y.fotoUrl.startsWith('data:') || y.fotoUrl.startsWith('http'));
+      const digerCihazda = y.fotoUrl && y.fotoUrl.startsWith('http') && !yerelFoto;
+      return '<div class="gorev' + (y.cozuldu ? ' bitti' : '') + '">' +
+        '<label class="tikalan"><input type="checkbox"' + (y.cozuldu ? ' checked' : '') + ' onchange="yanlisDurumTogle(\'' + y.id + '\')"></label>' +
+        '<div class="gmetin"><b>' + esc(y.ders) + ' - ' + esc(y.konu) + '</b><br><span class="soluk">' + esc(y.soruNotu || 'Not yok') + '</span>' +
+        (gosterFoto ? '<img class="yFoto" alt="" src="' + y.fotoUrl + '">' : '') +
+        (digerCihazda ? '<br><span class="soluk" style="font-size:11px">📷 Fotoğraf başka cihazda</span>' : '') + '</div>' +
+        '<button class="sil" onclick="yanlisSil(\'' + y.id + '\')">✕</button></div>';
+    }).join('');
   };
-
   const form = yanlisFormAcik ? kart('Yeni Yanlış Soru',
     '<label class="alan">Ders<select onchange="yanlisTaslak.ders=this.value">' + DERSLER.map(d => '<option' + (d === yanlisTaslak.ders ? ' selected' : '') + '>' + d + '</option>').join('') + '</select></label>' +
     '<label class="alan">Konu<input type="text" placeholder="Örn: Türev" value="' + esc(yanlisTaslak.konu) + '" oninput="yanlisTaslak.konu=this.value"></label>' +
@@ -708,10 +1183,8 @@ function yanlislarEkrani() {
     '<button class="btn" onclick="yanlisKaydet()">Depoya Kaydet</button>' +
     '<button class="btn ikincil" onclick="yanlisFormAcik=false;ekranCiz()">Vazgeç</button>'
   ) : '<button class="btn" onclick="yanlisFormAcik=true;ekranCiz()">＋ Yanlış Soru Ekle</button>';
-
   const icerik = S.yanlislar.length ? listeHtml(cozulmeyenler, 'Çözülmeyi Bekleyenler') + listeHtml(cozulenler, 'Çözülenler (Arşiv)')
     : '<p class="soluk">Henüz depoda yanlış soru yok.</p>';
-
   return kart('Yanlış Soru Deposu', icerik) + form;
 }
 function yanlisOzetMetni() {
@@ -733,11 +1206,9 @@ const MUF = [
   ['AYT','Kimya','Modern Atom Teorisi|Gazlar|Sıvı Çözeltiler|Entalpi|Hız|Denge|Asit-Baz Dengesi|Elektrokimya|Organik Kimya'],
   ['AYT','Biyoloji','Sinir Sistemi|Endokrin|Duyu Organları|Destek-Hareket|Sindirim|Dolaşım|Solunum|Üreme|Genden Proteine|Fotosentez|Solunum']
 ].map(m => ({tur: m[0], ders: m[1], konular: m[2].split('|')}));
-
 const KONU_DURUM = ['Çalışılmadı', 'Konu Bitti', 'Tekrar/Soru ✓'];
 let konuTur = 'TYT';
 let konuAcik = -1;
-
 function konuAnahtar(m, k) { return m.tur + '|' + m.ders + '|' + k; }
 function konuDurumDegis(i, j) {
   const m = MUF[i], a = konuAnahtar(m, m.konular[j]);
@@ -754,7 +1225,6 @@ function konuSay(m) {
 }
 function konuPuan(s) { return s[2] + s[1] * 0.5; }
 function konuYuzde(m) { return Math.round(konuPuan(konuSay(m)) / m.konular.length * 100); }
-
 function konuTakipEkrani() {
   const liste = MUF.map((m, i) => ({m: m, i: i})).filter(x => x.m.tur === konuTur);
   let puan = 0, say = 0;
@@ -762,12 +1232,10 @@ function konuTakipEkrani() {
   const genel = say ? Math.round(puan / say * 100) : 0;
   const alt = '<div class="alt">' + ['TYT', 'AYT'].map(t =>
     '<button class="' + (konuTur === t ? 'aktif' : '') + '" onclick="konuTurDegis(\'' + t + '\')">' + t + '</button>').join('') + '</div>';
-
   const ust = kart('Konu takip · ' + konuTur,
     '<div class="satir"><div class="sayi">%' + genel + '</div><div class="soluk">genel ilerleme</div></div>' +
     '<div class="cubuk"><div style="width:' + genel + '%"></div></div>' +
     '<button class="btn ikincil" onclick="tabGit(\'hedefler\')">← Hedeflere dön</button>');
-
   const dersler = liste.map(x => {
     const m = x.m, s = konuSay(m), y = konuYuzde(m), acik = konuAcik === x.i;
     const baslik = '<button class="dersBaslik" onclick="konuAc(' + x.i + ')">' +
@@ -781,7 +1249,6 @@ function konuTakipEkrani() {
     }).join('') : '';
     return '<div class="kart">' + baslik + satirlar + '</div>';
   }).join('');
-
   return alt + ust + dersler;
 }
 
@@ -796,7 +1263,6 @@ const AYT_DERS = {
 let haftaSecili = haftaBasi();
 let haftaAlt = 'form';
 let analizSecim = 'genel';
-
 function haftaBul(m) { return S.haftalar.find(h => h.hafta === m); }
 function netToplam(o) {
   let t = 0, var_ = false;
@@ -804,13 +1270,11 @@ function netToplam(o) {
   return var_ ? t : null;
 }
 function netYaz(n) { return n === null ? '-' : String(Math.round(n * 100) / 100).replace('.', ','); }
-
 function tumDersler(alan) {
   const tyt = TYT_DERS.map(d => ({key: 'tyt_' + d[0], ad: d[1], max: d[2], tur: 'TYT'}));
   const ayt = (AYT_DERS[alan] || []).map(d => ({key: 'ayt_' + d[0], ad: d[1], max: d[2], tur: 'AYT'}));
   return [...tyt, ...ayt];
 }
-
 function haftaCalismaSaatleri(haftaBaslangic) {
   const bas = tarihDon(haftaBaslangic);
   const bit = new Date(bas); bit.setDate(bit.getDate() + 7);
@@ -824,12 +1288,10 @@ function haftaCalismaSaatleri(haftaBaslangic) {
   });
   return sonuc;
 }
-
 function haftaFormu() {
   const m = haftaBul(haftaSecili), alan = (m && m.alan) || S.profil.alan || 'SAY';
   const girdiler = (on, liste, veri) => liste.map(d =>
     '<label class="alan">' + d[1] + '<input type="number" id="' + on + d[0] + '" step="0.25" min="0" max="' + d[2] + '" value="' + (veri && typeof veri[d[0]] === 'number' ? veri[d[0]] : '') + '"></label>').join('');
-
   const haftalarSirali = [...S.haftalar].sort((a, b) => b.hafta.localeCompare(a.hafta));
     const listeHtml = haftalarSirali.length ? haftalarSirali.map(h => {
     const tytNet = netToplam(h.tyt), aytNet = netToplam(h.ayt);
@@ -852,7 +1314,6 @@ function haftaFormu() {
     '<button class="btn" style="margin-top:14px" onclick="haftaKaydet()">Kaydet</button>') +
     kart('Kayıtlı Haftalar (Yeni → Eski)', listeHtml);
 }
-
 function haftaKaydet() {
   const alan = S.profil.alan || 'SAY', al = id => document.getElementById(id).value.trim();
   const oku = (on, liste) => {
@@ -866,7 +1327,6 @@ function haftaKaydet() {
   S.haftalar.sort((a, b) => a.hafta.localeCompare(b.hafta));
   kaydet(); ekranCiz(); bildir('Hafta kaydedildi ✓');
 }
-
 function grafikCiz(canvasId, haftalar, cizilecekler) {
   const cvs = document.getElementById(canvasId);
   if (!cvs) return;
@@ -876,8 +1336,6 @@ function grafikCiz(canvasId, haftalar, cizilecekler) {
   cvs.width = w * dpr; cvs.height = h * dpr;
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, w, h);
-
-  // Tüm verileri topla min/max için
   let tumVeriler = [];
   cizilecekler.forEach(c => {
     const veri = haftalar.map(c.veriAl).filter(v => v !== null);
@@ -887,8 +1345,6 @@ function grafikCiz(canvasId, haftalar, cizilecekler) {
   const minV = Math.min(...tumVeriler), maxV = Math.max(...tumVeriler);
   const range = maxV - minV || 1;
   const padding = 40, stepX = (w - 2 * padding) / (haftalar.length - 1 || 1);
-
-  // Grid çizgileri + Y eksen değerleri (sol tarafta)
   ctx.strokeStyle = 'rgba(255,255,255,.05)';
   ctx.lineWidth = 1;
   ctx.fillStyle = '#9aa3ba';
@@ -897,12 +1353,9 @@ function grafikCiz(canvasId, haftalar, cizilecekler) {
   for (let i = 0; i <= 4; i++) {
     const y = padding + (h - 2 * padding) * i / 4;
     ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(w - padding, y); ctx.stroke();
-    // Y eksen sayısı
     const val = maxV - (maxV - minV) * i / 4;
     ctx.fillText(Math.round(val * 10) / 10, padding - 8, y + 3);
   }
-
-  // Her çizgi için
   cizilecekler.forEach(({veriAl, renk, ad}) => {
     ctx.strokeStyle = renk; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.beginPath();
@@ -916,8 +1369,6 @@ function grafikCiz(canvasId, haftalar, cizilecekler) {
       }
     });
     ctx.stroke();
-
-    // Noktalar + Üzerine değer yaz
     ctx.fillStyle = renk;
     haftalar.forEach((hafta, i) => {
       const val = veriAl(hafta);
@@ -925,17 +1376,14 @@ function grafikCiz(canvasId, haftalar, cizilecekler) {
       const y = val !== null ? h - padding - (val - minV) / range * (h - 2 * padding) : null;
       if (y !== null) {
         ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
-        // Değer yaz (nokta üstü)
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 11px system-ui';
         ctx.textAlign = 'center';
         ctx.fillText(netYaz(val), x, y - 8);
-        ctx.fillStyle = renk; // rengi geri al
+        ctx.fillStyle = renk;
       }
     });
   });
-
-  // X eksen etiketleri (tarih)
   ctx.fillStyle = '#9aa3ba'; ctx.font = '11px system-ui'; ctx.textAlign = 'center';
   haftalar.forEach((hafta, i) => {
     const x = padding + i * stepX;
@@ -943,11 +1391,9 @@ function grafikCiz(canvasId, haftalar, cizilecekler) {
     ctx.fillText((d.getMonth() + 1) + '/' + d.getDate(), x, h - 8);
   });
 }
-
 function analizEkrani() {
   const haftalar = [...S.haftalar].sort((a, b) => a.hafta.localeCompare(b.hafta));
   if (!haftalar.length) return kart('Analiz', '<p class="soluk">Henüz deneme kaydı yok.</p>');
-
   const alan = S.profil.alan || 'SAY';
   const dersler = tumDersler(alan);
   const secimler = ['genel', 'genel_tyt', 'genel_ayt', ...dersler.map(d => d.key)].map(k => {
@@ -958,7 +1404,6 @@ function analizEkrani() {
     else etiket = (dersler.find(d => d.key === k)?.ad || k) + ' (' + (dersler.find(d => d.key === k)?.tur || '') + ')';
     return '<option value="' + k + '"' + (analizSecim === k ? ' selected' : '') + '>' + etiket + '</option>';
   }).join('');
-  
   const veriFonksiyonlari = {
     genel: h => {
       const tyt = netToplam(h.tyt), ayt = netToplam(h.ayt);
@@ -974,32 +1419,28 @@ function analizEkrani() {
       return src && typeof src[field] === 'number' ? src[field] : null;
     };
   });
-
-  // Çoklu çizgi desteği için
   let cizilecekler = [];
   let grafikBaslik = 'Net Grafiği';
   if (analizSecim === 'genel') {
     cizilecekler = [
-      {key: 'genel_tyt', renk: '#8fb0ff', ad: 'TYT Genel'},
-      {key: 'genel_ayt', renk: '#5be3b0', ad: 'AYT Genel'}
+      {veriAl: veriFonksiyonlari.genel_tyt, renk: '#8fb0ff', ad: 'TYT Genel'},
+      {veriAl: veriFonksiyonlari.genel_ayt, renk: '#5be3b0', ad: 'AYT Genel'}
     ];
     grafikBaslik = 'Genel Net Grafiği (TYT / AYT)';
   } else if (analizSecim === 'genel_tyt') {
-    cizilecekler = [{key: 'genel_tyt', renk: '#8fb0ff', ad: 'TYT Genel'}];
+    cizilecekler = [{veriAl: veriFonksiyonlari.genel_tyt, renk: '#8fb0ff', ad: 'TYT Genel'}];
     grafikBaslik = 'TYT Genel Net Grafiği';
   } else if (analizSecim === 'genel_ayt') {
-    cizilecekler = [{key: 'genel_ayt', renk: '#5be3b0', ad: 'AYT Genel'}];
+    cizilecekler = [{veriAl: veriFonksiyonlari.genel_ayt, renk: '#5be3b0', ad: 'AYT Genel'}];
     grafikBaslik = 'AYT Genel Net Grafiği';
   } else {
-    cizilecekler = [{key: analizSecim, renk: '#5be3b0', ad: dersler.find(d => d.key === analizSecim)?.ad || analizSecim}];
+    cizilecekler = [{veriAl: veriFonksiyonlari[analizSecim], renk: '#5be3b0', ad: dersler.find(d => d.key === analizSecim)?.ad || analizSecim}];
     grafikBaslik = 'Ders Net Grafiği';
   }
-
-    const saatlerTablosu = haftalar.map(h => {
+  const saatlerTablosu = haftalar.map(h => {
     const s = haftaCalismaSaatleri(h.hafta);
     return '<tr><td>' + gunAdi(h.hafta) + '</td><td>' + sureYaz(s.toplam) + '</td></tr>';
   }).join('');
-
   return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">' +
     '<b style="font-size:17px">Analiz</b>' +
     '<select onchange="analizSecim=this.value;ekranCiz()" style="min-width:160px;padding:8px 12px;border-radius:12px;border:1px solid var(--kenar);background:rgba(255,255,255,.07);color:var(--yazi);font-family:inherit">' + secimler + '</select>' +
@@ -1019,7 +1460,6 @@ function analizEkrani() {
         '</div>';
     }).join(''));
 }
-
 function haftalikEkrani() {
   const alt = '<div class="alt"><button class="' + (haftaAlt === 'form' ? 'aktif' : '') + '" onclick="haftaAlt=\'form\';ekranCiz()">Güncelleme</button>' +
     '<button class="' + (haftaAlt === 'analiz' ? 'aktif' : '') + '" onclick="haftaAlt=\'analiz\';ekranCiz()">Analiz</button></div>';
@@ -1073,7 +1513,6 @@ function programYapistir(i) {
   if (!programKopilamisGun) return bildir('Önce bir gün kopyalayın');
   const m = programHafta;
   if (!S.program[m]) S.program[m] = [[],[],[],[],[],[],[]];
-  // Yeni ID'ler üret ki programUygula yeni görevler oluşturabilsin
   const yeniListe = JSON.parse(JSON.stringify(programKopilamisGun.liste)).map(it => ({
     ...it,
     id: yeniId()
@@ -1123,7 +1562,6 @@ function programEkrani() {
 
 /* ===== ECOLI AI (SOHBET ASİSTANI) ===== */
 const DODO_SISTEM = "Sen YKS öğrencisi birinin kişisel eğitim koçusun. YKS (TYT/AYT) sistemine son derece hakimsin. Samimi, motivasyonu yüksek, net ve pratik öneriler verirsin. Kullanıcı sana deneme netlerini veya yanlış sorularını attığında nokta atışı zafiyet analizi yaparsın.";
-
 function dodoSistemMetni() {
   const p = S.profil, b = [];
   if (p.ad) b.push('Adı: ' + p.ad);
@@ -1133,11 +1571,9 @@ function dodoSistemMetni() {
   if (kg !== null && kg >= 0) b.push('Sınava ' + kg + ' gün kaldı');
   return DODO_SISTEM + (b.length ? '\nÖğrenci bilgisi: ' + b.join(', ') + '.' : '') + '\nYanıtları mobilde okunacak kadar kısa tut.';
 }
-
 function dodoBicim(t) {
   return esc(t).replace(/^\s*[*-]\s+/gm, '• ').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
 }
-
 function dodoSohbetEkrani() {
   return '<div class="sohbetAlan" id="sohbetAlan"></div>' +
     '<div class="sohbetCip">' +
@@ -1154,12 +1590,10 @@ function dodoSohbetEkrani() {
       '</div>' +
     '</div>';
 }
-
 function dodoEnterGonder(e) {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); dodoMesajGonder(); return false; }
   return true;
 }
-
 async function dodoFotoSec(inp) {
   const f = inp.files[0]; inp.value = '';
   if (!f) return;
@@ -1180,7 +1614,7 @@ function dodoFotoKaldir() { dodoFotoBase64 = null; dodoFotoOnizlemeGuncelle(); }
 function dodoFotoOnizlemeGuncelle() {
   const el = document.getElementById('dodoFotoOnizleme');
   const btn = document.getElementById('dodoFotoBtn');
-  if (btn) btn.textContent = dodoFotoBase64 ? '✓' : '📷'; // seçilince 📷 → ✓
+  if (btn) btn.textContent = dodoFotoBase64 ? '✓' : '📷';
   if (!el) return;
   if (dodoFotoBase64) {
     el.innerHTML = '<img src="' + dodoFotoBase64 + '" alt=""><button type="button" onclick="dodoFotoKaldir()">✕</button>';
@@ -1190,7 +1624,6 @@ function dodoFotoOnizlemeGuncelle() {
     el.innerHTML = '';
   }
 }
-
 function dodoSohbetCiz(yaziyor, hata) {
   const el = document.getElementById('sohbetAlan');
   if (!el) return;
@@ -1206,20 +1639,14 @@ function dodoSohbetCiz(yaziyor, hata) {
   el.innerHTML = h;
   el.scrollTop = el.scrollHeight;
 }
-
 const DODO_KEY = 'dodo_api_anahtari';
-const DODO_MODEL = 'gemini-3.5-flash-lite'; // Gemini (yedek) varsayılan modeli
-const DODO_ESKI_MODEL = 'gemini-1.5-flash'; // eski kayıtlı ad: yeni varsayılana çevrilir
-const DODO_NVIDIA_KEY = 'dodo_nvidia_anahtari'; // NVIDIA anahtarı AYRI saklanır, yedeğe girmez
+const DODO_MODEL = 'gemini-3.5-flash-lite';
+const DODO_ESKI_MODEL = 'gemini-1.5-flash';
+const DODO_NVIDIA_KEY = 'dodo_nvidia_anahtari';
 const DODO_NVIDIA_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
-// Varsayılan NVIDIA model listesi (ilki ana model). ID'leri build.nvidia.com'dan kopyalayıp
-// buraya ya da Ayarlar'daki kutuya yaz. Boşsa NVIDIA atlanır, doğrudan Gemini kullanılır.
-const DODO_NVIDIA_MODELLER = [
-  // 'NEMOTRON_ID_BURAYA',
-  // 'DEEPSEEK_ID_BURAYA'
-];
+const DODO_NVIDIA_MODELLER = [];
 const DODO_FOTO_VARSAYILAN = 'Bu fotoğraftaki soruyu çöz ve neden yanlış yapmış olabileceğimi açıkla.';
-let dodoSonModel = ''; // en son hangi model cevap verdi
+let dodoSonModel = '';
 function dodoOku(k, v) { try { const x = localStorage.getItem(k); return x ? JSON.parse(x) : v; } catch (e) { return v; } }
 function dodoYaz(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 function dodoAnahtar() { try { return localStorage.getItem(DODO_KEY) || ''; } catch (e) { return ''; } }
@@ -1232,8 +1659,7 @@ function dodoNvidiaUrl() { return (dodoOku('dodo_ayar', {}).nvidiaUrl || '').tri
 function dodoNvidiaModeller() {
   const l = dodoOku('dodo_ayar', {}).nvidiaModeller;
   return (Array.isArray(l) && l.length) ? l : DODO_NVIDIA_MODELLER;
-      }
-
+}
 async function geminiIstek(icerikler, sistem, gorselBase64) {
   const anahtar = dodoAnahtar();
   if (!anahtar) throw new Error('API anahtarı yok. Ayarlar sekmesinden Gemini API anahtarını ekle.');
@@ -1262,11 +1688,6 @@ async function geminiIstek(icerikler, sistem, gorselBase64) {
   if (!metin) throw new Error('Yapay zeka boş yanıt verdi.');
   return metin;
 }
-
-/* ===== YAPAY ZEKA YÖNLENDİRİCİ: önce NVIDIA modelleri, olmazsa Gemini ===== */
-
-// Gemini biçimindeki içerikleri OpenAI biçimine çevirir.
-// Fotoğraf: parts içinde inlineData olabilir ya da gorselBase64 (data URL) son kullanıcı mesajına eklenir.
 function dodoOpenAIMesajlar(icerikler, sistem, gorselBase64) {
   const out = [{role: 'system', content: sistem}];
   icerikler.forEach((c, i) => {
@@ -1280,16 +1701,14 @@ function dodoOpenAIMesajlar(icerikler, sistem, gorselBase64) {
     if (gorselBase64 && rol === 'user' && i === icerikler.length - 1) {
       parca.push({type: 'image_url', image_url: {url: gorselBase64}});
     }
-    const sade = parca.every(p => p.type === 'text'); // sadece metin: düz string
+    const sade = parca.every(p => p.type === 'text');
     out.push({role: rol, content: sade ? parca.map(p => p.text).join('\n') : parca});
   });
   return out;
 }
-
-// Tek bir NVIDIA modeline istek atar. Hata nesnesinde e.kes = true ise (401/403) döngü kesilir.
 async function nvidiaIstek(model, icerikler, sistem, gorselBase64) {
   const ac = new AbortController();
-  const zaman = setTimeout(() => ac.abort(), 45000); // 45 sn zaman aşımı
+  const zaman = setTimeout(() => ac.abort(), 45000);
   try {
     let r;
     try {
@@ -1303,27 +1722,24 @@ async function nvidiaIstek(model, icerikler, sistem, gorselBase64) {
           temperature: 0.7,
           max_tokens: 1500,
           stream: false,
-          chat_template_kwargs: {enable_thinking: false} // düşünmeyi kapat: çok daha hızlı yanıt
+          chat_template_kwargs: {enable_thinking: false}
         })
       });
     } catch (e) {
       if (e.name === 'AbortError') throw new Error('zaman aşımı (45 sn)');
-      throw new Error('ağ hatası / tarayıcı engeli (CORS olabilir)'); // fetch TypeError
+      throw new Error('ağ hatası / tarayıcı engeli (CORS olabilir)');
     }
     if (r.status === 401 || r.status === 403) {
       const h = new Error('anahtar hatası (' + r.status + ')'); h.kes = true; throw h;
     }
-    if (!r.ok) throw new Error('HTTP ' + r.status); // 429, 5xx, 404...: sıradaki modele geç
+    if (!r.ok) throw new Error('HTTP ' + r.status);
     const j = await r.json();
     let metin = String(j.choices?.[0]?.message?.content || '');
-    // Düşünen modellerin <think>...</think> kısmını temizle (kapanmamışsa kalanını da)
-    metin = metin.replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/<think>[\s\S]*$/i, '').trim();
+    metin = metin.replace(/<\/think>/gi, '').replace(/<think>[\s\S]*$/i, '').trim();
     if (!metin) throw new Error('boş yanıt');
     return metin;
   } finally { clearTimeout(zaman); }
 }
-
-// Tek giriş noktası: dodoMesajGonder ve dodoTest bunu çağırır.
 async function yapayZekaIstek(icerikler, sistem, gorselBase64) {
   const hatalar = [];
   const nk = dodoNvidiaAnahtar(), liste = dodoNvidiaModeller();
@@ -1335,7 +1751,7 @@ async function yapayZekaIstek(icerikler, sistem, gorselBase64) {
         return yanit;
       } catch (e) {
         hatalar.push(model.split('/').pop() + ': ' + e.message);
-        if (e.kes) break; // anahtar hatası: kalan NVIDIA modellerini deneme, Gemini'ye geç
+        if (e.kes) break;
       }
     }
   } else if (nk) hatalar.push('NVIDIA: model listesi boş');
@@ -1349,7 +1765,6 @@ async function yapayZekaIstek(icerikler, sistem, gorselBase64) {
   if (!nk && !dodoAnahtar()) throw new Error('API anahtarı yok. Ayarlar sekmesinden NVIDIA veya Gemini anahtarı ekle.');
   throw new Error('Yanıt alınamadı → ' + hatalar.join(' | '));
 }
-
 let dodoFotoBase64 = null;
 let dodoMesgul = false;
 async function dodoMesajGonder(metin, gorunen) {
@@ -1359,8 +1774,7 @@ async function dodoMesajGonder(metin, gorunen) {
   const yazilan = String(hazir ? metin : (giris ? giris.value : '')).trim();
   if (!yazilan && !dodoFotoBase64) return;
   const gonderilenFoto = dodoFotoBase64;
-  const m = yazilan || DODO_FOTO_VARSAYILAN; // metin boşsa varsayılan soru
-  // Sohbette "📷 <mesaj>" görünür; fotoğrafın kendisi KAYDEDİLMEZ
+  const m = yazilan || DODO_FOTO_VARSAYILAN;
   const g = gorunen || (gonderilenFoto ? '📷 ' + yazilan : '');
   const l = dodoOku('dodo_sohbet', []);
   l.push({r: 'user', t: m, g: g, z: Date.now(), hasImage: !!gonderilenFoto});
@@ -1369,21 +1783,20 @@ async function dodoMesajGonder(metin, gorunen) {
   dodoMesgul = true;
   dodoSohbetCiz(true);
   try {
-    const gecmis = l.slice(-20).filter(x => x.t); // API'ye en fazla son 20 mesaj
+    const gecmis = l.slice(-20).filter(x => x.t);
     while (gecmis.length && gecmis[0].r !== 'user') gecmis.shift();
     const yanit = await yapayZekaIstek(
       gecmis.map(x => ({role: x.r, parts: [{text: x.t}]})),
       dodoSistemMetni(),
-      gonderilenFoto // sadece son kullanıcı mesajına eklenir
+      gonderilenFoto
     );
-    dodoFotoBase64 = null; // fotoğraf ancak başarıdan sonra temizlenir
+    dodoFotoBase64 = null;
     dodoFotoOnizlemeGuncelle();
     const l2 = dodoOku('dodo_sohbet', []);
     l2.push({r: 'model', t: yanit.trim(), z: Date.now()});
     dodoYaz('dodo_sohbet', l2.slice(-60));
     dodoSohbetCiz();
   } catch (e) {
-    // Başarısız: mesajı geri al, yazı ve fotoğraf kaybolmasın
     const l2 = dodoOku('dodo_sohbet', []); l2.pop();
     dodoYaz('dodo_sohbet', l2);
     if (giris && !hazir) giris.value = yazilan;
@@ -1391,8 +1804,7 @@ async function dodoMesajGonder(metin, gorunen) {
     dodoFotoOnizlemeGuncelle();
     dodoSohbetCiz(false, e.message);
   } finally { dodoMesgul = false; }
-  }
-
+}
 function dodoHaftaAnaliz() {
   const h = haftaBul(haftaBasi());
   if (!h) return dodoSohbetCiz(false, 'Bu haftaya ait deneme kaydı girilmemiş.');
@@ -1408,7 +1820,6 @@ function dodoSohbetTemizle() {
   dodoYaz('dodo_sohbet', []);
   dodoSohbetCiz();
 }
-
 function dodoAyarKarti() {
   const goz = '<button type="button" class="gozBtn" onclick="dodoGozToggle(this)" aria-label="Şifreyi göster/gizle">👁</button>';
   return kart('🦤 Ecoli AI',
@@ -1420,16 +1831,13 @@ function dodoAyarKarti() {
     '<button class="btn" onclick="dodoAyarKaydet()">Kaydet</button>' +
     '<button class="btn ikincil" onclick="dodoTest()">Bağlantıyı test et</button>' +
     '<p class="soluk" id="d_test" style="margin-top:10px"></p>');
-  }
-
+}
 function dodoGozToggle(btn) {
   const inp = btn.previousElementSibling;
   const acik = inp.type === 'text';
   inp.type = acik ? 'password' : 'text';
   btn.textContent = acik ? '👁' : '👁‍🗨';
 }
-
-// sessiz = true ise "Kaydedildi" bildirimi gösterilmez. Geçersiz anahtarda false döner.
 function dodoAyarKaydet(sessiz) {
   const nk = document.getElementById('d_nkey').value.trim();
   const k = document.getElementById('d_key').value.trim();
@@ -1446,7 +1854,6 @@ function dodoAyarKaydet(sessiz) {
   if (!sessiz) bildir('Kaydedildi ✓');
   return true;
 }
-
 async function dodoTest() {
   const el = document.getElementById('d_test');
   if (!dodoAyarKaydet(true)) return;
@@ -1470,7 +1877,6 @@ const TABLAR = [
   {id:'hedefler', ad:'Hedefler', ikon:IK('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>')},
   {id:'ayarlar', ad:'Ayarlar', ikon:IK('<path d="M4 7h10m4 0h2M4 17h2m4 0h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>')}
 ];
-
 const EKRAN = {
   gorevler()  { return gorevlerEkrani(); },
   kaynaklar() {
@@ -1483,9 +1889,41 @@ const EKRAN = {
   program()   { return programEkrani(); },
   yanlislar() { return yanlislarEkrani(); },
   konular()   { return konuTakipEkrani(); },
-  ayarlar()   { return dodoAyarKarti() + kart('Yedekleme', '<button class="btn" onclick="yedekIndir()">JSON İndir</button><input type="file" id="yedekYukle" accept=".json" hidden onchange="yedekYukle(this)"><button class="btn ikincil" style="margin-top:8px" onclick="document.getElementById(\'yedekYukle\').click()">JSON Yükle</button>'); }
+  ayarlar()   {
+    const user = window.currentUser;
+    const girisli = user && user.uid !== 'local';
+    const eposta = girisli ? (user.email || '—') : 'Giriş yapılmamış';
+    const uidKisa = girisli ? user.uid.slice(0, 8) + '...' : '—';
+    let hesapHtml = '';
+    if (girisli) {
+      hesapHtml = kart('👤 Hesap ve Senkron',
+        '<div style="margin-bottom:12px">' +
+          '<div class="soluk" style="font-size:12px">UID</div>' +
+          '<div style="font-family:monospace;font-size:13px;word-break:break-all">' + uidKisa + '</div>' +
+        '</div>' +
+        '<div style="margin-bottom:12px">' +
+          '<div class="soluk" style="font-size:12px">E-posta</div>' +
+          '<div>' + esc(eposta) + '</div>' +
+        '</div>' +
+        '<div id="syncDetay" style="margin-bottom:12px;padding:12px;background:rgba(255,255,255,.04);border-radius:12px;border:1px solid var(--kenar)">' +
+          '<div class="soluk" style="font-size:12px;margin-bottom:6px">Senkron Durumu</div>' +
+          '<div id="syncDetayText">Yükleniyor...</div>' +
+        '</div>' +
+        '<button class="btn" onclick="manuelSenkkron()" style="margin-bottom:8px">⟳ Şimdi Senkronla</button>' +
+        '<button class="btn ikincil" onclick="cikisYap()" style="margin-bottom:8px">Çıkış Yap</button>' +
+        '<button class="btn" style="background:rgba(255,122,122,.2);border:1px solid rgba(255,122,122,.4);color:var(--kirmizi);margin-bottom:8px" onclick="hesapSilOnay()">🗑 Hesabımı ve Bulut Verilerimi Sil</button>' +
+        '<div class="gizlilikNotu">Verilerin Google Firebase\'de, hesabına bağlı saklanır. Uygulama yöneticisi teknik olarak veritabanını görebilir. Fotoğraflar ve API anahtarları buluta gitmez.</div>'
+      );
+    } else {
+      hesapHtml = kart('👤 Hesap ve Senkron',
+        '<p class="soluk">Henüz giriş yapmadınız. Verileriniz sadece bu cihazda saklanıyor.</p>' +
+        '<button class="btn" onclick="girisEkraniGoster()">Giriş Yap / Kayıt Ol</button>' +
+        '<div class="gizlilikNotu">Verilerin Google Firebase\'de, hesabına bağlı saklanır. Uygulama yöneticisi teknik olarak veritabanını görebilir. Fotoğraflar ve API anahtarları buluta gitmez.</div>'
+      );
+    }
+    return hesapHtml + dodoAyarKarti() + kart('Yedekleme', '<button class="btn" onclick="yedekIndir()">JSON İndir</button><input type="file" id="yedekYukle" accept=".json" hidden onchange="yedekYukle(this)"><button class="btn ikincil" style="margin-top:8px" onclick="document.getElementById(\'yedekYukle\').click()">JSON Yükle</button>');
+  }
 };
-
 let aktifTab = 'gorevler';
 function tabCiz() {
   document.getElementById('menu').innerHTML = TABLAR.map(t => {
@@ -1495,7 +1933,6 @@ function tabCiz() {
 }
 function ekranCiz() {
   document.getElementById('icerik').innerHTML = '<section class="sayfa acik' + (animasyon ? ' anim' : '') + '">' + EKRAN[aktifTab]() + '</section>';
-  // Analiz grafiğini çiz
   if (aktifTab === 'haftalik' && haftaAlt === 'analiz') {
     const haftalar = [...S.haftalar].sort((a, b) => a.hafta.localeCompare(b.hafta));
     const alan = S.profil.alan || 'SAY';
@@ -1506,7 +1943,6 @@ function ekranCiz() {
       genel_ayt: h => netToplam(h.ayt)
     };
     dersler.forEach(d => { veriFonksiyonlari[d.key] = h => { const src = d.tur === 'TYT' ? h.tyt : h.ayt; const field = d.key.replace(d.tur.toLowerCase() + '_', ''); return src && typeof src[field] === 'number' ? src[field] : null; }; });
-
     let cizilecekler = [];
     if (analizSecim === 'genel') {
       cizilecekler = [
@@ -1527,13 +1963,11 @@ function tabGit(id) {
   aktifTab = id; animasyon = true; tabCiz(); ekranCiz(); animasyon = false;
   document.getElementById('icerik').scrollTop = 0;
 }
-
 function yedekIndir() {
   const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'yks-yedek-' + bugun() + '.json';
   document.body.appendChild(a); a.click(); a.remove();
 }
-
 function yedekYukle(inp) {
   const f = inp.files[0]; inp.value = '';
   if (!f) return;
@@ -1547,20 +1981,293 @@ function yedekYukle(inp) {
       baslikGuncelle();
       ekranCiz();
       bildir('Yedek yüklendi ✓');
+      if (window.currentUser && window.currentUser.uid !== 'local') {
+        senkronBaslat();
+      }
     } catch (e) { alert('Yükleme hatası: ' + e.message); }
   };
   r.readAsText(f);
 }
 
-document.getElementById('tarih').textContent = new Date().toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long'});
-planYenile(); programUygula(); baslikGuncelle(); tabGit('gorevler');
+/* ===== GİRİŞ VE AUTH ===== */
+let girisSekmeAktif = 'eposta';
+
+async function baslatUygulama() {
+  let deneme = 0;
+  while (!window.FB?.fbReady && deneme < 30) {
+    await new Promise(r => setTimeout(r, 100));
+    deneme++;
+  }
+  const auth = window.FB?.auth;
+  if (auth) {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        await kullaniciGirisYapti(user);
+      } else {
+        girisEkraniGoster();
+      }
+    });
+    try {
+      const result = await getRedirectResult(auth);
+      if (result?.user) {
+        await kullaniciGirisYapti(result.user);
+        return;
+      }
+    } catch (e) {
+      console.warn('[Auth] Redirect sonucu alınamadı:', e.message);
+    }
+  } else {
+    console.log('[Auth] Firebase yok, yerel mod');
+    girisEkraniGoster(true);
+  }
+}
+
+function girisSekme(hangi) {
+  girisSekmeAktif = hangi;
+  document.querySelectorAll('.girisSekmeler button').forEach((b, i) => {
+    b.classList.toggle('aktif', (i === 0 && hangi === 'eposta') || (i === 1 && hangi === 'google'));
+  });
+  document.getElementById('formEposta').style.display = hangi === 'eposta' ? 'flex' : 'none';
+  document.getElementById('formGoogle').style.display = hangi === 'google' ? 'flex' : 'none';
+  document.getElementById('girisHata').textContent = '';
+  document.getElementById('girisHataGoogle').textContent = '';
+}
+
+function girisEkraniGoster(yerelMod = false) {
+  document.getElementById('girisEkrani').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('dodoBtn').style.display = 'none';
+  if (yerelMod) {
+    document.querySelector('.girisKart p').textContent = 'Yerel mod (Firebase erişilemedi)';
+    document.getElementById('formEposta').style.display = 'none';
+    document.getElementById('formGoogle').style.display = 'none';
+    document.querySelector('.girisSekmeler').style.display = 'none';
+  }
+}
+
+function girisEkraniGizle() {
+  document.getElementById('girisEkrani').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('dodoBtn').style.display = 'grid';
+}
+
+async function girisEposta() {
+  const email = document.getElementById('gEmail').value.trim();
+  const sifre = document.getElementById('gSifre').value;
+  const hataEl = document.getElementById('girisHata');
+  hataEl.textContent = '';
+  if (!email || !sifre) return hataEl.textContent = 'E-posta ve şifre girin.';
+  try {
+    const { signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+    await signInWithEmailAndPassword(window.FB.auth, email, sifre);
+  } catch (e) {
+    hataEl.textContent = hataCevir(e);
+  }
+}
+
+async function girisGoogle() {
+  const hataEl = document.getElementById('girisHataGoogle');
+  hataEl.textContent = '';
+  try {
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    if (isPWA) {
+      const { signInWithRedirect } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+      await signInWithRedirect(window.FB.auth, window.FB.googleProvider);
+    } else {
+      const { signInWithPopup } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+      await signInWithPopup(window.FB.auth, window.FB.googleProvider);
+    }
+  } catch (e) {
+    if (e.code === 'auth/popup-blocked' || e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') {
+      try {
+        const { signInWithRedirect } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+        await signInWithRedirect(window.FB.auth, window.FB.googleProvider);
+      } catch (e2) {
+        hataEl.textContent = hataCevir(e2);
+      }
+    } else {
+      hataEl.textContent = hataCevir(e);
+    }
+  }
+}
+
+async function sifreSifirla() {
+  const email = document.getElementById('gEmail').value.trim();
+  const hataEl = document.getElementById('girisHata');
+  if (!email) return hataEl.textContent = 'Önce e-posta girin.';
+  try {
+    const { sendPasswordResetEmail } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+    await sendPasswordResetEmail(window.FB.auth, email);
+    bildir('Şifre sıfırlama e-postası gönderildi ✓');
+  } catch (e) {
+    hataEl.textContent = hataCevir(e);
+  }
+}
+
+function hataCevir(e) {
+  const kod = e.code || '';
+  if (kod.includes('wrong-password') || kod.includes('invalid-credential')) return 'Şifre yanlış.';
+  if (kod.includes('user-not-found')) return 'Kullanıcı bulunamadı.';
+  if (kod.includes('email-already-in-use')) return 'Bu e-posta zaten kayıtlı.';
+  if (kod.includes('weak-password')) return 'Şifre en az 6 karakter olmalı.';
+  if (kod.includes('invalid-email')) return 'Geçersiz e-posta adresi.';
+  if (kod.includes('network-request-failed') || kod.includes('offline')) return 'İnternet yok veya erişim engellendi.';
+  if (kod.includes('unauthorized-domain') || kod.includes('operation-not-allowed')) return 'Alan adı yetkili değil (Firebase Console > Authentication > Settings > Authorized domains).';
+  if (kod.includes('quota-exceeded') || kod.includes('quota')) return 'Kota doldu, daha sonra deneyin.';
+  if (kod.includes('popup-blocked')) return 'Popup engellendi, yönlendirme deneniyor...';
+  return 'Hata: ' + (e.message || 'Bilinmeyen');
+}
+
+function girisYok() {
+  window.currentUser = { uid: 'local', isAnonymous: true, displayName: 'Yerel Kullanıcı' };
+  localStorage.setItem(UID_KEY, 'local');
+  girisEkraniGizle();
+  uygulamaBaslat();
+}
+
+async function kullaniciGirisYapti(user) {
+  const oncekiUid = localStorage.getItem(UID_KEY);
+  const yeniUid = user.uid;
+  if (oncekiUid && oncekiUid !== yeniUid && oncekiUid !== 'local') {
+    const secim = confirm(
+      `Başka bir hesapla giriş yapıyorsunuz (${user.email}).\n` +
+      `Bu cihazda ${oncekiUid.slice(0,8)}... kullanıcısının verisi var.\n\n` +
+      `Ne yapmak istersiniz?\n` +
+      `TAMAM = Yeni hesaba geç, yerel veriyi yedekle (indir) sonra temizle\n` +
+      `IPTAL = Çıkış yap, önceki hesapta kal`
+    );
+    if (secim) {
+      yedekIndir();
+      localStorage.removeItem(KEY);
+      S = varsayilan();
+    } else {
+      await signOut(window.FB.auth);
+      return;
+    }
+  }
+  localStorage.setItem(UID_KEY, yeniUid);
+  window.currentUser = user;
+  if (oncekiUid === 'local' && !user.isAnonymous) {
+    await yerelVeriyiBulutaTasi(user);
+  }
+  girisEkraniGizle();
+  await uygulamaBaslat();
+  await senkronBaslat();
+}
+
+async function yerelVeriyiBulutaTasi(user) {
+  const yerelVar = localStorage.getItem(KEY);
+  if (!yerelVar) return;
+  let bulutBos = true;
+  for (const b of SYNC_BOLUMLER) {
+    const ref = doc(window.FB.db, bolumBelgeYolu(user.uid, b.ad));
+    const snap = await getDoc(ref);
+    if (snap.exists() && snap.data().kayitlar && Object.keys(snap.data().kayitlar).length > 0) {
+      bulutBos = false;
+      break;
+    }
+  }
+  if (bulutBos) {
+    bildir('İlk giriş: verileriniz buluta yükleniyor...');
+    await ilkSenkronYaz();
+    bildir('Verileriniz buluta yüklendi ✓');
+  } else {
+    bildir('Verileriniz birleştiriliyor...');
+    await senkronBaslat();
+    setTimeout(() => bildir('Senkron tamamlandı ✓'), 1000);
+  }
+}
+
+function cikisYap() {
+  const user = window.currentUser;
+  if (!user || user.uid === 'local') {
+    if (confirm('Girişsiz moddasınız. Yerel veriyi silip sıfırdan mı başlasın?')) {
+      localStorage.removeItem(KEY);
+      S = varsayilan();
+    }
+    girisEkraniGoster(true);
+    return;
+  }
+  const secim = confirm(
+    'Çıkış yapılıyor.\n\n' +
+    'TAMAM = Yerel veriyi SİL (temiz başlangıç)\n' +
+    'IPTAL = Yerel veriyi KORU (sonra tekrar girişte birleştir)'
+  );
+  if (secim) {
+    localStorage.removeItem(KEY);
+    S = varsayilan();
+  }
+  localStorage.removeItem(SYNC_KEY);
+  localStorage.removeItem(UID_KEY);
+  signOut(window.FB.auth).then(() => {
+    girisEkraniGoster();
+  });
+}
+
+async function hesapSilOnay() {
+  const user = window.FB.auth.currentUser;
+  if (!user || user.uid === 'local') {
+    alert('Bu işlem sadece giriş yapmış kullanıcılar içindir.');
+    return;
+  }
+  if (!confirm('HESABINI VE TÜM BULUT VERİLERİNİ KALICI OLARAK SİLMEK İSTİYOR MUSUNUZ?\n\nBu işlem geri alınamaz!')) return;
+  if (!confirm('SON ONAY: E-posta: ' + user.email + '\n\nGerçekten silinsin mi?')) return;
+  try {
+    for (const b of SYNC_BOLUMLER) {
+      try {
+        const ref = doc(window.FB.db, bolumBelgeYolu(user.uid, b.ad));
+        await deleteDoc(ref);
+      } catch {}
+    }
+    try {
+      await deleteUser(user);
+    } catch (e) {
+      if (e.code === 'auth/requires-recent-login') {
+        alert('Güvenlik için tekrar giriş yapmanız gerekiyor. Lütfen çıkış yapıp tekrar girin, sonra silmeyi deneyin.');
+        return;
+      }
+      throw e;
+    }
+    localStorage.removeItem(KEY);
+    localStorage.removeItem(SYNC_KEY);
+    localStorage.removeItem(UID_KEY);
+    S = varsayilan();
+    bildir('Hesap ve veriler silindi');
+    girisEkraniGoster();
+  } catch (e) {
+    alert('Silme hatası: ' + hataCevir(e));
+  }
+}
+
+async function manuelSenkkron() {
+  if (!window.currentUser || window.currentUser.uid === 'local') return;
+  await senkronBaslat();
+}
+
+async function uygulamaBaslat() {
+  try {
+    const k = localStorage.getItem(KEY);
+    if (k) S = Object.assign(varsayilan(), JSON.parse(k));
+  } catch (e) { console.error('Veri okunamadı', e); }
+  planYenile();
+  programUygula();
+  baslikGuncelle();
+  tabGit('gorevler');
+  if (!document.getElementById('syncDurum')) {
+    const baslikEl = document.getElementById('baslik');
+    baslikEl.insertAdjacentHTML('beforeend', '<span id="syncDurum"></span>');
+  }
+  syncDurumGuncelle('bekliyor');
+}
+
+baslatUygulama();
 
 function dodoAc() {
   if (document.body.classList.contains('dodoAcik')) return;
   document.getElementById('dodoSek').innerHTML = '<button type="button" onclick="dodoSohbetTemizle()">🗑 Sohbeti Temizle</button>';
   document.getElementById('dodoIcerik').innerHTML = dodoSohbetEkrani();
   dodoSohbetCiz();
-  dodoFotoOnizlemeGuncelle(); // panel yeniden açılınca 📷/✓ durumunu düzelt
+  dodoFotoOnizlemeGuncelle();
   document.body.classList.add('dodoAcik');
 }
 function dodoKapat() { document.body.classList.remove('dodoAcik'); }
