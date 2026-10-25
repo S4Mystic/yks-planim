@@ -1,4 +1,4 @@
-const SURUM = 'yks-v34';
+const SURUM = 'yks-v32';
 
 self.addEventListener('install', e => {
   self.skipWaiting();
@@ -12,6 +12,10 @@ self.addEventListener('activate', e => {
   );
 });
 
-// Önbellekleme yok: tüm istekler doğrudan ağ üzerinden alınır,
-// böylece uygulama her zaman güncel index.html'i gösterir.
-self.addEventListener('fetch', () => {});
+// Önbellekleme yok: tüm istekler doğrudan ağ üzerinden alınır.
+// SW istekleri engellemez, doğrudan ağa geçer.
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    fetch(e.request).catch(() => caches.match(e.request))
+  );
+});

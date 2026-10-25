@@ -2194,6 +2194,12 @@ async function baslatUygulama() {
     const yukleme = document.getElementById('yuklemeEkrani');
     if (yukleme) yukleme.style.display = 'none';
   };
+  // Eski Service Worker kayıtlarını temizle (önceki bozuk önbelleği kaldırır)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(r => r.unregister());
+    });
+  }
   const auth = window.FB?.auth;
   if (auth) {
     window.FB.onAuthStateChanged(auth, async (user) => {
@@ -2223,6 +2229,20 @@ async function baslatUygulama() {
     girisEkraniGoster(true);
     sonlandir();
   }
+
+  // Güvenlik: Firebase/auth asla yanıtsız kalırsa bile asla kilitlenme olmasın
+  setTimeout(() => {
+    const yukleme = document.getElementById('yuklemeEkrani');
+    if (yukleme && yukleme.style.display !== 'none') {
+      yukleme.style.display = 'none';
+      if (
+        document.getElementById('app').style.display === 'none' &&
+        document.getElementById('girisEkrani').style.display === 'none'
+      ) {
+        girisEkraniGoster(true);
+      }
+    }
+  }, 5000);
 }
 
 function girisSekme(hangi) {
