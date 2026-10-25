@@ -311,7 +311,7 @@ async function firebaseBaslat() {
   }
 }
 firebaseBaslat();
-window.FB = { auth, db, googleProvider, get fbReady() { return fbReady; } };
+window.FB = { auth, db, googleProvider, onAuthStateChanged, signOut, deleteUser, get fbReady() { return fbReady; } };
 </script>
 
 <script>
@@ -2000,7 +2000,7 @@ async function baslatUygulama() {
   }
   const auth = window.FB?.auth;
   if (auth) {
-    onAuthStateChanged(auth, async (user) => {
+    window.FB.onAuthStateChanged(auth, async (user) => {
       if (user) {
         await kullaniciGirisYapti(user);
       } else {
@@ -2141,7 +2141,7 @@ async function kullaniciGirisYapti(user) {
       localStorage.removeItem(KEY);
       S = varsayilan();
     } else {
-      await signOut(window.FB.auth);
+      await window.FB.signOut(window.FB.auth);
       return;
     }
   }
@@ -2199,7 +2199,7 @@ function cikisYap() {
   }
   localStorage.removeItem(SYNC_KEY);
   localStorage.removeItem(UID_KEY);
-  signOut(window.FB.auth).then(() => {
+  window.FB.signOut(window.FB.auth).then(() => {
     girisEkraniGoster();
   });
 }
@@ -2220,7 +2220,7 @@ async function hesapSilOnay() {
       } catch {}
     }
     try {
-      await deleteUser(user);
+      await window.FB.deleteUser(user);
     } catch (e) {
       if (e.code === 'auth/requires-recent-login') {
         alert('Güvenlik için tekrar giriş yapmanız gerekiyor. Lütfen çıkış yapıp tekrar girin, sonra silmeyi deneyin.');
