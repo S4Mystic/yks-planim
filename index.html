@@ -447,8 +447,22 @@ async function senkronYazGonder(bolumAd) {
   try {
     const b = SYNC_BOLUMLER.find(x => x.ad === bolumAd);
     if (!b) return;
-    const uid = window.currentUser.uid;
     const veri = temizleDataURL(item.veri);
+    
+    // Dizi alanlarını Firestore için map'e çevir: [{id, ...}, ...] -> {id: {...}, ...}
+    const DIZI_ALANLARI = ['kaynaklar', 'sureler', 'haftalar', 'yanlislar', 'rutinler', 'gorevler'];
+    let yazilacakVeri = veri;
+    if (DIZI_ALANLARI.includes(bolumAd) && Array.isArray(veri)) {
+      const map = {};
+      for (const kayit of veri) {
+        if (kayit && kayit.id) map[kayit.id] = kayit;
+      }
+      yazilacakVeri = { kayitlar: map };
+    } else if (!DIZI_ALANLARI.includes(bolumAd)) {
+      // Nesne alanları için direkt kayitlar sarmala
+      yazilacakVeri = { kayitlar: veri };
+    }
+    
     if (b.shard) {
       const ayGruplari = {};
       for (const [id, kayit] of Object.entries(veri)) {
@@ -459,7 +473,7 @@ async function senkronYazGonder(bolumAd) {
       const batch = window.FB.writeBatch(window.FB.db);
       for (const [ay, kayitlar] of Object.entries(ayGruplari)) {
         const ref = doc(window.FB.db, bolumBelgeYolu(uid, bolumAd, ay));
-        batch.set(ref, { kayitlar, guncellenme: serverTimestamp() }, { merge: true });
+        batch.set(ref, yazilacakVeri, { merge: true });
       }
       await batch.commit();
     } else {
@@ -468,7 +482,7 @@ async function senkronYazGonder(bolumAd) {
       for (const [id, kayit] of Object.entries(veri)) {
         kayitlar[id] = { ...kayit, u: kayit.u || simdi() };
       }
-      await window.FB.setDoc(ref, { kayitlar, guncellenme: window.FB.serverTimestamp() }, { merge: true });
+      await setDoc(ref, yazilacakVeri, { merge: true });
     }
     const meta = syncMetaOku();
     meta[bolumAd] = item.hash;
@@ -515,35 +529,66 @@ function tumBirlestir(bolumAd, uzakVeri) {
   if (!b) return;
   const alanAdi = b.alan || bolumAd;
   
-  // gorevler dizi korunur, direkt overwrite edilmez
-  if (alanAdi === 'gorevler') return;
+  // Firestore'dan gelen uzakVeri: {kayitlar: {id: record}} şeklinde gelir
+  // Eğer uzakVeri direkt bir map ise (kayitlar yoksa) onu kullan, yoksa kayitlar'ı al
+  const uzakKayitlar = uzakVeri.kayitlar || uzakVeri || {};
   
+  // Dizi alanları (array): map'ten dizi'ye çevir
+  const DIZI_ALANLARI = ['kaynaklar', 'sureler', 'haftalar', 'yanlislar', 'rutinler', 'gorevler'];
+  
+  if (DIZI_ALANLARI.includes(alanAdi)) {
+    // Map'i diziye çevir
+    const diziyeCevir = (map) => {
+      const sonuc = [];
+      for (const [id, kayit] of Object.entries(map)) {
+        if (kayit && kayit.s === 1) continue; // silinmiş
+        sonuc.push(kayit);
+      }
+      return sonuc;
+    };
+    
+    // Birleştirme: map bazlı
+    const birlesikMap = { ...yerelVeri };
+    for (const [id, uzakKayit] of Object.entries(uzakKayitlar)) {
+      const yerelKayit = birlesikMap[id];
+      if (!yerelKayit) {
+        if (!uzakKayit.s) birlesikMap[id] = { ...uzakKayit };
+        continue;
+      }
+      const uYerel = yerelKayit.u || 0;
+      const uUzak = uzakKayit.u || 0;
+      if (uUzak > uYerel) {
+        if (uzakKayit.s) delete birlesikMap[id];
+        else birlesikMap[id] = { ...uzakKayit };
+      } else if (uUzak === uYerel && uzakKayit.s && !yerelKayit.s) {
+        delete birlesikMap[id];
+      }
+    }
+    
+    S[alanAdi] = diziyeCevir(birlesikMap);
+    return;
+  }
+  
+  // Nesne/map alanları: kacan, konuTakip, profil, program, kaynakTamam, programTamam, elleGorevler
   const yerelVeri = S[alanAdi];
   if (bolumAd === 'kacan') {
     const birlesik = { ...yerelVeri };
-    for (const [tarih, sayi] of Object.entries(uzakVeri)) {
-      if (!birlesik[tarih] || (uzakVeri[tarih] || 0) > (birlesik[tarih] || 0)) {
-        birlesik[tarih] = uzakVeri[tarih];
+    for (const [tarih, sayi] of Object.entries(uzakKayitlar)) {
+      if (!birlesik[tarih] || (uzakKayitlar[tarih] || 0) > (birlesik[tarih] || 0)) {
+        birlesik[tarih] = uzakKayitlar[tarih];
       }
     }
     S[alanAdi] = birlesik;
     return;
   }
+  
   if (bolumAd === 'yanlislar') {
-    const uzakTemiz = {};
-    for (const [id, kayit] of Object.entries(uzakVeri)) {
-      const yerelKayit = yerelVeri[id];
-      const yerelFoto = alYerelFoto(yerelKayit);
-      if (yerelFoto && (!kayit.fotoUrl || !kayit.fotoUrl.startsWith('data:'))) {
-        uzakTemiz[id] = { ...kayit, fotoUrl: yerelFoto };
-      } else {
-        uzakTemiz[id] = kayit;
-      }
-    }
-    S[alanAdi] = birlestirYerelUzak(yerelVeri, uzakTemiz);
+    // yanlislar zaten DIZI_ALANLARI içinde yukarıda işlendi, buraya gelmez
     return;
   }
-  S[alanAdi] = birlestirYerelUzak(yerelVeri, uzakVeri);
+  
+  // Genel nesne birleştirme
+  S[alanAdi] = birlestirYerelUzak(yerelVeri, uzakKayitlar);
 }
 
 async function senkronBaslat() {
@@ -592,7 +637,11 @@ async function ilkSenkronYaz() {
   for (const b of SYNC_BOLUMLER) {
     const alanAdi = b.alan || b.ad;
     const veri = S[alanAdi];
-    if (veri && Object.keys(veri).length > 0) {
+    const DIZI_ALANLARI = ['kaynaklar', 'sureler', 'haftalar', 'yanlislar', 'rutinler', 'gorevler'];
+    const varMi = DIZI_ALANLARI.includes(alanAdi) 
+      ? (Array.isArray(veri) && veri.length > 0)
+      : (veri && Object.keys(veri).length > 0);
+    if (varMi) {
       await senkronYazGonder(b.ad);
     }
   }
