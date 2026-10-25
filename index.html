@@ -472,14 +472,15 @@ async function senkronYazGonder(bolumAd) {
       yazilacakVeri = { kayitlar: veri };
     }
     
-    const ref = doc(window.FB.db, bolumBelgeYolu(uid, bolumAd));
-    await setDoc(ref, yazilacakVeri, { merge: true });
+    const ref = window.FB.doc(window.FB.db, bolumBelgeYolu(uid, bolumAd));
+    await window.FB.setDoc(ref, yazilacakVeri, { merge: true });
     const meta = syncMetaOku();
     meta[bolumAd] = item.hash;
     syncMetaYaz(meta);
   } catch (e) {
     console.error('[Sync] Yazma hatası:', bolumAd, e);
     syncDurumGuncelle('hata', e.message);
+    bildir('Senkron hata: ' + (e.message || 'Bilinmeyen'));
     yazmaKuyrugu.set(bolumAd, item);
     setTimeout(() => senkronYazGonder(bolumAd), 5000);
   } finally {
@@ -2256,7 +2257,7 @@ async function yerelVeriyiBulutaTasi(user) {
   if (!yerelVar) return;
   let bulutBos = true;
   for (const b of SYNC_BOLUMLER) {
-    const ref = doc(window.FB.db, bolumBelgeYolu(user.uid, b.ad));
+    const ref = window.FB.doc(window.FB.db, bolumBelgeYolu(user.uid, b.ad));
     const snap = await window.FB.getDoc(ref);
     if (snap.exists() && snap.data().kayitlar && Object.keys(snap.data().kayitlar).length > 0) {
       bulutBos = false;
@@ -2325,7 +2326,7 @@ async function hesapSilOnay() {
   try {
     for (const b of SYNC_BOLUMLER) {
       try {
-        const ref = doc(window.FB.db, bolumBelgeYolu(user.uid, b.ad));
+        const ref = window.FB.doc(window.FB.db, bolumBelgeYolu(user.uid, b.ad));
         await window.FB.deleteDoc(ref);
       } catch {}
     }
