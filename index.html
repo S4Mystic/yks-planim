@@ -2238,25 +2238,12 @@ async function girisGoogle() {
   const hataEl = document.getElementById('girisHataGoogle');
   hataEl.textContent = '';
   try {
-    const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-    if (isPWA) {
-      const { signInWithRedirect } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
-      await signInWithRedirect(window.FB.auth, window.FB.googleProvider);
-    } else {
-      const { signInWithPopup } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
-      await signInWithPopup(window.FB.auth, window.FB.googleProvider);
-    }
+    // COOP (Cross-Origin-Opener-Policy) politikası signInWithPopup'u engeller,
+    // bu yüzden her zaman redirect kullanılır (pencere açılmaz, yönlendirme yapılır).
+    const { signInWithRedirect } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+    await signInWithRedirect(window.FB.auth, window.FB.googleProvider);
   } catch (e) {
-    if (e.code === 'auth/popup-blocked' || e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') {
-      try {
-        const { signInWithRedirect } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
-        await signInWithRedirect(window.FB.auth, window.FB.googleProvider);
-      } catch (e2) {
-        hataEl.textContent = hataCevir(e2);
-      }
-    } else {
-      hataEl.textContent = hataCevir(e);
-    }
+    hataEl.textContent = hataCevir(e);
   }
 }
 
