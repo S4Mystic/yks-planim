@@ -2131,33 +2131,45 @@ function girisYok() {
 }
 
 async function kullaniciGirisYapti(user) {
-  const oncekiUid = localStorage.getItem(UID_KEY);
-  const yeniUid = user.uid;
-  if (oncekiUid && oncekiUid !== yeniUid && oncekiUid !== 'local') {
-    const secim = confirm(
-      `Başka bir hesapla giriş yapıyorsunuz (${user.email}).\n` +
-      `Bu cihazda ${oncekiUid.slice(0,8)}... kullanıcısının verisi var.\n\n` +
-      `Ne yapmak istersiniz?\n` +
-      `TAMAM = Yeni hesaba geç, yerel veriyi yedekle (indir) sonra temizle\n` +
-      `IPTAL = Çıkış yap, önceki hesapta kal`
-    );
-    if (secim) {
-      yedekIndir();
-      localStorage.removeItem(KEY);
-      S = varsayilan();
-    } else {
-      await window.FB.signOut(window.FB.auth);
-      return;
+  try {
+    const oncekiUid = localStorage.getItem(UID_KEY);
+    const yeniUid = user.uid;
+  
+    // Kullanıcı değişimi kontrolü (Farklı uid ile giriş)
+    if (oncekiUid && oncekiUid !== yeniUid && oncekiUid !== 'local') {
+      const secim = confirm(
+        `Başka bir hesapla giriş yapıyorsunuz (${user.email}).\n` +
+        `Bu cihazda ${oncekiUid.slice(0,8)}... kullanıcısının verisi var.\n\n` +
+        `Ne yapmak istersiniz?\n` +
+        `TAMAM = Yeni hesaba geç, yerel veriyi yedekle (indir) sonra temizle\n` +
+        `IPTAL = Çıkış yap, önceki hesapta kal`
+      );
+      
+      if (secim) {
+        yedekIndir();
+        localStorage.removeItem(KEY);
+        S = varsayilan();
+      } else {
+        await window.FB.signOut(window.FB.auth);
+        return;
+      }
     }
+  
+    localStorage.setItem(UID_KEY, yeniUid);
+    window.currentUser = user;
+  
+    if (oncekiUid === 'local' && !user.isAnonymous) {
+      await yerelVeriyiBulutaTasi(user);
+    }
+  
+    girisEkraniGizle();
+    await uygulamaBaslat();
+    // Senkronu arkaplanda başlat, UI'yi engelleme (hata olsa uygulama kapanmasın)
+    senkronBaslat().catch(e => console.error('[Sync] Başlatma hatası:', e));
+  } catch (e) {
+    console.error('[Auth] Giriş hatası:', e);
+    girisEkraniGoster();
   }
-  localStorage.setItem(UID_KEY, yeniUid);
-  window.currentUser = user;
-  if (oncekiUid === 'local' && !user.isAnonymous) {
-    await yerelVeriyiBulutaTasi(user);
-  }
-  girisEkraniGizle();
-  await uygulamaBaslat();
-  await senkronBaslat();
 }
 
 async function yerelVeriyiBulutaTasi(user) {
