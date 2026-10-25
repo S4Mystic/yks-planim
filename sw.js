@@ -1,8 +1,6 @@
-const SURUM = 'yks-v33';
+const SURUM = 'yks-v34';
 
-self.addEventListener('install', e => {
-  self.skipWaiting();
-});
+self.addEventListener('install', () => self.skipWaiting());
 
 self.addEventListener('activate', e => {
   e.waitUntil(
@@ -12,10 +10,6 @@ self.addEventListener('activate', e => {
   );
 });
 
-// Önbellekleme yok: tüm istekler doğrudan ağ üzerinden alınır.
-// SW istekleri engellemez, doğrudan ağa geçer.
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
-  );
-});
+// SW hiçbir istekleri yakalamaz, engellemez.
+// Tüm istekler doğrudan ağ üzerinden alınır.
+self.addEventListener('fetch', () => {});
