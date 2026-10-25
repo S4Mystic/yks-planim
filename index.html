@@ -332,7 +332,7 @@ const SYNC_BOLUMLER = [
   { ad: 'profil',        koleksiyon: 'profil',        shard: false, alan: 'profil' },
   { ad: 'kaynaklar',     koleksiyon: 'kaynaklar',     shard: false, alan: 'kaynaklar' },
   { ad: 'program',       koleksiyon: 'program',       shard: false, alan: 'program' },
-  { ad: 'elleGorevler',  koleksiyon: 'elleGorevler',  shard: true,  alan: 'gorevler', filtre: g => g.tur === 'elle' },
+  { ad: 'elleGorevler',  koleksiyon: 'elleGorevler',  shard: true,  alan: 'elleGorevler', filtre: g => g.tur === 'elle' },
   { ad: 'kaynakTamam',   koleksiyon: 'kaynakTamam',   shard: false, alan: 'kaynakTamam' },
   { ad: 'programTamam',  koleksiyon: 'programTamam',  shard: false, alan: 'programTamam' },
   { ad: 'sureler',       koleksiyon: 'sureler',       shard: true,  alan: 'sureler' },
@@ -514,6 +514,10 @@ function tumBirlestir(bolumAd, uzakVeri) {
   const b = SYNC_BOLUMLER.find(x => x.ad === bolumAd);
   if (!b) return;
   const alanAdi = b.alan || bolumAd;
+  
+  // gorevler dizi korunur, direkt overwrite edilmez
+  if (alanAdi === 'gorevler') return;
+  
   const yerelVeri = S[alanAdi];
   if (bolumAd === 'kacan') {
     const birlesik = { ...yerelVeri };
@@ -637,7 +641,8 @@ const varsayilan = () => ({
   konuTakip: {},   
   rutinler: [],     
   kaynakTamam: {},
-  programTamam: {}
+  programTamam: {},
+  elleGorevler: {}   // elle görevler map olarak saklanır, gorevler dizisi türetilir
 });
 
 let S = varsayilan();
@@ -759,6 +764,27 @@ function planYenile() {
       }
     }
   }
+  // Elle görevler map'inden gorevler dizisine yansıt (türetilmiş görünüm)
+  if (S.elleGorevler) {
+    const mevcutElleIds = new Set(S.gorevler.filter(g => g.tur === 'elle').map(g => g.id));
+    for (const [id, g] of Object.entries(S.elleGorevler)) {
+      if (g.s) continue;
+      if (!mevcutElleIds.has(id)) {
+        S.gorevler.push({
+          id: id,
+          tarih: g.tarih || bugun(),
+          metin: g.metin || '',
+          kaynakId: null,
+          videoNos: [],
+          linkler: [],
+          tur: 'elle',
+          bitti: !!g.bitti,
+          bitisGun: g.bitisGun
+        });
+      }
+    }
+  }
+  
   kaydet();
 }
 
@@ -849,7 +875,27 @@ function kaynakFormu() {
 let sonTik = null;
 function bugunGorevleri() {
   const bg = bugun();
-  return S.gorevler.filter(g => g.tarih === bg || g.bitisGun === bg || (g.tur === 'elle' && !g.bitti && g.tarih < bg));
+  const liste = [...(S.gorevler || [])];
+  
+  // Elle görevler map'inden eklenenleri ekle
+  if (S.elleGorevler) {
+    for (const [id, g] of Object.entries(S.elleGorevler)) {
+      if (g.s) continue; // silinmiş
+      liste.push({
+        id: id,
+        tarih: g.tarih || bg,
+        metin: g.metin || '',
+        kaynakId: null,
+        videoNos: [],
+        linkler: [],
+        tur: 'elle',
+        bitti: !!g.bitti,
+        bitisGun: g.bitisGun
+      });
+    }
+  }
+  
+  return liste.filter(g => g.tarih === bg || g.bitisGun === bg || (g.tur === 'elle' && !g.bitti && g.tarih < bg));
 }
 
 function seriHesapla() {
@@ -919,17 +965,25 @@ function elleEkle() {
   const tur = document.getElementById('e_tur').value;
   const m = document.getElementById('e_metin').value.trim();
   if (!m) return alert('Ne yapacağını yaz.');
-  S.gorevler.push({id:yeniId(), tarih:bugun(), metin:(tur === 'Diğer' ? m : tur + ': ' + m),
-                   kaynakId:null, videoNos:[], linkler:[], tur:'elle', bitti:false});
+  const id = yeniId();
+  if (!S.elleGorevler) S.elleGorevler = {};
+  S.elleGorevler[id] = { id, tarih: bugun(), metin: (tur === 'Diğer' ? m : tur + ': ' + m),
+                        kaynakId: null, videoNos: [], linkler: [], tur: 'elle', bitti: false, u: simdi() };
   kaydet(); ekranCiz();
 }
 
 function elleSil(id) {
-  const g = S.gorevler.find(x => x.id === id);
-  if (g && g.tur === 'elle') {
-    g.s = 1;
-    g.u = simdi();
+  if (S.elleGorevler && S.elleGorevler[id]) {
+    S.elleGorevler[id].s = 1;
+    S.elleGorevler[id].u = simdi();
     kaydet();
+  } else {
+    const g = S.gorevler.find(x => x.id === id);
+    if (g && g.tur === 'elle') {
+      g.s = 1;
+      g.u = simdi();
+      kaydet();
+    }
   }
   ekranCiz();
 }
