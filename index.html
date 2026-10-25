@@ -1937,7 +1937,12 @@ function tabCiz() {
   }).join('');
 }
 function ekranCiz() {
-  document.getElementById('icerik').innerHTML = '<section class="sayfa acik' + (animasyon ? ' anim' : '') + '">' + EKRAN[aktifTab]() + '</section>';
+  try {
+    document.getElementById('icerik').innerHTML = '<section class="sayfa acik' + (animasyon ? ' anim' : '') + '">' + EKRAN[aktifTab]() + '</section>';
+  } catch (e) {
+    console.error('[Ekran] Sekme çizim hatası:', aktifTab, e);
+    document.getElementById('icerik').innerHTML = '<section class="sayfa acik"><div class="kart"><h2>Hata</h2><p class="soluk">Sekme yüklenemedi: ' + esc(e.message) + '</p></div></section>';
+  }
   if (aktifTab === 'haftalik' && haftaAlt === 'analiz') {
     const haftalar = [...S.haftalar].sort((a, b) => a.hafta.localeCompare(b.hafta));
     const alan = S.profil.alan || 'SAY';
