@@ -1,4 +1,4 @@
-const SURUM = 'yks-v32';
+const SURUM = 'yks-v34';
 
 self.addEventListener('install', e => {
   self.skipWaiting();
