@@ -1,4 +1,4 @@
-const SURUM = 'yks-v24';
+const SURUM = 'yks-v25';
 const DOSYALAR = [
   'index.html',
   'manifest.json',

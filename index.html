@@ -408,9 +408,9 @@ function bolumBelgeYolu(uid, bolumAd, ay) {
   const b = SYNC_BOLUMLER.find(x => x.ad === bolumAd);
   if (!b) return null;
   if (b.shard && ay) {
-    return `users/${uid}/veri/${bolumAd}/${ay}`;
+    return `users/${uid}/veri/${bolumAd}/${ay}/ana`; // 6 segment (çift)
   }
-  return `users/${uid}/veri/${bolumAd}/ana`;
+  return `users/${uid}/veri/${bolumAd}`; // 4 segment (çift)
 }
 
 function ayAnahtari(tarih) {
