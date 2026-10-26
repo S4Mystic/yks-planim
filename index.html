@@ -231,9 +231,11 @@ tr:first-child td{border-top:none}
 .girisAlt{margin-top:16px;padding-top:16px;border-top:1px solid var(--kenar);text-align:center;color:var(--soluk);font-size:13px}
 .gizlilikNotu{font-size:11px;color:var(--soluk);line-height:1.5;margin-top:16px;padding:12px;background:rgba(255,255,255,.04);border-radius:12px;border:1px solid var(--kenar)}
 #syncDetay{font-size:13px}
+.toast{z-index:300}
 </style>
 </head>
 <body>
+<div id="yukleniyor" class="girisEkrani"><div class="girisKart"><h1>Lyrica</h1><p style="margin:0">Oturum kontrol ediliyor…</p></div></div>
 <!-- Giriş Ekranı -->
 <div id="girisEkrani" class="girisEkrani" style="display:none">
   <div class="girisKart">
@@ -258,6 +260,9 @@ tr:first-child td{border-top:none}
     </div>
     <div class="girisAyrac">veya</div>
     <button class="btn ikincil" onclick="girisYok()">Girişsiz kullan (sadece bu cihaz)</button>
+    <details style="margin-top:14px" ontoggle="teshisYenile()"><summary class="soluk" style="cursor:pointer">🛠 Teşhis</summary>
+    <pre id="teshisMetin" style="white-space:pre-wrap;word-break:break-all;font-size:11px;color:var(--soluk);margin:8px 0"></pre>
+    <button class="btn ikincil" onclick="teshisKopyala()">Kopyala</button></details>
     <div class="girisAlt">
       <button class="girisLink" onclick="hesapSilOnay()">Hesabımı ve bulut verilerimi sil</button>
     </div>
@@ -288,7 +293,7 @@ tr:first-child td{border-top:none}
 <!-- Firebase SDK v10+ modüler CDN yükleyici -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, sendPasswordResetEmail, reauthenticateWithCredential, EmailAuthProvider, deleteUser } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { getAuth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence, browserPopupRedirectResolver, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, sendPasswordResetEmail, deleteUser } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { getFirestore, enableIndexedDbPersistence, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, orderBy, limit, writeBatch, serverTimestamp, Timestamp, FieldPath } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -303,28 +308,29 @@ const firebaseConfig = {
 
 let app, auth, db, googleProvider;
 let fbReady = false;
-
-async function firebaseBaslat() {
+try {
+  app = initializeApp(firebaseConfig);
   try {
-    app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    db = getFirestore(app);
-    googleProvider = new GoogleAuthProvider();
-    await enableIndexedDbPersistence(db);
-    fbReady = true;
-    console.log('[Firebase] Hazır');
-  } catch (e) {
-    console.warn('[Firebase] Başlatılamadı, yerel mod:', e.message);
-    fbReady = false;
-  }
-}
-firebaseBaslat();
-window.FB = { 
-  auth, db, googleProvider, 
+    auth = initializeAuth(app, {
+      persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence],
+      popupRedirectResolver: browserPopupRedirectResolver
+    });
+  } catch (e) { console.warn('[Firebase] initializeAuth olmadı, getAuth:', e.message); auth = getAuth(app); }
+  db = getFirestore(app);
+  enableIndexedDbPersistence(db).then(() => { fbReady = true; }).catch(e => { console.warn('[Firebase] Çevrimdışı önbellek yok:', e.code || e.message); fbReady = true; });
+  googleProvider = new GoogleAuthProvider();
+  googleProvider.setCustomParameters({ prompt: 'select_account' });
+} catch (e) { console.error('[Firebase] Başlatılamadı:', e); }
+
+window.FB_CFG = { authDomain: firebaseConfig.authDomain, projectId: firebaseConfig.projectId };
+window.FB = {
+  auth, db, googleProvider,
   onAuthStateChanged, signOut, deleteUser,
+  signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword,
   doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, writeBatch, serverTimestamp,
-  get fbReady() { return fbReady; } 
+  get fbReady() { return fbReady; }
 };
+window.dispatchEvent(new Event('fbhazir'));
 </script>
 
 <script>
@@ -2159,49 +2165,50 @@ function yedekYukle(inp) {
 /* ===== GİRİŞ VE AUTH ===== */
 let girisSekmeAktif = 'eposta';
 
+let authCozuldu = false;
+function fbBekle(ms) {
+  return new Promise(res => {
+    if (window.FB) return res(true);
+    const t = setTimeout(() => res(false), ms);
+    window.addEventListener('fbhazir', () => { clearTimeout(t); res(true); }, { once: true });
+  });
+}
+
 async function baslatUygulama() {
-  // Eski Service Worker kayıtlarını temizle (önceki bozuk önbelleği kaldırır)
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(regs =>
-      regs.forEach(r => r.unregister())
-    );
+    navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
   }
-
-  const auth = window.FB?.auth;
-
-  // Güvenlik: asla ekran boş kalmasın, 3 sn sonra normal giriş ekranı gösterilir
-  setTimeout(() => girisEkraniGoster(), 3000);
-
-  if (auth) {
-    window.FB.onAuthStateChanged(auth, async (user) => {
-      try {
-        if (user) {
-          await kullaniciGirisYapti(user);
-        } else {
-          girisEkraniGoster();
-        }
-      } catch (e) {
-        console.error('[Auth] hata:', e);
-        girisEkraniGoster();
-      }
-    });
-    try {
-      const result = await getRedirectResult(auth);
-      if (result?.user) await kullaniciGirisYapti(result.user);
-    } catch (e) {
-      console.warn('[Auth] redirect:', e.message);
-    }
-  } else {
-    console.log('[Auth] Firebase yok, yerel mod');
+  const hazir = await fbBekle(10000);
+  const auth = hazir ? window.FB.auth : null;
+  if (!auth) {
+    authCozuldu = true;
+    girisHataYaz({ code: 'fb/yuklenemedi', message: 'Firebase yüklenemedi' }, 'baslangic', 'google');
     girisEkraniGoster();
+    return;
   }
+  // Redirect dönüşünü HER açılışta işle; hata yutulmasın
+  const yonlendirme = window.FB.getRedirectResult(auth).catch(e => { girisHataYaz(e, 'redirect-donus', 'google'); return null; });
+  // Güvenlik ağı: oturum sonradan çözülürse uygulama yine açılır
+  setTimeout(() => { if (!authCozuldu) girisEkraniGoster(); }, 10000);
+  window.FB.onAuthStateChanged(auth, async (user) => {
+    await yonlendirme;
+    authCozuldu = true;
+    try {
+      if (user) await kullaniciGirisYapti(user);
+      else girisEkraniGoster();
+    } catch (e) {
+      console.error('[Auth] hata:', e);
+      girisHataYaz(e, 'auth-durumu');
+      girisEkraniGoster();
+    }
+  }, (e) => { authCozuldu = true; girisHataYaz(e, 'auth-dinleyici'); girisEkraniGoster(); });
 }
 
 // Global hata yakalayıcı: hiçbir durumda ekran boş kalmasın
 window.addEventListener('error', (e) => {
   console.error('[Global] Yakalanamaz hata:', e.message);
   if (
-    document.getElementById('app').style.display === 'none' &&
+    authCozuldu && document.getElementById('app').style.display === 'none' &&
     document.getElementById('girisEkrani').style.display === 'none'
   ) {
     girisEkraniGoster();
@@ -2220,12 +2227,15 @@ function girisSekme(hangi) {
 }
 
 function girisEkraniGoster() {
+  document.getElementById('yukleniyor').style.display = 'none';
   document.getElementById('girisEkrani').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('dodoBtn').style.display = 'none';
+  teshisYenile();
 }
 
 function girisEkraniGizle() {
+  document.getElementById('yukleniyor').style.display = 'none';
   document.getElementById('girisEkrani').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
   document.getElementById('dodoBtn').style.display = 'grid';
@@ -2238,23 +2248,26 @@ async function girisEposta() {
   hataEl.textContent = '';
   if (!email || !sifre) return hataEl.textContent = 'E-posta ve şifre girin.';
   try {
-    const { signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
-    await signInWithEmailAndPassword(window.FB.auth, email, sifre);
+    await window.FB.signInWithEmailAndPassword(window.FB.auth, email, sifre);
   } catch (e) {
-    hataEl.textContent = hataCevir(e);
+    girisHataYaz(e, 'eposta', 'eposta');
   }
 }
 
 async function girisGoogle() {
-  const hataEl = document.getElementById('girisHataGoogle');
-  hataEl.textContent = '';
+  document.getElementById('girisHataGoogle').textContent = '';
+  const FB = window.FB;
+  if (!FB || !FB.auth) return girisHataYaz({ code: 'fb/yok' }, 'google', 'google');
   try {
-    // COOP (Cross-Origin-Opener-Policy) politikası signInWithPopup'u engeller,
-    // bu yüzden her zaman redirect kullanılır (pencere açılmaz, yönlendirme yapılır).
-    const { signInWithRedirect } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
-    await signInWithRedirect(window.FB.auth, window.FB.googleProvider);
+    // Popup önce: kullanıcı dokunuşu zincirini bozmamak için araya await import girmiyor
+    await FB.signInWithPopup(FB.auth, FB.googleProvider);
+    // Başarılıysa onAuthStateChanged devralır
   } catch (e) {
-    hataEl.textContent = hataCevir(e);
+    girisHataYaz(e, 'popup', 'google');
+    if (['auth/popup-blocked', 'auth/operation-not-supported-in-this-environment'].includes(e.code)) {
+      try { await FB.signInWithRedirect(FB.auth, FB.googleProvider); }
+      catch (e2) { girisHataYaz(e2, 'redirect-baslat', 'google'); }
+    }
   }
 }
 
@@ -2271,18 +2284,83 @@ async function sifreSifirla() {
   }
 }
 
+const HATA_METIN = {
+  'auth/popup-blocked': 'Tarayıcı açılır pencereyi engelledi, yönlendirme deneniyor…',
+  'auth/popup-closed-by-user': 'Giriş penceresi kapatıldı. Tekrar dene.',
+  'auth/cancelled-popup-request': 'Önceki giriş isteği iptal edildi. Tekrar dene.',
+  'auth/unauthorized-domain': 'Bu alan adı Firebase\'de yetkili değil. Authentication > Settings > Authorized domains\'e "' + location.hostname + '" ekle.',
+  'auth/network-request-failed': 'Ağ hatası: internet yok ya da erişim engellendi.',
+  'auth/operation-not-supported-in-this-environment': 'Bu tarayıcı/ortam bu giriş yöntemini desteklemiyor.',
+  'auth/operation-not-allowed': 'Bu giriş yöntemi Firebase\'de açık değil (Authentication > Sign-in method).',
+  'auth/web-storage-unsupported': 'Tarayıcı depolamayı engelliyor (gizli mod / çerez ayarı).',
+  'auth/internal-error': 'Firebase iç hata verdi. API anahtarı kısıtlarını ve Authorized domains\'i kontrol et.',
+  'auth/invalid-api-key': 'API anahtarı geçersiz.',
+  'auth/api-key-not-valid': 'API anahtarı reddedildi (referrer / API kısıtı).',
+  'auth/account-exists-with-different-credential': 'Bu e-posta başka bir giriş yöntemiyle kayıtlı.',
+  'auth/user-disabled': 'Bu hesap devre dışı.',
+  'auth/too-many-requests': 'Çok fazla deneme. Biraz bekle.',
+  'auth/wrong-password': 'Şifre yanlış.',
+  'auth/invalid-credential': 'E-posta veya şifre yanlış.',
+  'auth/user-not-found': 'Kullanıcı bulunamadı.',
+  'auth/email-already-in-use': 'Bu e-posta zaten kayıtlı.',
+  'auth/weak-password': 'Şifre en az 6 karakter olmalı.',
+  'auth/invalid-email': 'Geçersiz e-posta adresi.',
+  'fb/yuklenemedi': 'Giriş servisi yüklenemedi (internet ya da engelleyici). Girişsiz kullanabilirsin.',
+  'fb/yok': 'Giriş servisi hazır değil. Sayfayı yenile.'
+};
 function hataCevir(e) {
-  const kod = e.code || '';
-  if (kod.includes('wrong-password') || kod.includes('invalid-credential')) return 'Şifre yanlış.';
-  if (kod.includes('user-not-found')) return 'Kullanıcı bulunamadı.';
-  if (kod.includes('email-already-in-use')) return 'Bu e-posta zaten kayıtlı.';
-  if (kod.includes('weak-password')) return 'Şifre en az 6 karakter olmalı.';
-  if (kod.includes('invalid-email')) return 'Geçersiz e-posta adresi.';
-  if (kod.includes('network-request-failed') || kod.includes('offline')) return 'İnternet yok veya erişim engellendi.';
-  if (kod.includes('unauthorized-domain') || kod.includes('operation-not-allowed')) return 'Alan adı yetkili değil (Firebase Console > Authentication > Settings > Authorized domains).';
-  if (kod.includes('quota-exceeded') || kod.includes('quota')) return 'Kota doldu, daha sonra deneyin.';
-  if (kod.includes('popup-blocked')) return 'Popup engellendi, yönlendirme deneniyor...';
-  return 'Hata: ' + (e.message || 'Bilinmeyen');
+  const kod = (e && e.code) || '';
+  if (HATA_METIN[kod]) return HATA_METIN[kod];
+  if (kod.includes('quota')) return 'Kota doldu, daha sonra deneyin.';
+  return 'Hata: ' + ((e && e.message) || 'Bilinmeyen');
+}
+
+function girisHataYaz(e, baglam, sekme) {
+  const kod = (e && e.code) || 'bilinmiyor';
+  try { localStorage.setItem('yks_son_auth_hata', JSON.stringify({ kod, mesaj: (e && e.message) || '', baglam: baglam || '', z: new Date().toISOString() })); } catch (x) {}
+  if (sekme) girisSekme(sekme);
+  const el = document.getElementById(girisSekmeAktif === 'google' ? 'girisHataGoogle' : 'girisHata');
+  if (el) el.innerHTML = esc(hataCevir(e)) + '<div style="font-size:10px;opacity:.7;margin-top:2px">' + esc(kod) + '</div>';
+  teshisYenile();
+}
+
+function teshisMetni() {
+  const FB = window.FB, cfg = window.FB_CFG || {};
+  const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  let depo = 'ok'; try { localStorage.setItem('_t', '1'); localStorage.removeItem('_t'); } catch (x) { depo = 'ENGELLİ'; }
+  let son = {}; try { son = JSON.parse(localStorage.getItem('yks_son_auth_hata') || '{}'); } catch (x) {}
+  const u = FB && FB.auth && FB.auth.currentUser;
+  const kuid = localStorage.getItem(UID_KEY);
+  return [
+    'Lyrica teşhis · ' + new Date().toISOString(),
+    'Adres: ' + location.origin + location.pathname,
+    'hostname: ' + location.hostname,
+    'authDomain: ' + (cfg.authDomain || '—'),
+    'authDomain ≠ hostname (3. taraf depolama riski): ' + (cfg.authDomain && cfg.authDomain !== location.hostname ? 'EVET' : 'hayır'),
+    'Authorized domains\'te "' + location.hostname + '" olmalı (koddan okunamaz, konsoldan kontrol et)',
+    'Standalone/PWA: ' + (standalone ? 'evet' : 'hayır'),
+    'Tarayıcı: ' + navigator.userAgent,
+    'localStorage: ' + depo + ' · indexedDB: ' + (window.indexedDB ? 'var' : 'YOK') + ' · çerez: ' + (navigator.cookieEnabled ? 'açık' : 'KAPALI'),
+    'Firebase yüklendi: ' + (FB && FB.auth ? 'evet' : 'HAYIR'),
+    'Auth durumu çözüldü: ' + (authCozuldu ? 'evet' : 'hayır'),
+    'Oturum: ' + (u ? 'açık (' + (u.email || u.uid.slice(0, 8)) + ')' : 'yok'),
+    'Kayıtlı uid: ' + (kuid ? kuid.slice(0, 8) : '—'),
+    'Çevrimiçi: ' + (navigator.onLine ? 'evet' : 'hayır'),
+    'Son hata: ' + (son.kod || 'yok') + (son.baglam ? ' [' + son.baglam + ']' : '') + (son.mesaj ? ' — ' + son.mesaj : '') + (son.z ? ' @' + son.z : '')
+  ].join('\n');
+}
+function teshisYenile() {
+  const el = document.getElementById('teshisMetin');
+  if (el) el.textContent = teshisMetni();
+}
+async function teshisKopyala() {
+  const m = teshisMetni();
+  try { await navigator.clipboard.writeText(m); bildir('Teşhis kopyalandı ✓'); }
+  catch (x) {
+    const t = document.createElement('textarea'); t.value = m; document.body.appendChild(t); t.select();
+    try { document.execCommand('copy'); bildir('Teşhis kopyalandı ✓'); } catch (y) { prompt('Kopyala:', m); }
+    t.remove();
+  }
 }
 
 function girisYok() {
@@ -2320,16 +2398,20 @@ async function kullaniciGirisYapti(user) {
     window.currentUser = user;
   
     if (oncekiUid === 'local' && !user.isAnonymous) {
-      await yerelVeriyiBulutaTasi(user);
+      try { await yerelVeriyiBulutaTasi(user); } catch (e) { console.error('[Göç]', e); girisHataYaz(e, 'goc'); bildir('Bulut verisi okunamadı, yerel veriyle devam: ' + (e.code || e.message)); }
     }
   
     girisEkraniGizle();
     await uygulamaBaslat();
     senkronBaslat().catch(e => console.error('[Sync] Başlatma hatası:', e));
-  } catch (e) {
+    } catch (e) {
     console.error('[Auth] Giriş hatası:', e);
-    bildir('Giriş hatası: ' + (e.message || 'Bilinmeyen'));
-    girisEkraniGoster();
+    girisHataYaz(e, 'giris-sonrasi');
+    bildir('Giriş sonrası hata: ' + (e.message || 'Bilinmeyen'));
+    // Oturum geçerliyse giriş ekranına GERİ DÖNME
+    const u = window.FB.auth.currentUser;
+    if (u) { window.currentUser = window.currentUser || u; girisEkraniGizle(); }
+    else girisEkraniGoster();
   }
 }
 
