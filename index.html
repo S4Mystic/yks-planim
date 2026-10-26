@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="utf-8">
@@ -247,16 +247,34 @@ tr:first-child td{border-top:none}
     <h1>Lyrica</h1>
     <p>YKS çalışma planlayıcı ve takip</p>
     <div class="girisSekmeler">
-      <button class="aktif" onclick="girisSekme('eposta')">E-posta / Şifre</button>
-      <button onclick="girisSekme('google')">Google ile giriş</button>
+      <button class="aktif" onclick="girisSekme('kullanici')">👤 Kullanıcı</button>
+      <button onclick="girisSekme('eposta')">✉ E-posta</button>
+      <button onclick="girisSekme('google')">Google</button>
     </div>
-    <div id="formEposta" class="girisForm">
+    <!-- Kullanıcı Adı Formu -->
+    <div id="formKullanici" class="girisForm">
+      <label class="alan">Kullanıcı adı<input type="text" id="gKullanici" autocomplete="username" placeholder="Örn: berk_42" autocapitalize="none" autocorrect="off" spellcheck="false"></label>
+      <label class="alan">Şifre<input type="password" id="gSifreK" autocomplete="current-password" placeholder="••••••••"></label>
+      <div id="formKullaniciKayit" style="display:none">
+        <label class="alan" style="margin-top:0">Şifre tekrar<input type="password" id="gSifreK2" autocomplete="new-password" placeholder="••••••••"></label>
+      </div>
+      <div id="girisHataKullanici" class="girisHata"></div>
+      <button class="btn girisBtn" id="btnKullaniciGiris" onclick="girisKullaniciAdi()">Giriş Yap</button>
+      <button class="btn ikincil" id="btnKullaniciMod" onclick="kullaniciModDegis()">Hesap Oluştur</button>
+    </div>
+    <!-- E-posta / Şifre Formu -->
+    <div id="formEposta" class="girisForm" style="display:none">
       <label class="alan">E-posta<input type="email" id="gEmail" autocomplete="email" placeholder="sen@ornek.com"></label>
       <label class="alan">Şifre<input type="password" id="gSifre" autocomplete="current-password" placeholder="••••••••"></label>
+      <div id="formEpostaKayit" style="display:none">
+        <label class="alan" style="margin-top:0">Şifre tekrar<input type="password" id="gSifre2" autocomplete="new-password" placeholder="••••••••"></label>
+      </div>
       <div id="girisHata" class="girisHata"></div>
-      <button class="btn girisBtn" onclick="girisEposta()">Giriş Yap</button>
-      <button class="btn ikincil" style="margin-top:8px" onclick="sifreSifirla()">Şifremi Unuttum</button>
+      <button class="btn girisBtn" id="btnEpostaGiris" onclick="girisEposta()">Giriş Yap</button>
+      <button class="btn ikincil" id="btnEpostaKayit" onclick="epostaModDegis()">Hesap Oluştur</button>
+      <button class="btn ikincil" id="btnSifreSifirla" onclick="sifreSifirla()">Şifremi Unuttum</button>
     </div>
+    <!-- Google Formu -->
     <div id="formGoogle" class="girisForm" style="display:none">
       <p class="soluk" style="text-align:center;margin:0 0 16px">Google hesabınla hızlıca giriş yap.</p>
       <div id="girisHataGoogle" class="girisHata"></div>
@@ -298,7 +316,7 @@ tr:first-child td{border-top:none}
 <!-- Firebase SDK v10+ modüler CDN yükleyici -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getAuth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence, browserPopupRedirectResolver, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, sendPasswordResetEmail, deleteUser } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { getAuth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence, browserPopupRedirectResolver, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, sendPasswordResetEmail, deleteUser } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { getFirestore, enableIndexedDbPersistence, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, orderBy, limit, writeBatch, serverTimestamp, Timestamp, FieldPath } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -331,7 +349,7 @@ window.FB_CFG = { authDomain: firebaseConfig.authDomain, projectId: firebaseConf
 window.FB = {
   auth, db, googleProvider,
   onAuthStateChanged, signOut, deleteUser,
-  signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword,
+  signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, writeBatch, serverTimestamp,
   get fbReady() { return fbReady; }
 };
@@ -2223,7 +2241,9 @@ function yedekYukle(inp) {
 }
 
 /* ===== GİRİŞ VE AUTH ===== */
-let girisSekmeAktif = 'eposta';
+let girisSekmeAktif = 'kullanici';
+let kullaniciMod = 'giris'; // 'giris' | 'kayit'
+let epostaMod = 'giris';   // 'giris' | 'kayit'
 
 let authCozuldu = false;
 function fbBekle(ms) {
@@ -2277,13 +2297,16 @@ window.addEventListener('error', (e) => {
 
 function girisSekme(hangi) {
   girisSekmeAktif = hangi;
+  const sekmeIds = ['kullanici', 'eposta', 'google'];
   document.querySelectorAll('.girisSekmeler button').forEach((b, i) => {
-    b.classList.toggle('aktif', (i === 0 && hangi === 'eposta') || (i === 1 && hangi === 'google'));
+    b.classList.toggle('aktif', sekmeIds[i] === hangi);
   });
+  document.getElementById('formKullanici').style.display = hangi === 'kullanici' ? 'flex' : 'none';
   document.getElementById('formEposta').style.display = hangi === 'eposta' ? 'flex' : 'none';
   document.getElementById('formGoogle').style.display = hangi === 'google' ? 'flex' : 'none';
-  document.getElementById('girisHata').textContent = '';
-  document.getElementById('girisHataGoogle').textContent = '';
+  ['girisHataKullanici', 'girisHata', 'girisHataGoogle'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.textContent = '';
+  });
 }
 
 function girisEkraniGoster() {
@@ -2307,11 +2330,80 @@ async function girisEposta() {
   const hataEl = document.getElementById('girisHata');
   hataEl.textContent = '';
   if (!email || !sifre) return hataEl.textContent = 'E-posta ve şifre girin.';
-  try {
-    await window.FB.signInWithEmailAndPassword(window.FB.auth, email, sifre);
-  } catch (e) {
-    girisHataYaz(e, 'eposta', 'eposta');
+  if (sifre.length < 6) return hataEl.textContent = 'Şifre en az 6 karakter olmalı.';
+  if (epostaMod === 'kayit') {
+    const sifre2 = document.getElementById('gSifre2').value;
+    if (sifre !== sifre2) return hataEl.textContent = 'Şifreler eşleşmiyor.';
+    try {
+      await window.FB.createUserWithEmailAndPassword(window.FB.auth, email, sifre);
+    } catch (e) {
+      girisHataYaz(e, 'eposta-kayit', 'eposta');
+    }
+  } else {
+    try {
+      await window.FB.signInWithEmailAndPassword(window.FB.auth, email, sifre);
+    } catch (e) {
+      girisHataYaz(e, 'eposta', 'eposta');
+    }
   }
+}
+
+function epostaModDegis() {
+  epostaMod = epostaMod === 'giris' ? 'kayit' : 'giris';
+  const kayit = epostaMod === 'kayit';
+  document.getElementById('formEpostaKayit').style.display = kayit ? 'block' : 'none';
+  document.getElementById('btnEpostaGiris').textContent = kayit ? 'Kayıt Ol' : 'Giriş Yap';
+  document.getElementById('btnEpostaKayit').textContent = kayit ? 'Zaten hesabım var' : 'Hesap Oluştur';
+  document.getElementById('btnSifreSifirla').style.display = kayit ? 'none' : '';
+  document.getElementById('girisHata').textContent = '';
+}
+
+function kullaniciAdiGecer(k) { return /^[a-z0-9_\-]{3,30}$/.test(k); }
+function kullaniciAdiEmail(k) { return k + '@lyrica.local'; }
+
+async function girisKullaniciAdi() {
+  const kullanici = document.getElementById('gKullanici').value.trim().toLowerCase();
+  const sifre = document.getElementById('gSifreK').value;
+  const hataEl = document.getElementById('girisHataKullanici');
+  hataEl.textContent = '';
+  if (!kullaniciAdiGecer(kullanici)) {
+    return hataEl.textContent = 'Kullanıcı adı 3–30 karakter olmalı; sadece harf, rakam, _ veya - içerebilir.';
+  }
+  if (!sifre) return hataEl.textContent = 'Şifre girin.';
+  if (sifre.length < 6) return hataEl.textContent = 'Şifre en az 6 karakter olmalı.';
+  const email = kullaniciAdiEmail(kullanici);
+  if (kullaniciMod === 'kayit') {
+    const sifre2 = document.getElementById('gSifreK2').value;
+    if (sifre !== sifre2) return hataEl.textContent = 'Şifreler eşleşmiyor.';
+    try {
+      await window.FB.createUserWithEmailAndPassword(window.FB.auth, email, sifre);
+    } catch (e) {
+      if (e.code === 'auth/email-already-in-use') {
+        hataEl.textContent = '"' + kullanici + '" kullanıcı adı zaten alınmış.';
+      } else {
+        girisHataYaz(e, 'kullanici-kayit', 'kullanici');
+      }
+    }
+  } else {
+    try {
+      await window.FB.signInWithEmailAndPassword(window.FB.auth, email, sifre);
+    } catch (e) {
+      if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
+        hataEl.textContent = 'Kullanıcı adı veya şifre hatalı.';
+      } else {
+        girisHataYaz(e, 'kullanici-giris', 'kullanici');
+      }
+    }
+  }
+}
+
+function kullaniciModDegis() {
+  kullaniciMod = kullaniciMod === 'giris' ? 'kayit' : 'giris';
+  const kayit = kullaniciMod === 'kayit';
+  document.getElementById('formKullaniciKayit').style.display = kayit ? 'block' : 'none';
+  document.getElementById('btnKullaniciGiris').textContent = kayit ? 'Kayıt Ol' : 'Giriş Yap';
+  document.getElementById('btnKullaniciMod').textContent = kayit ? 'Zaten hesabım var' : 'Hesap Oluştur';
+  document.getElementById('girisHataKullanici').textContent = '';
 }
 
 async function girisGoogle() {
@@ -2379,7 +2471,10 @@ function girisHataYaz(e, baglam, sekme) {
   const kod = (e && e.code) || 'bilinmiyor';
   try { localStorage.setItem('yks_son_auth_hata', JSON.stringify({ kod, mesaj: (e && e.message) || '', baglam: baglam || '', z: new Date().toISOString() })); } catch (x) {}
   if (sekme) girisSekme(sekme);
-  const el = document.getElementById(girisSekmeAktif === 'google' ? 'girisHataGoogle' : 'girisHata');
+  const el = document.getElementById(
+    girisSekmeAktif === 'google' ? 'girisHataGoogle' :
+    girisSekmeAktif === 'kullanici' ? 'girisHataKullanici' : 'girisHata'
+  );
   if (el) el.innerHTML = esc(hataCevir(e)) + '<div style="font-size:10px;opacity:.7;margin-top:2px">' + esc(kod) + '</div>';
   teshisYenile();
 }
